@@ -143,6 +143,7 @@ C**********************************************************************
       logical lex
 
       double precision :: b = $b$
+      double precision :: mix
 
       ALLOCATE (UR(0:NBX,0:NBY,0:NGZM1),VR(0:NBX,0:NBY,0:NGZM1))
       ALLOCATE (WR(0:NBX,0:NBY,0:NGZM1))

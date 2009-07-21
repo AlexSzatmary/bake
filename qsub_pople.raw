@@ -1,7 +1,7 @@
 #!/bin/csh
 #PBS -l ncpus=4
 #ncpus must be a multiple of 4
-#PBS -l walltime=600:00
+#PBS -l walltime=60:00
 #PBS -N cell$cd$
 #PBS -j oe
 #PBS -W umask=007
