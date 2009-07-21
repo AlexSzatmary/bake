@@ -211,7 +211,14 @@ C**********************************************************************
          bfs(2,:) = (/0.d0, 0.d0, 0.d0/)
          bfs(3,:) = (/0.d0, gamma_dot_p, 0.d0/)
       end if
-
+      if (4 == $flow$) then
+         mix = $mix$
+         bfs(1,:) = (/-mix*gamma_dot_p/2.d0, gamma_dot_p*(1-mix), 
+     &        0.d0/)
+         bfs(2,:) = (/gamma_dot_p*(1-mix), -mix*gamma_dot_p/2.d0, 
+     &        0.d0/)
+         bfs(3,:) = (/0.d0, 0.d0, gamma_dot_p*mix/)
+      end if
 !     In program units for velocity (unitless)
       if (3 /= $flow$) then
          umean(:)= (/0.d0,0.d0,0.d0/)
