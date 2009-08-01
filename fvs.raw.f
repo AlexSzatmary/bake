@@ -1,4 +1,6 @@
       subroutine fvssub(ur, vr, wr, bfs, umean)
+!     Subtracts out the imposed linear flow
+
       integer, parameter :: lxng=$lngx$,lyng=lxng,lzng=lxng
       integer, parameter :: ngx=2**lxng,ngy=2**lyng,ngz=2**lzng
       double precision, parameter :: flngx=ngx, flngy=ngy, flngz=ngz

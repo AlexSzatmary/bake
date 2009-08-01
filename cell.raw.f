@@ -166,6 +166,7 @@ C**********************************************************************
       nu = mu/rho ! Kinematic density
 
       
+!     Shear rate, defined in terms of capillary number
       gamma_dot = Eh*capillary_no/(radx*mu)
 !     Shear rate in program units
       gamma_dot_p = $gamma_dot_p$
@@ -194,6 +195,12 @@ C**********************************************************************
 
 !     Added to implement BC homogenization
 !     These are in the program units for 1/T
+!     bfs is the velocity gradient matrix, \nabla u (no dot)
+!     This can be applied to FVS or to the bodyfs subroutine.
+!     FVS allows for direct imposition of a linear flow field.
+!     bodyfs imposes stresses on the faces of the domain; these stresses are
+!     picked to generate the same flow field that FVS would, if there were
+!     no immersed body.
 !     Plane Shear
       if (1 == $flow$) then
          bfs(1,:) = (/0.d0, 0.d0, 0.d0/)
@@ -220,16 +227,19 @@ C**********************************************************************
      &        0.d0/)
          bfs(3,:) = (/0.d0, 0.d0, gamma_dot_p*mix/)
       end if
+
+!     This is the mean fluid velocity vector. For unbounded flows, this is
+!     typically zero, so that a capsule in the center is immobilized.
 !     In program units for velocity (unitless)
       if (3 /= $flow$) then
          umean(:)= (/0.d0,0.d0,0.d0/)
       end if
-
 !     This makes the flow zero at the wall
       if (3 == $flow$) then
          umean(:) = (/0.d0, 0.d0, bfs(3,2)*((flngy+1.d0)/2.d0-planey)/)
       end if
 
+!     This is code for automatically restarting an aborted run.
       klok = 0
       inquire(100, exist=lex, iostat=ios, recl=i)
       open(100,iostat=ios, form='unformatted')
@@ -242,13 +252,19 @@ C**********************************************************************
       if (klok == 0) then
 !     Initialize the solid arrays
       call inspher(lcube,radx,h,xfn,elmnew,shpint,shpfs)
+!     $npls$ is the number of planes. If there is one, it should be
+!     initialized.
       if ($npls$ > 0) then
          call inplane(xpi, xfn)
       end if
+!     Get an initial measurement of the center of the capsule
       call cellcenter(klok, xfn, xcenter, ycenter, zcenter)
+!     Use these values to measure velocity. It's a crappy measure, it's a
+!     backward difference.
       xcenterold = xcenter
       ycenterold = ycenter
       zcenterold = zcenter
+
 !  Initialize the activation variables --
       write(206,*) nstep  ,' = nstep'
       write(206,*) lcube  ,' cm = lcube'
