@@ -19,3 +19,4 @@ f,$FVS$,0,1
 ,$flow$,1
 ,$nstep$,2000
 ,$vstable$,0
+,$mix$,0
