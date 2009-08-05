@@ -27,3 +27,36 @@
 
       return
       end subroutine fvssub
+
+      subroutine poiseuille(ur, vr, wr, pr, gamma_dot_p, vsc)
+!     Imposes Poiseuille flow
+
+      integer, parameter :: lxng=$lngx$,lyng=lxng,lzng=lxng
+      integer, parameter :: ngx=2**lxng,ngy=2**lyng,ngz=2**lzng
+      double precision, parameter :: flngx=ngx, flngy=ngy, flngz=ngz
+      double complex :: ur(0:ngx+2, 0:ngy+2,0:ngz-1), 
+     &     vr(0:ngx+2, 0:ngy+2, 0:ngz-1),
+     &     wr(0:ngx+2, 0:ngy+2, 0:ngz-1),
+     &     pr(0:ngx+2, 0:ngy+2, 0:ngz-1)
+
+      integer i, j, k
+      double precision gamma_dot_p, vsc
+      double precision, parameter :: dpdz = -2*vsc*gamma_dot_p/ngy
+
+      do i = 1,ngx
+         do j = 1,ngy
+            do k = 0,ngz-1
+               if (j > 2.5) then
+                  wr(i,j,k) = wr(i,j,k) - ((1/(2*vsc))*dpdz*
+     &                 (2*(j-2.5)-ngy))
+               else
+                  wr(i,j,k) = wr(i,j,k) - ((1/(2*vsc))*dpdz*
+     &                 (2*(ngy+j-2.5)-ngy))
+               end if
+               pr(i,j,k) = pr(i,j,k) - (-2*vsc*gamma_dot_p*k/ngy)
+            end do
+         end do
+      end do
+
+      return
+      end subroutine poiseuille

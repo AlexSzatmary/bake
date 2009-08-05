@@ -1,4 +1,4 @@
 #!/usr/bin/python
 import os
-for i in range(75934,75955):
+for i in range(85335, 85350):
     os.system('qdel ' + str(i))

@@ -102,6 +102,7 @@ C**********************************************************************
       double precision ::  LCUBE,NU,MU,MASS,LENGTH
 !     Velocities are always expressed in program units
       double COMPLEX,ALLOCATABLE :: UR(:,:,:),VR(:,:,:),WR(:,:,:)
+      double complex :: pr(0:NBX,0:NBY,0:NGZM1)
       double complex :: meanstablev
 !     Handy look-up tables for fluid mechanics calculations.
       double COMPLEX, ALLOCATABLE :: VXFACT(:),VYFACT(:),VZFACT(:)
@@ -284,11 +285,12 @@ C**********************************************************************
 !     Initialize velocity
 !     Throughout, u is in program units (normalized by h/td)
       if (fvs /= 0) then
-         call fvssub(ur, vr, wr, -bfs, -umean)
+         call $bfscmd$
+!         call fvssub(ur, vr, wr, -bfs, -umean)
       end if
 
       call wprofile(wr, 0)
-!      call uvwdump(ur, vr, wr, 0)
+      call uvwpdump(ur, vr, wr, pr, 0)
       call makefilename('solidnodes', 0,'.txt',strfname)
       call saveallsolid(XFN,strfname)
       call makefilename('solidforce', 0,'.txt',strfname)
@@ -348,8 +350,8 @@ C**********************************************************************
          if (fvs /= 0) then
             call fvssub(ur, vr, wr, bfs, umean)
          end if
-         CALL FLUIDUP(KLOK,UR,VR,WR,VXFACT,VYFACT,VZFACT,PRDENO,QRFACT,
-     &     DSQ, DX, DY, DZ)
+         CALL FLUIDUP(KLOK,UR,VR,WR, pr, VXFACT,VYFACT,VZFACT,
+     &        PRDENO,QRFACT, DSQ, DX, DY, DZ)
          if (fvs /= 0) then
             call fvssub(ur, vr, wr, -bfs, -umean)
          end if
@@ -384,7 +386,7 @@ C**********************************************************************
          call dumpstatus(klok, message)
 
       if ((klok/500)*500 == klok) then
-!         call uvwdump(ur, vr, wr, KLOK)
+         call uvwpdump(ur, vr, wr, pr, KLOK)
          message = 'cell l284'
          call dumpstatus(klok, message)
          call makefilename('solidnodes',KLOK,'.txt',strfname)

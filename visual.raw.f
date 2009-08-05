@@ -356,7 +356,7 @@ C          end if
 
       end subroutine wdump
 !**********************************************************************
-      subroutine uvwdump(ur, vr, wr,clock)
+      subroutine uvwpdump(ur, vr, wr, pr, clock)
       implicit none
       integer, parameter :: lngx=$lngx$,lngy=lngx,lngz=lngx
       integer, parameter :: ngx=2**lngx,ngy=2**lngy,ngz=2**lngz
@@ -364,22 +364,24 @@ C          end if
       double complex :: ur(0:ngx+2,0:ngy+2,0:ngz-1)
       double complex :: vr(0:ngx+2,0:ngy+2,0:ngz-1)
       double complex :: wr(0:ngx+2,0:ngy+2,0:ngz-1)
-      character*19 uvwdumpname
+      double complex :: pr(0:ngx+2,0:ngy+2,0:ngz-1)
 
-      call makefilename('uvwdump___', clock,'.txt', uvwdumpname)
+      character*19 uvwpdumpname
+
+      call makefilename('uvwpdump__', clock,'.txt', uvwpdumpname)
       
-      open(25,file=uvwdumpname,status='unknown')
+      open(25,file=uvwpdumpname,status='unknown')
       do i =1,ngx
          do j = 1,ngy
             do k = 0,ngz-1
                write(25,*) i,j,k, dreal(ur(i,j,k)), dreal(vr(i,j,k)), 
-     &              dreal(wr(i,j,k))
+     &              dreal(wr(i,j,k)), dreal(pr(i,j,k))
             end do
          end do
       end do
       close(25)
 
-      end subroutine uvwdump
+      end subroutine uvwpdump
 !**********************************************************************
       subroutine wlindump(wlin,clock)
       implicit none

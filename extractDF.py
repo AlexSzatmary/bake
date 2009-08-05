@@ -50,9 +50,11 @@ for i in range(N_values):
     if short_tokens[j] != '':
       cd = cd+short_tokens[j]+list_values[j][list_i[j]]
   wd = os.path.join('.', 'batch', cd)
-  hin = open(os.path.join(wd, 'fort.204'),'r')
-  hout.write(wd + ',' + hin.readlines()[-1])
-  hin.close()
+  print os.path.join(wd, 'fort.204')
+  if os.path.exists(os.path.join(wd, 'fort.204')):
+    hin = open(os.path.join(wd, 'fort.204'),'r')
+    hout.write(wd + ',' + hin.readlines()[-1])
+    hin.close()
   j = 0
   while i < N_values - 1:
     list_i[j] = list_i[j] + 1
