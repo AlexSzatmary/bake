@@ -14,7 +14,7 @@ l,$lngx$,5
 g,$capillary_no$,1.d-2
 f,$FVS$,0,1
 ,$gapratio$,0.00d0
-,$b$,4.d0
+b,$b$,6.d0
 ,$gamma_dot_p$,1.d-3
 ,$flow$,4
 ,$nstep$,2000
