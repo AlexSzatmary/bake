@@ -20,4 +20,4 @@ f,$FVS$,0,1
 ,$nstep$,2000
 ,$vstable$,0
 ,$mix$,0
-,$bfscmd$,fvssub(ur, vr, wr, -bfs, -umean)
+,$bfscmd$,1
