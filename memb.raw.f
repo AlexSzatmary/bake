@@ -31,7 +31,7 @@
       RETURN
       END SUBROUTINE INHIST
 !**********************************************************************
-      subroutine INSPHER(LCUBE,RADX,H,XFN, elmnew,shpint,shpfs) 
+      subroutine importmesh(LCUBE,RADX,H,XFN, elmnew,shpint,shpfs) 
       IMPLICIT NONE
       integer, parameter :: nfsize=$nsnode$,nfsize2=$nselm$
       integer, parameter :: m_start=$m_start$, m_end=$m_end$
@@ -62,13 +62,22 @@
          x = XFN(1,i)*dcos(theta) - XFN(2,i)*dsin(theta)
          y = XFN(1,i)*dsin(theta) + XFN(2,i)*dcos(theta)
 !     Move the sphere to the center of the flow field, give it radius radx.
-         XFN(1,i) =RADX*x/H + 0.5d0*(flngx+1.d0)
-         if (3 /= $flow$) then
+
+         if ($flow$ == 1 .or. $flow$ == 2 .or. $flow$ == 4) then
+            XFN(1,i) =RADX*x/H + 0.5d0*(flngx+1.d0)
             XFN(2,i) =RADX*y/H + 0.5d0*(flngy+1.d0)
-         else
-            XFN(2,i) =RADX*y/H + RADX/H*(gapratio+1.d0)+2.5d0
+            XFN(3,i) =RADX*XFN(3,i)/H + 0.5d0*(flngz-1.d0)
          end if
-         XFN(3,i) =RADX*XFN(3,i)/H + 0.5d0*(flngz-1.d0)
+         if ($flow$ == 3) then
+            XFN(1,i) =RADX*x/H + 0.5d0*(flngx+1.d0)
+            XFN(2,i) =RADX*y/H + RADX/H*(gapratio+1.d0)+2.5d0
+            XFN(3,i) =RADX*XFN(3,i)/H + 0.5d0*(flngz-1.d0)
+         end if
+         if ($flow$ == 5) then
+            XFN(1,i) =RADX*x/H + 0.5d0*(flngx+1.d0)
+            XFN(2,i) =RADX*y/H + 0.5d0*(flngy+1.d0)
+            XFN(3,i) =RADX*XFN(3,i)/H + 0.35d0*(flngz-1.d0)
+         end if
       enddo
       do i = 1,nfsize2
          read(20,103)elmnew(1,i),elmnew(2,i),elmnew(3,i)

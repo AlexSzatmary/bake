@@ -41,19 +41,21 @@
 
       integer i, j, k
       double precision gamma_dot_p, vsc
-      double precision, parameter :: dpdz = -2*vsc*gamma_dot_p/ngy
+      double precision :: dpdz
+
+      dpdz = -2*vsc*gamma_dot_p/ngy
 
       do i = 1,ngx
          do j = 1,ngy
             do k = 0,ngz-1
-               if (j > 2.5) then
-                  wr(i,j,k) = wr(i,j,k) - ((1/(2*vsc))*dpdz*
-     &                 (2*(j-2.5)-ngy))
+               if (j > $planey$) then
+                  wr(i,j,k) = wr(i,j,k) + ((1/(2*vsc))*(-dpdz)*
+     &                 ((j-$planey$)*ngy-(j-$planey$)**2))
                else
-                  wr(i,j,k) = wr(i,j,k) - ((1/(2*vsc))*dpdz*
-     &                 (2*(ngy+j-2.5)-ngy))
+                  wr(i,j,k) = wr(i,j,k) + ((1/(2*vsc))*(-dpdz)*
+     &                 ((ngy+j-$planey$)*ngy-(ngy+j-$planey$)**2))
                end if
-               pr(i,j,k) = pr(i,j,k) - (-2*vsc*gamma_dot_p*k/ngy)
+               pr(i,j,k) = pr(i,j,k) + (-2*vsc*gamma_dot_p*k/ngy)
             end do
          end do
       end do

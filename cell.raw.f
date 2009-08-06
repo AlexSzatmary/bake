@@ -228,6 +228,12 @@ C**********************************************************************
      &        0.d0/)
          bfs(3,:) = (/0.d0, 0.d0, gamma_dot_p*mix/)
       end if
+      if (5 == $flow$) then
+!     Don't use bfs
+         bfs(1,:) = (/0.d0, 0.d0, 0.d0/)
+         bfs(2,:) = (/0.d0, 0.d0, 0.d0/)
+         bfs(3,:) = (/0.d0, 0.d0, 0.d0/)
+      end if
 
 !     This is the mean fluid velocity vector. For unbounded flows, this is
 !     typically zero, so that a capsule in the center is immobilized.
@@ -252,7 +258,7 @@ C**********************************************************************
 
       if (klok == 0) then
 !     Initialize the solid arrays
-      call inspher(lcube,radx,h,xfn,elmnew,shpint,shpfs)
+      call importmesh(lcube,radx,h,xfn,elmnew,shpint,shpfs)
 !     $npls$ is the number of planes. If there is one, it should be
 !     initialized.
       if ($npls$ > 0) then
@@ -285,8 +291,12 @@ C**********************************************************************
 !     Initialize velocity
 !     Throughout, u is in program units (normalized by h/td)
       if (fvs /= 0) then
-         call $bfscmd$
-!         call fvssub(ur, vr, wr, -bfs, -umean)
+         if ($bfscmd$ == 1) then
+            call fvssub(ur, vr, wr, -bfs, -umean)
+         end if
+         if ($bfscmd$ == 2) then
+            call poiseuille(ur, vr, wr, pr, gamma_dot_p, vsc)
+         end if
       end if
 
       call wprofile(wr, 0)
@@ -348,12 +358,22 @@ C**********************************************************************
          message = 'cell l248'
          call dumpstatus(klok, message)
          if (fvs /= 0) then
-            call fvssub(ur, vr, wr, bfs, umean)
+            if ($bfscmd$ == 1) then
+               call fvssub(ur, vr, wr, bfs, umean)
+            end if
+            if ($bfscmd$ == 2) then
+               call poiseuille(ur, vr, wr, pr, -gamma_dot_p, vsc)
+            end if
          end if
          CALL FLUIDUP(KLOK,UR,VR,WR, pr, VXFACT,VYFACT,VZFACT,
      &        PRDENO,QRFACT, DSQ, DX, DY, DZ)
          if (fvs /= 0) then
-            call fvssub(ur, vr, wr, -bfs, -umean)
+            if ($bfscmd$ == 1) then
+               call fvssub(ur, vr, wr, -bfs, -umean)
+            end if
+            if ($bfscmd$ == 2) then
+               call poiseuille(ur, vr, wr, pr, gamma_dot_p, vsc)
+            end if
          end if
          message = 'cell l252'
          call dumpstatus(klok, message)
