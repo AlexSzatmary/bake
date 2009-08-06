@@ -16,7 +16,7 @@ list_values = []
 n_values = []
 m = 0
 for line in hin.readlines():
-  elements = line.split(',')
+  elements = line.split(';')
   elements[-1] = elements[-1].replace('\n','')
   short_tokens.append(elements[0])
   tokens.append(elements[1])

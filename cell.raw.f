@@ -1,3 +1,7 @@
+!     Some modifications made by Alex Szatmary. He claims copyright on
+!     these changes, which, unfortunately, are not, at the moment,
+!     clearly marked, but he's a nice guy and is generally happy to 
+!     share.
 C *********************************************************************
 C *     Copyright 1994 Charles S. Peskin and David M. McQueen         *
 C *     All rights reserved. No portion of this program may be        *
@@ -94,9 +98,9 @@ C**********************************************************************
       PARAMETER(FLNGX=NGX,FLNGY=NGY,FLNGZ=NGZ)
       parameter(nfsize=$nsnode$,nfsize2=$nselm$)
       integer, parameter :: npl=$npl$
-      integer, parameter :: m_start=$m_start$, m_end=$m_end$
       INTEGER KLOK,KLOK1,KLOK0,KLOKEND,NSTEP
       double precision :: T,H,h64,TD,VSC,TIME,RHO,PI,RADX,FOSTAR
+      double precision :: rad($ncap$)
       double precision :: xcenter, ycenter, zcenter
       double precision :: xcenterold, ycenterold, zcenterold
       double precision ::  LCUBE,NU,MU,MASS,LENGTH
@@ -104,6 +108,7 @@ C**********************************************************************
       double COMPLEX,ALLOCATABLE :: UR(:,:,:),VR(:,:,:),WR(:,:,:)
       double complex :: pr(0:NBX,0:NBY,0:NGZM1)
       double complex :: meanstablev
+      double complex :: meanu, meanv, meanw
 !     Handy look-up tables for fluid mechanics calculations.
       double COMPLEX, ALLOCATABLE :: VXFACT(:),VYFACT(:),VZFACT(:)
       double precision,ALLOCATABLE :: PRDENO(:,:,:),QRFACT(:,:,:)
@@ -115,6 +120,7 @@ C**********************************************************************
       double precision, parameter :: capillary_no = $capillary_no$
       integer, parameter :: FVS = $FVS$
       double precision :: planey = $planey$
+      integer cap_start($ncap$), cap_end($ncap$)
       character*80 message
 
 !     Array of linked lists representing the solid nodes for a given 
@@ -146,6 +152,9 @@ C**********************************************************************
       double precision :: b = $b$
       double precision :: mix
 
+      integer fineness($ncap$), nnode($ncap$), nelm($ncap$)
+      double precision :: cap_center(3,$ncap$)
+
       ALLOCATE (UR(0:NBX,0:NBY,0:NGZM1),VR(0:NBX,0:NBY,0:NGZM1))
       ALLOCATE (WR(0:NBX,0:NBY,0:NGZM1))
       ALLOCATE (QRFACT(0:NBX,0:NBY,0:NGZM1),PRDENO(0:NBX,0:NBY,0:NGZM1))
@@ -155,10 +164,25 @@ C**********************************************************************
       ALLOCATE (elmnew(1:3,1:NFSIZE2))
       ALLOCATE (shpint(1:3,1:NFSIZE2),shpfs(1:7,1:NFSIZE2))
 
+      cap_center(1,:)=$xc_cap$
+      cap_center(2,:)=$yc_cap$
+      cap_center(3,:)=$zc_cap$
+
+      fineness = $fineness$
+      do i=1,$ncap$
+         call capsuletable(fineness(i),nnode(i),nelm(i))
+      end do
+
+      rad = $rad$
+
+      !red
+      cap_start = (/1/)
+      cap_end = (/nnode(1)/)
+
       pi = 3.14159265358979323846d0 ! Taken from Wikipedia; 20 digits
 !     Physical parameters -- using cgs system
       nstep = $nstep$ ! Number of timesteps
-      radx = 3.338d-4 ! cell radius (cm)
+      radx = $radx$ ! cell radius (cm)
 
       if (b < 0) b = 2*(1+2*$gapratio$)*ngy/(ngy-3)
       lcube = radx*b ! Length of one edge of the fluid domain cube (cm)
@@ -258,7 +282,10 @@ C**********************************************************************
 
       if (klok == 0) then
 !     Initialize the solid arrays
-      call importmesh(lcube,radx,h,xfn,elmnew,shpint,shpfs)
+         do i = 1,$ncap$
+            call importmesh(lcube,rad(i),h,xfn,elmnew,shpint,shpfs,
+     &           cap_start(i), cap_end(i), cap_center(:,i))
+         end do
 !     $npls$ is the number of planes. If there is one, it should be
 !     initialized.
       if ($npls$ > 0) then
@@ -305,8 +332,11 @@ C**********************************************************************
       call saveallsolid(XFN,strfname)
       call makefilename('solidforce', 0,'.txt',strfname)
       call saveallsolid(frc,strfname)
-      call shape(lcube,h64,klok,td,m_start,m_end,1,nfsize2,xfn,elmnew)
-      call calculateDF(klok, xfn, m_start, m_end)
+      do i = 1,$ncap$
+         call shape(lcube,h64,klok,td,cap_start(i),cap_end(i),1,
+     &        nfsize2,xfn,elmnew)
+         call calculateDF(klok, xfn, cap_start(i), cap_end(i))
+      end do
       else
          write(*,*) 'cell l184 Restarting'
          call restart(lcube, nu, rho,td,klok,ur,vr,wr,
@@ -325,7 +355,10 @@ C**********************************************************************
          message = 'cell l216'
          call dumpstatus(klok, message)
       T = T+TD
-         CALL MEMBNX(KLOK,XFN,elmnew,shpint,shpfs,FRC,h,FOSTAR,RADX)
+      do i=1,$ncap$
+         CALL MEMBNX(KLOK,XFN,elmnew,shpint,shpfs,FRC,h,FOSTAR,RAD(i),
+     &        cap_start(i), cap_end(i))
+      end do
          message = 'cell l220'
          call dumpstatus(klok, message)
          if ($npls$ > 0) then
@@ -348,6 +381,12 @@ C**********************************************************************
          ycenterold = ycenter
          zcenterold = zcenter
          message = 'cell l240'
+         call meanfluidvelocity(ur, meanu)
+         call meanfluidvelocity(vr, meanv)
+         call meanfluidvelocity(wr, meanw)
+         open(403, access='append')
+         write(403,*) klok, dreal(meanu), dreal(meanv), dreal(meanw)
+         close(403)
          call dumpstatus(klok, message)
          CALL pushup(KLOK,UR,VR,WR,XFN,FRC,FIRSTN,NUMBER,NEXTN)
          message = 'cell l243'
@@ -383,11 +422,13 @@ C**********************************************************************
          CALL MOVE(KLOK,UR,VR,WR,XFN,FIRSTN,NUMBER,NEXTN)
          message = 'cell l258'
          call dumpstatus(klok, message)
-         CALL SHAPE(LCUBE,h64,KLOK,TD,m_start,m_end,1,nfsize2,XFN,
-     &     elmnew)
-         message = 'cell l262'
-         call dumpstatus(klok, message)
-         call calculateDF(klok, xfn, m_start, m_end)
+         do i=1,$ncap$
+            CALL SHAPE(LCUBE,h64,KLOK,TD,cap_start(i),cap_end(i),1,
+     &           nfsize2,XFN, elmnew)
+            message = 'cell l262'
+            call dumpstatus(klok, message)
+            call calculateDF(klok, xfn, cap_start(i), cap_end(i))
+         end do
       WRITE(206,*)' KLOK: ',KLOK,  ' ; TIME: ',T
          message = 'cell l266'
          call dumpstatus(klok, message)
@@ -395,7 +436,7 @@ C**********************************************************************
      &        xfn,xpi,firstn,number,nextn,elmnew,shpint,shpfs)
          message = 'cell l270'
          call dumpstatus(klok, message)
-         if ((klok/100)*100 == klok) then
+         if ((klok/1)*1 == klok) then
          message = 'cell l273'
          call dumpstatus(klok, message)
          call wprofile(wr, klok)
@@ -405,7 +446,7 @@ C**********************************************************************
          message = 'cell l279'
          call dumpstatus(klok, message)
 
-      if ((klok/500)*500 == klok) then
+      if ((klok/5)*5 == klok) then
          call uvwpdump(ur, vr, wr, pr, KLOK)
          message = 'cell l284'
          call dumpstatus(klok, message)
@@ -425,16 +466,16 @@ C**********************************************************************
          message = 'cell l299'
          call dumpstatus(klok, message)
 
-         if ($vstable$ == 1) then
-            if ($flow$ /= 3) then
-               call meanfluidvelocity(ur, meanstablev)
-               ur = ur - meanstablev
-               call meanfluidvelocity(vr, meanstablev)
-               vr = vr - meanstablev
-               call meanfluidvelocity(wr, meanstablev)
-               wr = wr - meanstablev
-            end if
-         end if
+C          if ($vstable$ == 1) then
+C             if ($flow$ /= 3) then
+C                call meanfluidvelocity(ur, meanstablev)
+C                ur = ur - meanstablev
+C                call meanfluidvelocity(vr, meanstablev)
+C                vr = vr - meanstablev
+C                call meanfluidvelocity(wr, meanstablev)
+C                wr = wr - meanstablev
+C             end if
+C          end if
    5  CONTINUE
    6  CONTINUE
 

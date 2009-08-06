@@ -116,7 +116,6 @@
       PARAMETER(NGXM1=NGX-1,NGYM1=NGY-1,NGZM1=NGZ-1)
       PARAMETER(FNGX=NGX,FNGY=NGY,FNGZ=NGZ)
       INTEGER I,J,K
-      integer, parameter :: m_start=$m_start$, m_end=$m_end$
       double precision :: xfn(1:3,1:nfsize)
       integer, parameter :: sqrtnpl=$sqrtnpl$
       integer, parameter ::  fp_start=$fp_start$, fp_end=$fp_end$
@@ -144,7 +143,6 @@
       INTEGER NGXP2,NGYP2,NGZP2
       INTEGER NGXB4,NGYB4,NGZB4
       INTEGER NFSIZE
-      integer, parameter :: m_end=$m_end$
       integer, parameter :: fp_start=$fp_start$, fp_end=$fp_end$
       double precision :: FLNGX,FLNGY,FLNGZ
       PARAMETER(LXNG=$lngx$,LYNG=LXNG,LZNG=LXNG+1)

@@ -31,7 +31,8 @@
       RETURN
       END SUBROUTINE INHIST
 !**********************************************************************
-      subroutine importmesh(LCUBE,RADX,H,XFN, elmnew,shpint,shpfs) 
+      subroutine importmesh(LCUBE,RADX,H,XFN, elmnew,shpint,shpfs,
+     &     my_cap_start, my_cap_end, my_cap_center)
       IMPLICIT NONE
       integer, parameter :: nfsize=$nsnode$,nfsize2=$nselm$
       integer, parameter :: m_start=$m_start$, m_end=$m_end$
@@ -44,19 +45,21 @@
       INTEGER elmnew(1:3,1:NFSIZE2)
       double precision :: shpint(1:3,1:NFSIZE2),shpfs(1:7,1:NFSIZE2)
       double precision :: gapratio=$gapratio$
+      integer my_cap_start, my_cap_end
+      double precision my_cap_center(3)
       zc1=0.d0
       zc2=0.d0
-      open(20,file='mesh/sphere.$m_end$.sph',status='unknown')
-      open(21,file='mesh/shpfcta.$m_end$.sph',status='unknown')
-      open(22,file='mesh/shpfctb.$m_end$.sph',status='unknown')
-      open(23,file='mesh/shpint.$m_end$.sph',status='unknown')
+      open(20,file='mesh/mesh.$mesh$',status='unknown')
+      open(21,file='mesh/shpfcta.$mesh$',status='unknown')
+      open(22,file='mesh/shpfctb.$mesh$',status='unknown')
+      open(23,file='mesh/shpint.$mesh$',status='unknown')
       read(20,100)n1,n2
  100  format(7x,i5,2x,i5)
 
       pi = 3.14159265358979323846d0 ! Taken from Wikipedia; 20 digits
       theta =  pi/4.0d0
 !     The sphere comes in as the unit sphere.
-      do i = m_start, m_end
+      do i = my_cap_start, my_cap_end
          read(20,101) XFN(1,i),XFN(2,i), XFN(3,i)
  101     format(13x,e20.13,e20.13,e20.13)
          x = XFN(1,i)*dcos(theta) - XFN(2,i)*dsin(theta)
@@ -64,9 +67,9 @@
 !     Move the sphere to the center of the flow field, give it radius radx.
 
          if ($flow$ == 1 .or. $flow$ == 2 .or. $flow$ == 4) then
-            XFN(1,i) =RADX*x/H + 0.5d0*(flngx+1.d0)
-            XFN(2,i) =RADX*y/H + 0.5d0*(flngy+1.d0)
-            XFN(3,i) =RADX*XFN(3,i)/H + 0.5d0*(flngz-1.d0)
+            XFN(1,i) =RADX*x/H + my_cap_center(1)
+            XFN(2,i) =RADX*y/H + my_cap_center(2)
+            XFN(3,i) =RADX*XFN(3,i)/H + my_cap_center(3)
          end if
          if ($flow$ == 3) then
             XFN(1,i) =RADX*x/H + 0.5d0*(flngx+1.d0)
@@ -74,9 +77,9 @@
             XFN(3,i) =RADX*XFN(3,i)/H + 0.5d0*(flngz-1.d0)
          end if
          if ($flow$ == 5) then
-            XFN(1,i) =RADX*x/H + 0.5d0*(flngx+1.d0)
-            XFN(2,i) =RADX*y/H + 0.5d0*(flngy+1.d0)
-            XFN(3,i) =RADX*XFN(3,i)/H + 0.35d0*(flngz-1.d0)
+            XFN(1,i) =RADX*x/H + my_cap_center(1)
+            XFN(2,i) =RADX*y/H + my_cap_center(2)
+            XFN(3,i) =RADX*XFN(3,i)/H + my_cap_center(3)
          end if
       enddo
       do i = 1,nfsize2
@@ -106,11 +109,12 @@
          shpint(3,i) = shpint(3,i)*radx
       enddo
       return
-      END SUBROUTINE INSPHER
+      end subroutine importmesh
 !************************************************************
       subroutine MEMBNX(KLOK,XFN,elmnew,shpint,shpfs,FRC,
-     & H,FOSTAR,RADX)
+     & H,FOSTAR,RADX, my_cap_start, my_cap_end)
       IMPLICIT NONE
+      integer my_cap_start, my_cap_end
       INTERFACE ELM
       subroutine elmfrc(shpfs,ielm,u2,u3,v3,fx1,fy1,fx2,fy2,
      &     fx3,fy3,fz1,fz2,fz3)
@@ -153,7 +157,7 @@
       FORCEY2=0.d0
       FORCEZ2=0.d0
 
-      do 20 i = m_start, m_end
+      do 20 i = my_cap_start, my_cap_end
          FRC(1,i) = 0.0d0
          FRC(2,i) = 0.0d0
          FRC(3,i) = 0.0d0
@@ -455,3 +459,23 @@
       fz3 = 0.0d0
       return
       end subroutine elmfrc
+!**********************************************************************
+      subroutine capsuletable(fineness, nnode, nelm)
+      integer fineness, nnode, nelm
+      if (fineness == 4) then
+         nnode = 2562
+         nelm = 2560
+      end if
+      if (fineness == 5) then
+         nnode = 10242
+         nelm = 20480
+      end if
+      if (fineness == 6) then
+         nnode = 40962
+         nelm = 81920
+      end if
+      if (fineness == 7) then
+         nnode = 163842
+         nelm = 327680
+      end if
+      end subroutine capsuletable
