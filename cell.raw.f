@@ -175,9 +175,7 @@ C**********************************************************************
 
       rad = $rad$
 
-      !red
-      cap_start = (/1/)
-      cap_end = (/nnode(1)/)
+      call make_cap_start_and_end(nnode, cap_start, cap_end)
 
       pi = 3.14159265358979323846d0 ! Taken from Wikipedia; 20 digits
 !     Physical parameters -- using cgs system

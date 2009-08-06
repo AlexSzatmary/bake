@@ -479,3 +479,15 @@
          nelm = 327680
       end if
       end subroutine capsuletable
+!**********************************************************************
+      subroutine make_cap_start_and_end(nnode, cap_start, cap_end)
+      implicit none
+      integer i
+      integer nnode($ncap$), cap_start($ncap$), cap_end($ncap$)
+      cap_start(1)=1
+      cap_end(1)=nnode(1)
+      do i=2,$ncap$
+         cap_start(i) = cap_end(i-1)+1
+         cap_end(i) = cap_start(i) - 1 + nnode(i)
+      end do
+      end subroutine make_cap_start_and_end
