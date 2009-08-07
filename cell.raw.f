@@ -83,6 +83,12 @@ C**********************************************************************
          integer my_nnode, my_nelm
          double precision my_cap_center(3)
          end subroutine
+         subroutine cellcenter(klok, xfn, my_nnode, cap_i, xcenter, 
+     &     ycenter, zcenter)
+         integer klok, my_nnode, cap_i
+         double precision :: xfn(:,:)
+         double precision :: xcenter, ycenter, zcenter
+         end subroutine cellcenter
       end interface
 
       integer lxng,lyng,lzng,ngx,ngy,ngz,nfsize,nfsize2
@@ -98,8 +104,10 @@ C**********************************************************************
       INTEGER KLOK,KLOK1,KLOK0,KLOKEND,NSTEP
       double precision :: T,H,h64,TD,VSC,TIME,RHO,PI,RADX,FOSTAR
       double precision :: rad($ncap$)
-      double precision :: xcenter, ycenter, zcenter
-      double precision :: xcenterold, ycenterold, zcenterold
+      double precision :: xcenter($ncap$), ycenter($ncap$),
+     &     zcenter($ncap$)
+      double precision :: xcenterold($ncap$), ycenterold($ncap$), 
+     &     zcenterold($ncap$)
       double precision ::  LCUBE,NU,MU,MASS,LENGTH
 !     Velocities are always expressed in program units
       double COMPLEX,ALLOCATABLE :: UR(:,:,:),VR(:,:,:),WR(:,:,:)
@@ -301,13 +309,16 @@ C**********************************************************************
          end if
          write(*,*) 'cell l316'
 !     Get an initial measurement of the center of the capsule
-         call cellcenter(klok, xfn, xcenter, ycenter, zcenter)
-         write(*,*) 'cell l319'
+         do i=1,$ncap$
+            call cellcenter(klok,xfn(1:3,cap_n_start(i):cap_n_end(i)), 
+     &           nnode(i), i, xcenter(i), ycenter(i), zcenter(i))
+            write(*,*) 'cell l319'
 !     Use these values to measure velocity. It's a crappy measure, it's
 !     a backward difference.
-         xcenterold = xcenter
-         ycenterold = ycenter
-         zcenterold = zcenter
+            xcenterold(i) = xcenter(i)
+            ycenterold(i) = ycenter(i)
+            zcenterold(i) = zcenter(i)
+         end do
 
 !  Initialize the activation variables --
          write(206,*) nstep  ,' = nstep'
@@ -383,16 +394,22 @@ C**********************************************************************
          call meanforce(klok, frc)
          message = 'cell l228'
          call dumpstatus(klok, message)
-         call cellcenter(klok, xfn, xcenter, ycenter, zcenter)
-         message = 'cell l232'
-         call dumpstatus(klok, message)
-         open(402, access='append')
-         write(402,*) klok, xcenter - xcenterold, 
-     &        ycenter - ycenterold, zcenter - zcenterold
-         close(402)
-         xcenterold = xcenter
-         ycenterold = ycenter
-         zcenterold = zcenter
+         do i=1,$ncap$
+            call cellcenter(klok,xfn(1:3,cap_n_start(i):cap_n_end(i)), 
+     &           nnode(i), i, xcenter(i), ycenter(i), zcenter(i))
+            message = 'cell l232'
+            call dumpstatus(klok, message)
+!     todo Make filename change with capsule index
+            call makefilename('capsulev__', i,'.txt',strfname)
+            open(402,file=strfname, access='append')
+            write(402,*) klok, xcenter(i) - xcenterold(i),
+     &           ycenter(i) - ycenterold(i), zcenter(i) - zcenterold(i)
+            close(402)
+            xcenterold(i) = xcenter(i)
+            ycenterold(i) = ycenter(i)
+            zcenterold(i) = zcenter(i)
+         end do
+
          message = 'cell l240'
          call meanfluidvelocity(ur, meanu)
          call meanfluidvelocity(vr, meanv)

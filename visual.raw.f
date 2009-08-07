@@ -439,26 +439,29 @@ C          end if
       close(451)
       end subroutine meanforce
 !**********************************************************
-      subroutine cellcenter(klok, xfn, xcenter, ycenter, zcenter)
+      subroutine cellcenter(klok, xfn, my_nnode, cap_i, xcenter,
+     &     ycenter, zcenter)
       implicit none
-      integer, parameter :: nfsize=$nsnode$
-      integer, parameter :: m_start=$m_start$, m_end=$m_end$
+      integer cap_i
       double precision :: xcenter, ycenter, zcenter
-      double precision :: xfn(3, nfsize)
-      integer :: nmem=$nmem$
-      integer i, klok
-
-      do i = m_start, m_end
+      double precision :: xfn(:,:)
+      integer i, klok, my_nnode
+      character*19 strfname
+      
+      do i = 1, my_nnode
          xcenter = xcenter + XFN(1,i)
          ycenter = ycenter + XFN(2,i)
          zcenter = zcenter + XFN(3,i)
       end do
 
-      xcenter = xcenter/dble(nmem)
-      ycenter = ycenter/dble(nmem)
-      zcenter = zcenter/dble(nmem)
+      xcenter = xcenter/dble(my_nnode)
+      ycenter = ycenter/dble(my_nnode)
+      zcenter = zcenter/dble(my_nnode)
 
-      open(401, access='append')
+      !todo Make filename change with capsule index
+
+      call makefilename('capsulex__', cap_i,'.txt',strfname)
+      open(401, file=strfname, access='append')
       write(401,*) klok, xcenter,ycenter,zcenter
       close(401)
       return

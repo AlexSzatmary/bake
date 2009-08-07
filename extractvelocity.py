@@ -14,7 +14,7 @@ list_values = []
 n_values = []
 m = 0
 for line in hin.readlines():
-  elements = line.split(',')
+  elements = line.split(';')
   elements[-1] = elements[-1].replace('\n','')
   short_tokens.append(elements[0])
   tokens.append(elements[1])
@@ -50,7 +50,7 @@ for i in range(N_values):
     if short_tokens[j] != '':
       cd = cd+short_tokens[j]+list_values[j][list_i[j]]
   wd = os.path.join('.', 'batch', cd)
-  hin = open(os.path.join(wd, 'fort.402'),'r')
+  hin = open(os.path.join(wd, 'capsulev__00001.txt'),'r')
   hout.write(wd + ',' + hin.readlines()[-1])
   hin.close()
   j = 0
