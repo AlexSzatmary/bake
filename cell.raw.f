@@ -76,6 +76,7 @@ C**********************************************************************
       interface
          subroutine importmesh(LCUBE,RAD,H,XFN, elmnew,shpint,shpfs,
      &        my_nnode, my_nelm, my_cap_center)
+         implicit none
          double precision lcube, h, pi, rad
          double precision :: XFN(:,:)
          INTEGER elmnew(:,:)
@@ -83,12 +84,39 @@ C**********************************************************************
          integer my_nnode, my_nelm
          double precision my_cap_center(3)
          end subroutine
+
          subroutine cellcenter(klok, xfn, my_nnode, cap_i, xcenter, 
      &     ycenter, zcenter)
+         implicit none
          integer klok, my_nnode, cap_i
          double precision :: xfn(:,:)
          double precision :: xcenter, ycenter, zcenter
          end subroutine cellcenter
+
+         subroutine inplane(xpi, xfn,fp_start,fp_end)
+         implicit none
+         double precision :: xpi(:,:), xfn(:,:)
+         integer :: fp_start, fp_end
+         end subroutine inplane
+
+         subroutine pmhist(xpi,xfn,frc,firstn,nextn,number,const,
+     &     fp_start, fp_end, nfsize)
+         implicit none
+         double precision :: XPI(:,:)
+         double precision :: XFN(:,:),FRC(:,:)
+         integer firstn(:,:),number(:,:)
+         integer nextn(:)
+         double precision :: CONST
+         integer fp_start, fp_end
+         end subroutine pmhist
+
+         subroutine pushup(KLOK,UR,VR,WR,XFN,FRC,FIRSTN,NUMBER,NEXTN)
+         implicit none
+         integer klok
+         double COMPLEX UR(:,:,:), VR(:,:,:), WR(:,:,:)
+         double precision :: XFN(:,:),FRC(:,:)
+         INTEGER FIRSTN(:,:),NUMBER(:,:),NEXTN(:)
+         end subroutine pushup
       end interface
 
       integer lxng,lyng,lzng,ngx,ngy,ngz,nfsize,nfsize2
@@ -99,7 +127,6 @@ C**********************************************************************
       PARAMETER(NBX=NGX+2,NBY=NGY+2,NBZ=NGZ+2)
       PARAMETER(NGXM1=NGX-1,NGYM1=NGY-1,NGZM1=NGZ-1)
       PARAMETER(FLNGX=NGX,FLNGY=NGY,FLNGZ=NGZ)
-      parameter(nfsize=$nsnode$,nfsize2=$nselm$)
       integer, parameter :: npl=$npl$
       INTEGER KLOK,KLOK1,KLOK0,KLOKEND,NSTEP
       double precision :: T,H,h64,TD,VSC,TIME,RHO,PI,RADX,FOSTAR
@@ -166,28 +193,36 @@ C**********************************************************************
       integer fineness($ncap$), nnode($ncap$), nelm($ncap$)
       double precision :: cap_center(3,$ncap$)
 
-      ALLOCATE (UR(0:NBX,0:NBY,0:NGZM1),VR(0:NBX,0:NBY,0:NGZM1))
-      ALLOCATE (WR(0:NBX,0:NBY,0:NGZM1))
-      ALLOCATE (QRFACT(0:NBX,0:NBY,0:NGZM1),PRDENO(0:NBX,0:NBY,0:NGZM1))
-      ALLOCATE (VXFACT(0:NBX),VYFACT(0:NBY),VZFACT(0:NBZ))
-      ALLOCATE (FIRSTN(1:NGX,1:NGY),NUMBER(1:NGX,1:NGY))
-      ALLOCATE (NEXTN(1:NFSIZE),XFN(1:3,1:NFSIZE),FRC(1:3,1:NFSIZE))
-      ALLOCATE (elmnew(1:3,1:NFSIZE2))
-      ALLOCATE (shpint(1:3,1:NFSIZE2),shpfs(1:7,1:NFSIZE2))
-
-      cap_center(1,:)=$xc_cap$
-      cap_center(2,:)=$yc_cap$
-      cap_center(3,:)=$zc_cap$
+      integer fp_start, fp_end
 
       fineness = $fineness$
       do i=1,$ncap$
          call capsuletable(fineness(i),nnode(i),nelm(i))
       end do
+      call make_cap_start_and_end(nnode, cap_n_start, cap_n_end,
+     &     nelm, cap_e_start, cap_e_end)
+
+      nfsize=cap_n_end($ncap$)+$npl$
+      nfsize2=cap_e_end($ncap$)
+
+      fp_start=cap_n_end($ncap$)+1
+      fp_end=nfsize
+
+      ALLOCATE(UR(0:NBX,0:NBY,0:NGZM1),VR(0:NBX,0:NBY,0:NGZM1))
+      ALLOCATE(WR(0:NBX,0:NBY,0:NGZM1))
+      ALLOCATE(QRFACT(0:NBX,0:NBY,0:NGZM1),PRDENO(0:NBX,0:NBY,0:NGZM1))
+      ALLOCATE(VXFACT(0:NBX),VYFACT(0:NBY),VZFACT(0:NBZ))
+      ALLOCATE(FIRSTN(1:NGX,1:NGY),NUMBER(1:NGX,1:NGY))
+      ALLOCATE(NEXTN(1:NFSIZE),XFN(1:3,1:NFSIZE),FRC(1:3,1:NFSIZE))
+      ALLOCATE(elmnew(1:3,1:NFSIZE2))
+      ALLOCATE(shpint(1:3,1:NFSIZE2),shpfs(1:7,1:NFSIZE2))
+
+      cap_center(1,:)=$xc_cap$
+      cap_center(2,:)=$yc_cap$
+      cap_center(3,:)=$zc_cap$
 
       rad = $rad$
 
-      call make_cap_start_and_end(nnode, cap_n_start, cap_n_end,
-     &     nelm, cap_e_start, cap_e_end)
       pi = 3.14159265358979323846d0 ! Taken from Wikipedia; 20 digits
 !     Physical parameters -- using cgs system
       nstep = $nstep$ ! Number of timesteps
@@ -305,7 +340,7 @@ C**********************************************************************
 !     $npls$ is the number of planes. If there is one, it should be
 !     initialized.
          if ($npls$ > 0) then
-            call inplane(xpi, xfn)
+            call inplane(xpi, xfn, fp_start, fp_end)
          end if
          write(*,*) 'cell l316'
 !     Get an initial measurement of the center of the capsule
@@ -387,7 +422,7 @@ C**********************************************************************
          call dumpstatus(klok, message)
          if ($npls$ > 0) then
             call pmhist(XPI,XFN,FRC,FIRSTN,NEXTN,NUMBER,
-     &           10240.d0/dble($npl$))
+     &           10240.d0/dble($npl$), fp_start, fp_end, nfsize)
          end if
          message = 'cell l225'
          call dumpstatus(klok, message)

@@ -104,22 +104,22 @@
       RETURN
       END SUBROUTINE wrap
 !*********************************************************************
-      SUBROUTINE INPLANE(XPI,xfn)
+      SUBROUTINE INPLANE(XPI,xfn, fp_start, fp_end)
       IMPLICIT NONE
       INTEGER LXNG,LYNG,LZNG,NGX,NGY,NGZ
       INTEGER NGXM1,NGYM1,NGZM1,NBX,NBY,NBZ
       double precision :: FNGX,FNGY,FNGZ
-      integer, parameter :: nfsize=$nsnode$
       PARAMETER(LXNG=$lngx$,LYNG=LXNG,LZNG=LXNG)
       PARAMETER(NGX=2**LXNG,NGY=2**LYNG,NGZ=2**LZNG)
       PARAMETER(NBX=NGX+2,NBY=NGY+2,NBZ=NGZ+2)
       PARAMETER(NGXM1=NGX-1,NGYM1=NGY-1,NGZM1=NGZ-1)
       PARAMETER(FNGX=NGX,FNGY=NGY,FNGZ=NGZ)
       INTEGER I,J,K
-      double precision :: xfn(1:3,1:nfsize)
+      double precision :: xfn(:,:)
       integer, parameter :: sqrtnpl=$sqrtnpl$
-      integer, parameter ::  fp_start=$fp_start$, fp_end=$fp_end$
-      double precision :: XPI(1:3,1:fp_end-fp_start+1)
+      integer :: fp_start, fp_end
+
+      double precision :: XPI(:,:)
       do i=0,sqrtnpl-1
          do j=0,sqrtnpl-1
             xpi(1,i*sqrtnpl+j+1)=(fngx-2*fngx/dble(sqrtnpl))*i/
@@ -135,7 +135,8 @@
       return
       end subroutine inplane
 !*********************************************************************
-      SUBROUTINE PMHIST(XPI,XFN,FRC,FIRSTN,NEXTN,NUMBER,CONST)
+      SUBROUTINE PMHIST(XPI,XFN,FRC,FIRSTN,NEXTN,NUMBER,CONST,
+     &     fp_start, fp_end, nfsize)
       IMPLICIT NONE
       INTEGER LXNG,LYNG,LZNG,NGX,NGY,NGZ
       INTEGER NGXM1,NGYM1,NGZM1,NBX,NBY,NBZ
@@ -143,7 +144,7 @@
       INTEGER NGXP2,NGYP2,NGZP2
       INTEGER NGXB4,NGYB4,NGZB4
       INTEGER NFSIZE
-      integer, parameter :: fp_start=$fp_start$, fp_end=$fp_end$
+      integer fp_start, fp_end
       double precision :: FLNGX,FLNGY,FLNGZ
       PARAMETER(LXNG=$lngx$,LYNG=LXNG,LZNG=LXNG+1)
       PARAMETER(NGX=2**LXNG,NGY=2**LYNG,NGZ=2**LZNG)
@@ -155,10 +156,10 @@
       PARAMETER(FLNGX=NGX,FLNGY=NGY,FLNGZ=NGZ)
       PARAMETER(NFSIZE=$nsnode$)
       integer, parameter :: npl=$npl$
-      double precision :: XPI(1:3,1:npl)
-      double precision :: XFN(1:3,1:NFSIZE),FRC(1:3,1:NFSIZE)
-      INTEGER FIRSTN(1:NGX,1:NGY),NUMBER(1:NGX,1:NGY)
-      INTEGER NEXTN(1:nfsize)
+      double precision :: XPI(:,:)
+      double precision :: XFN(:,:),FRC(:,:)
+      integer firstn(:,:),number(:,:)
+      integer nextn(:)
       INTEGER I,J,K,II,JJ,N
       double precision :: CONST
 
@@ -202,7 +203,7 @@ C SORT THE XFN DATA BY X-COORDINATE AND Y-COORDINATE USING LINKED LISTS
       INTEGER NGXP1,NGYP1,NGZP1
       INTEGER NGXP2,NGYP2,NGZP2
       INTEGER NGXB4,NGYB4,NGZB4
-      INTEGER NFSIZE,NPTMAX
+      INTEGER NPTMAX
       double precision :: FLNGX,FLNGY,FLNGZ
       PARAMETER(LXNG=$lngx$,LYNG=LXNG,LZNG=LXNG)
       PARAMETER(NGX=2**LXNG,NGY=2**LYNG,NGZ=2**LZNG)
@@ -212,12 +213,10 @@ C SORT THE XFN DATA BY X-COORDINATE AND Y-COORDINATE USING LINKED LISTS
       PARAMETER(NGXP2=NGX+2,NGYP2=NGY+2,NGZP2=NGZ+2)
       PARAMETER(NGXB4=NGX/4,NGYB4=NGY/4,NGZB4=NGZ/4)
       PARAMETER(FLNGX=NGX,FLNGY=NGY,FLNGZ=NGZ)
-      parameter(nfsize=$nsnode$)
       PARAMETER(NPTMAX=256)
-      double COMPLEX UR(0:NBX,0:NBY,0:NGZM1),VR(0:NBX,0:NBY,0:NGZM1)
-      double COMPLEX WR(0:NBX,0:NBY,0:NGZM1)
-      double precision :: XFN(1:3,1:NFSIZE),FRC(1:3,1:NFSIZE)
-      INTEGER FIRSTN(1:NGX,1:NGY),NUMBER(1:NGX,1:NGY),NEXTN(1:NFSIZE)
+      double COMPLEX UR(:,:,:),VR(:,:,:), WR(:,:,:)
+      double precision :: XFN(:,:),FRC(:,:)
+      INTEGER FIRSTN(:,:),NUMBER(:,:),NEXTN(:)
       double precision :: FLIZP1,FLJZP1,RAD1,RAD2,RAD3,ARG1,ARG2,ARG3
       INTEGER I,J,K,L,M,N,IZERO,JZERO,MZERO,NPT,NPOINTS,NUMREM
       INTEGER II,JJ,IJ,I3D,J3D,K3D,NEXTNOLD,NPREV,IR
