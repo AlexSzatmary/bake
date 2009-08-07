@@ -96,27 +96,35 @@ C**********************************************************************
          subroutine inplane(xpi, xfn,fp_start,fp_end)
          implicit none
          double precision :: xpi(:,:), xfn(:,:)
-         integer :: fp_start, fp_end
+         integer fp_start, fp_end
          end subroutine inplane
 
          subroutine pmhist(xpi,xfn,frc,firstn,nextn,number,const,
      &     fp_start, fp_end, nfsize)
          implicit none
-         double precision :: XPI(:,:)
-         double precision :: XFN(:,:),FRC(:,:)
+         double precision :: xpi(:,:)
+         double precision :: xfn(:,:),frc(:,:)
          integer firstn(:,:),number(:,:)
          integer nextn(:)
-         double precision :: CONST
+         double precision :: const
          integer fp_start, fp_end
          end subroutine pmhist
 
-         subroutine pushup(KLOK,UR,VR,WR,XFN,FRC,FIRSTN,NUMBER,NEXTN)
+         subroutine pushup(klok,ur,vr,wr,xfn,frc,firstn,number,nextn)
          implicit none
          integer klok
-         double COMPLEX UR(:,:,:), VR(:,:,:), WR(:,:,:)
-         double precision :: XFN(:,:),FRC(:,:)
-         INTEGER FIRSTN(:,:),NUMBER(:,:),NEXTN(:)
+         double complex ur(:,:,:), vr(:,:,:), wr(:,:,:)
+         double precision :: xfn(:,:),frc(:,:)
+         integer firstn(:,:),number(:,:),nextn(:)
          end subroutine pushup
+
+         subroutine move(klok,ur,vr,wr,xfn,firstn,number,nextn)
+         implicit none
+         integer klok
+         double complex :: ur(:,:,:), vr(:,:,:), wr(:,:,:)
+         double precision :: XFN(:,:)
+         integer firstn(:,:),number(:,:),nextn(:)
+         end subroutine move
       end interface
 
       integer lxng,lyng,lzng,ngx,ngy,ngz,nfsize,nfsize2
@@ -421,7 +429,7 @@ C**********************************************************************
          message = 'cell l220'
          call dumpstatus(klok, message)
          if ($npls$ > 0) then
-            call pmhist(XPI,XFN,FRC,FIRSTN,NEXTN,NUMBER,
+            call pmhist(xpi,xfn,frc,firstn,nextn,number,
      &           10240.d0/dble($npl$), fp_start, fp_end, nfsize)
          end if
          message = 'cell l225'

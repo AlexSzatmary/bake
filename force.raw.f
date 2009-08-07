@@ -512,7 +512,7 @@ C THAN THE INDEX ARRAY; THIS FACILITATES SATISFYING THE PERIODIC B.C.
       INTEGER NGXP1,NGYP1,NGZP1
       INTEGER NGXP2,NGYP2,NGZP2
       INTEGER NGXB4,NGYB4,NGZB4
-      INTEGER NFSIZE,NPTMAX
+      INTEGER NPTMAX
       double precision :: FLNGX,FLNGY,FLNGZ
       PARAMETER(LXNG=$lngx$,LYNG=LXNG,LZNG=LXNG)
       PARAMETER(NGX=2**LXNG,NGY=2**LYNG,NGZ=2**LZNG)
@@ -522,13 +522,10 @@ C THAN THE INDEX ARRAY; THIS FACILITATES SATISFYING THE PERIODIC B.C.
       PARAMETER(NGXP2=NGX+2,NGYP2=NGY+2,NGZP2=NGZ+2)
       PARAMETER(NGXB4=NGX/4,NGYB4=NGY/4,NGZB4=NGZ/4)
       PARAMETER(FLNGX=NGX,FLNGY=NGY,FLNGZ=NGZ)
-      parameter(nfsize=$nsnode$)
       PARAMETER(NPTMAX=256)
-      double COMPLEX :: UR(0:NBX,0:NBY,0:NGZM1)
-      double complex :: VR(0:NBX,0:NBY,0:NGZM1)
-      double COMPLEX :: WR(0:NBX,0:NBY,0:NGZM1)
-      double precision :: XFN(1:3,1:NFSIZE)
-      INTEGER FIRSTN(1:NGX,1:NGY),NUMBER(1:NGX,1:NGY),NEXTN(1:NFSIZE)
+      double complex :: ur(:,:,:), vr(:,:,:), wr(:,:,:)
+      double precision :: XFN(:,:)
+      integer firstn(:,:),number(:,:),nextn(:)
       double precision :: FLIZP1,FLJZP1,RAD1,RAD2,RAD3,ARG1,ARG2,ARG3
       INTEGER I,J,K,L,M,N,IZERO,JZERO,MZERO,NPT,NPOINTS,NUMREM
       INTEGER II,JJ,IJ,I3D,J3D,K3D,IR,NUVW
@@ -536,7 +533,6 @@ C THAN THE INDEX ARRAY; THIS FACILITATES SATISFYING THE PERIODIC B.C.
       double precision, ALLOCATABLE :: XFN1OLD(:),XFN2OLD(:),
      &     XFN3OLD(:)
       double precision :: xfn3oldold(nptmax)
-!      double precision :: xfn3fullold(nfsize)
       double precision,ALLOCATABLE :: D1(:,:),D2(:,:),D3(:,:)
       double precision,ALLOCATABLE :: D12(:,:,:)
       double precision,ALLOCATABLE :: DELTA(:,:)
@@ -586,10 +582,6 @@ C     XFN(2,L) = XFN(2,L) + D * V(I,J,K)
 C     XFN(3,L) = XFN(3,L) + D * W(I,J,K)
 C
 C     WHERE D WAS DEFINED ABOVE.
-
-!      do i = 1, nfsize
-!         xfn3fullold(i) = xfn(3, i)
-!      end do
 
 !$OMP  PARALLEL DO &
 !$OMP& SHARED(FIRSTN,NEXTN,NUMBER,UR,VR,WR,XFN)&
@@ -715,12 +707,6 @@ C     WHERE D WAS DEFINED ABOVE.
       DEALLOCATE (D12,DELTA)
       DEALLOCATE (FLKZP1,lindx)
 20    CONTINUE
-!$OMP END PARALLEL DO
-!      do i = 1, nfsize
-!         if (dabs(xfn(3, i)-xfn3fullold(i)) > 1.d-13) then
-!            write(*,*) 'force l482', i, xfn(3,i), xfn3fullold(i)
-!         end if
-!      end do
       RETURN
       END SUBROUTINE MOVE
 !*********************************************************************
