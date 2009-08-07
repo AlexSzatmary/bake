@@ -175,17 +175,18 @@
       return
       end subroutine Dzy
 !**********************************************************************
-      subroutine calculateDF(clock, xfn, nbeg, nend)
+      subroutine calculateDF(clock, cap_i, xfn, nbeg, nend)
       implicit none
       integer nbeg, nend
       integer, parameter :: nfsize = $nsnode$
       integer, parameter :: nmem = $nmem$
       double precision :: xfn(3, nfsize)
-      integer i
+      integer cap_i, i
       integer clock
       double precision :: rmin, rmax, r
       double precision :: cgx, cgy, cgz
       double precision :: DF
+      character*19 strfname
 
       rmin = 1000d0
       rmax = -1000d0
@@ -227,7 +228,8 @@ C          end if
 
       DF = (rmax - rmin)/(rmax+rmin)
 
-      open(204, access='append')
+      call makefilename('TaylorDF__', cap_i,'.txt',strfname)
+      open(204, file=strfname, access='append')
       write(204,*) clock, ',', DF
       close(204)
 

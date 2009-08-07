@@ -19,22 +19,6 @@ c     WR(I,J,K) = (WR(I,J,K) + PR(I,J,K)*PRFACT(K))/QRFACT(I,J,K)
 c   to:
 c     WR(I,J,K) = (WR(I,J,K) + PR(I,J,K)*PRFACT(K+1))/QRFACT(I,J,K)
 c  (Combined upwind difference [hrtxp_61u6.f] and microtasking [hrtxp_61m3e.f])
-C
-C  OUTPUT FILES:
-C      FORT.7  VELOCITY AND PRESSURE ON A COARSE GRID
-C      FORT.8  VELOCITY AND PRESSURE ON A FINE   GRID
-C      FORT.9  VELOCITY AND LOCATION ON THE VALVE FLOWMETER WEBS
-C      FORT.10 FIBER  DATA
-C      FORT.11 MARKER DATA
-C
-C  INPUT PARAMETERS: 
-C      LCUBE=LENGTH OF SIDE OF CUBE (CM)
-C      NU=KINEMATIC VISCOSITY (CM**2/SEC)
-C      RHO=FLUID DENSITY (GM/CM**3)
-C                (MU=NU*RHO=DYNAMIC VISCOSITY)
-C      NG=NUMBER OF GRID POINTS IN EACH DIRECTION 
-C      TD=TIME STEP (SEC)
-C
 C  PARAMETERS: 
 C     PLANES ARE NG X NG
 C     BUT ARE STORED IN ARRAYS WITH DIMENSIONS
@@ -88,7 +72,20 @@ c   added common block membrn
 C**********************************************************************
       PROGRAM cell
       IMPLICIT NONE
-      INTEGER LXNG,LYNG,LZNG,NGX,NGY,NGZ,NFSIZE,NFSIZE2
+
+      interface
+         subroutine importmesh(LCUBE,RAD,H,XFN, elmnew,shpint,shpfs,
+     &        my_nnode, my_nelm, my_cap_center)
+         double precision lcube, h, pi, rad
+         double precision :: XFN(:,:)
+         INTEGER elmnew(:,:)
+         double precision :: shpint(:,:),shpfs(:,:)
+         integer my_nnode, my_nelm
+         double precision my_cap_center(3)
+         end subroutine
+      end interface
+
+      integer lxng,lyng,lzng,ngx,ngy,ngz,nfsize,nfsize2
       INTEGER NGXM1,NGYM1,NGZM1,NBX,NBY,NBZ
       double precision :: FLNGX,FLNGY,FLNGZ
       PARAMETER(LXNG=$lngx$,LYNG=LXNG,LZNG=LXNG)
@@ -120,7 +117,13 @@ C**********************************************************************
       double precision, parameter :: capillary_no = $capillary_no$
       integer, parameter :: FVS = $FVS$
       double precision :: planey = $planey$
-      integer cap_start($ncap$), cap_end($ncap$)
+
+!     cap_n_start is an array of the indices to xfn, the *n*ode indices
+!     for each capsule. cap_n_end is the indices for the end of each
+!     capsule's node index count. cap_e_start is similar, but for
+!     element indexing, and cap_e_end likewise.
+      integer cap_n_start($ncap$), cap_n_end($ncap$)
+      integer cap_e_start($ncap$), cap_e_end($ncap$)
       character*80 message
 
 !     Array of linked lists representing the solid nodes for a given 
@@ -175,8 +178,8 @@ C**********************************************************************
 
       rad = $rad$
 
-      call make_cap_start_and_end(nnode, cap_start, cap_end)
-
+      call make_cap_start_and_end(nnode, cap_n_start, cap_n_end,
+     &     nelm, cap_e_start, cap_e_end)
       pi = 3.14159265358979323846d0 ! Taken from Wikipedia; 20 digits
 !     Physical parameters -- using cgs system
       nstep = $nstep$ ! Number of timesteps
@@ -268,7 +271,7 @@ C**********************************************************************
          umean(:) = (/0.d0, 0.d0, bfs(3,2)*((flngy+1.d0)/2.d0-planey)/)
       end if
 
-!     This is code for automatically restarting an aborted run.
+!     This automatically restarts an aborted run.
       klok = 0
       inquire(100, exist=lex, iostat=ios, recl=i)
       open(100,iostat=ios, form='unformatted')
@@ -281,62 +284,74 @@ C**********************************************************************
       if (klok == 0) then
 !     Initialize the solid arrays
          do i = 1,$ncap$
-            call importmesh(lcube,rad(i),h,xfn,elmnew,shpint,shpfs,
-     &           cap_start(i), cap_end(i), cap_center(:,i))
+            write(*,*) 'l290', cap_n_start(i), cap_n_end(i), 
+     &           cap_e_start(i),cap_e_end(i), cap_center(:,i)
+            call importmesh(lcube,rad(i),h,
+     &           xfn(1:3,cap_n_start(i):cap_n_end(i)),
+     &           elmnew(1:3,cap_e_start(i):cap_e_end(i)),
+     &           shpint(1:3,cap_e_start(i):cap_e_end(i)),
+     &           shpfs(1:7,cap_e_start(i):cap_e_end(i)), 
+     &           nnode(i), nelm(i), cap_center(:,i))
+            write(*,*) 'cell l309'
          end do
 !     $npls$ is the number of planes. If there is one, it should be
 !     initialized.
-      if ($npls$ > 0) then
-         call inplane(xpi, xfn)
-      end if
+         if ($npls$ > 0) then
+            call inplane(xpi, xfn)
+         end if
+         write(*,*) 'cell l316'
 !     Get an initial measurement of the center of the capsule
-      call cellcenter(klok, xfn, xcenter, ycenter, zcenter)
-!     Use these values to measure velocity. It's a crappy measure, it's a
-!     backward difference.
-      xcenterold = xcenter
-      ycenterold = ycenter
-      zcenterold = zcenter
+         call cellcenter(klok, xfn, xcenter, ycenter, zcenter)
+         write(*,*) 'cell l319'
+!     Use these values to measure velocity. It's a crappy measure, it's
+!     a backward difference.
+         xcenterold = xcenter
+         ycenterold = ycenter
+         zcenterold = zcenter
 
 !  Initialize the activation variables --
-      write(206,*) nstep  ,' = nstep'
-      write(206,*) lcube  ,' cm = lcube'
-      write(206,*) nu     ,' cm**2/sec = nu'
-      write(206,*) rho    ,' gm/cm**3 = rho'
-      write(206,*) ngx,lxng,' = ngx l2ngx'
-      write(206,*) td     ,' sec = td'
-      write(206,*) pi,' = pi'
-      write(206,*) h ,' cm = h '
-      write(206,*) mu,' (gm/cm**3)*(cm**2/sec) = mu'
-      write(206,*)'conversion factors --'
-      write(206,*) mass  ,' =mass'
-      write(206,*) length,' =length'
-      write(206,*) time  ,' =time'
-      write(206,*) vsc   ,' =vsc=kinematic viscosity in program units'
+         write(206,*) nstep  ,' = nstep'
+         write(206,*) lcube  ,' cm = lcube'
+         write(206,*) nu     ,' cm**2/sec = nu'
+         write(206,*) rho    ,' gm/cm**3 = rho'
+         write(206,*) ngx,lxng,' = ngx l2ngx'
+         write(206,*) td     ,' sec = td'
+         write(206,*) pi,' = pi'
+         write(206,*) h ,' cm = h '
+         write(206,*) mu,' (gm/cm**3)*(cm**2/sec) = mu'
+         write(206,*)'conversion factors --'
+         write(206,*) mass  ,' =mass'
+         write(206,*) length,' =length'
+         write(206,*) time  ,' =time'
+         write(206,*) vsc   ,' =vsc=kinematic viscosity, program units'
 
 !     Initialize velocity
 !     Throughout, u is in program units (normalized by h/td)
-      if (fvs /= 0) then
-         if ($bfscmd$ == 1) then
-            call fvssub(ur, vr, wr, -bfs, -umean)
+         if (fvs /= 0) then
+            if ($bfscmd$ == 1) then
+               call fvssub(ur, vr, wr, -bfs, -umean)
+            end if
+            if ($bfscmd$ == 2) then
+               call poiseuille(ur, vr, wr, pr, gamma_dot_p, vsc)
+            end if
          end if
-         if ($bfscmd$ == 2) then
-            call poiseuille(ur, vr, wr, pr, gamma_dot_p, vsc)
-         end if
-      end if
+         write(*,*) 'cell l352'
 
-      call wprofile(wr, 0)
-      call uvwpdump(ur, vr, wr, pr, 0)
-      call makefilename('solidnodes', 0,'.txt',strfname)
-      call saveallsolid(XFN,strfname)
-      call makefilename('solidforce', 0,'.txt',strfname)
-      call saveallsolid(frc,strfname)
-      do i = 1,$ncap$
-         call shape(lcube,h64,klok,td,cap_start(i),cap_end(i),1,
-     &        nfsize2,xfn,elmnew)
-         call calculateDF(klok, xfn, cap_start(i), cap_end(i))
-      end do
+         call wprofile(wr, 0)
+         write(*,*) 'cell l355'
+         call uvwpdump(ur, vr, wr, pr, 0)
+         call makefilename('solidnodes', 0,'.txt',strfname)
+         call saveallsolid(XFN,strfname)
+         call makefilename('solidforce', 0,'.txt',strfname)
+         call saveallsolid(frc,strfname)
+         do i = 1,$ncap$
+            call shape(lcube,h64,klok,td,cap_n_start(i),cap_n_end(i),
+     &           cap_e_start(i), cap_e_end(i),xfn,elmnew)
+            call calculateDF(klok, i, xfn, cap_n_start(i), 
+     &           cap_n_end(i))
+         end do
       else
-         write(*,*) 'cell l184 Restarting'
+         write(*,*) 'cell l367 Restarting'
          call restart(lcube, nu, rho,td,klok,ur,vr,wr,
      &        xfn,xpi,firstn,number,nextn,elmnew,shpint,shpfs)
       end if
@@ -355,7 +370,7 @@ C**********************************************************************
       T = T+TD
       do i=1,$ncap$
          CALL MEMBNX(KLOK,XFN,elmnew,shpint,shpfs,FRC,h,FOSTAR,RAD(i),
-     &        cap_start(i), cap_end(i))
+     &        cap_n_start(i), cap_n_end(i))
       end do
          message = 'cell l220'
          call dumpstatus(klok, message)
@@ -421,11 +436,11 @@ C**********************************************************************
          message = 'cell l258'
          call dumpstatus(klok, message)
          do i=1,$ncap$
-            CALL SHAPE(LCUBE,h64,KLOK,TD,cap_start(i),cap_end(i),1,
+            CALL SHAPE(LCUBE,h64,KLOK,TD,cap_n_start(i),cap_n_end(i),1,
      &           nfsize2,XFN, elmnew)
             message = 'cell l262'
             call dumpstatus(klok, message)
-            call calculateDF(klok, xfn, cap_start(i), cap_end(i))
+            call calculateDF(klok, i, xfn,cap_n_start(i), cap_n_end(i))
          end do
       WRITE(206,*)' KLOK: ',KLOK,  ' ; TIME: ',T
          message = 'cell l266'

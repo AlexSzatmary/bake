@@ -31,58 +31,56 @@
       RETURN
       END SUBROUTINE INHIST
 !**********************************************************************
-      subroutine importmesh(LCUBE,RADX,H,XFN, elmnew,shpint,shpfs,
-     &     my_cap_start, my_cap_end, my_cap_center)
+      subroutine importmesh(LCUBE,RAD,H,XFN, elmnew,shpint,shpfs,
+     $     my_nnode, my_nelm, my_cap_center)
       IMPLICIT NONE
-      integer, parameter :: nfsize=$nsnode$,nfsize2=$nselm$
-      integer, parameter :: m_start=$m_start$, m_end=$m_end$
       integer, parameter :: lxng=$lngx$,lyng=lxng,lzng=lxng
       integer, parameter :: ngx=2**lxng,ngy=2**lyng,ngz=2**lzng
       double precision, parameter :: flngx=ngx,flngy=ngy,flngz=ngz
       INTEGER n1,n2,i
-      double precision LCUBE,H,pi,theta,x,y,RADX,zc1,zc2
-      double precision :: XFN(1:3,1:NFSIZE)
-      INTEGER elmnew(1:3,1:NFSIZE2)
-      double precision :: shpint(1:3,1:NFSIZE2),shpfs(1:7,1:NFSIZE2)
+      double precision LCUBE,H,pi,theta,x,y,rad
+      double precision :: XFN(:,:)
+!      double precision :: XFN(3,$nsnode$)
+      INTEGER elmnew(:,:)
+      double precision :: shpint(:,:), shpfs(:,:)
       double precision :: gapratio=$gapratio$
-      integer my_cap_start, my_cap_end
+      integer my_nnode, my_nelm
       double precision my_cap_center(3)
-      zc1=0.d0
-      zc2=0.d0
+
       open(20,file='mesh/mesh.$mesh$',status='unknown')
       open(21,file='mesh/shpfcta.$mesh$',status='unknown')
       open(22,file='mesh/shpfctb.$mesh$',status='unknown')
       open(23,file='mesh/shpint.$mesh$',status='unknown')
       read(20,100)n1,n2
  100  format(7x,i5,2x,i5)
-
       pi = 3.14159265358979323846d0 ! Taken from Wikipedia; 20 digits
       theta =  pi/4.0d0
 !     The sphere comes in as the unit sphere.
-      do i = my_cap_start, my_cap_end
+      do i = 1, my_nnode
          read(20,101) XFN(1,i),XFN(2,i), XFN(3,i)
  101     format(13x,e20.13,e20.13,e20.13)
          x = XFN(1,i)*dcos(theta) - XFN(2,i)*dsin(theta)
          y = XFN(1,i)*dsin(theta) + XFN(2,i)*dcos(theta)
-!     Move the sphere to the center of the flow field, give it radius radx.
+!     Move the sphere to the center of the flow field, give it radius rad.
 
          if ($flow$ == 1 .or. $flow$ == 2 .or. $flow$ == 4) then
-            XFN(1,i) =RADX*x/H + my_cap_center(1)
-            XFN(2,i) =RADX*y/H + my_cap_center(2)
-            XFN(3,i) =RADX*XFN(3,i)/H + my_cap_center(3)
+            XFN(1,i) =RAD*x/H + my_cap_center(1)
+            XFN(2,i) =RAD*y/H + my_cap_center(2)
+            XFN(3,i) =RAD*XFN(3,i)/H + my_cap_center(3)
          end if
          if ($flow$ == 3) then
-            XFN(1,i) =RADX*x/H + 0.5d0*(flngx+1.d0)
-            XFN(2,i) =RADX*y/H + RADX/H*(gapratio+1.d0)+2.5d0
-            XFN(3,i) =RADX*XFN(3,i)/H + 0.5d0*(flngz-1.d0)
+            XFN(1,i) =RAD*x/H + 0.5d0*(flngx+1.d0)
+            XFN(2,i) =RAD*y/H + RAD/H*(gapratio+1.d0)+2.5d0
+            XFN(3,i) =RAD*XFN(3,i)/H + 0.5d0*(flngz-1.d0)
          end if
          if ($flow$ == 5) then
-            XFN(1,i) =RADX*x/H + my_cap_center(1)
-            XFN(2,i) =RADX*y/H + my_cap_center(2)
-            XFN(3,i) =RADX*XFN(3,i)/H + my_cap_center(3)
+            XFN(1,i) =RAD*x/H + my_cap_center(1)
+            XFN(2,i) =RAD*y/H + my_cap_center(2)
+            XFN(3,i) =RAD*XFN(3,i)/H + my_cap_center(3)
          end if
       enddo
-      do i = 1,nfsize2
+
+      do i = 1, my_nelm
          read(20,103)elmnew(1,i),elmnew(2,i),elmnew(3,i)
          read(21,104)shpfs(1,i),shpfs(2,i),shpfs(3,i),shpfs(7,i)
          read(22,105)shpfs(4,i),shpfs(5,i),shpfs(6,i)
@@ -94,19 +92,19 @@
       enddo
 !     This scales the sphere's (non-dimensional) finite element parameters
 !     to real units.
-      do i= 1, nfsize2
-         shpfs(1,i)=shpfs(1,i)/RADX
-         shpfs(2,i)=shpfs(2,i)/RADX
-         shpfs(3,i)=shpfs(3,i)/RADX
-         shpfs(4,i)=shpfs(4,i)/RADX
-         shpfs(5,i)=shpfs(5,i)/RADX
-         shpfs(6,i)=shpfs(6,i)/RADX
-         shpfs(7,i)=shpfs(7,i)*RADX*RADX
+      do i= 1, my_nelm
+         shpfs(1,i)=shpfs(1,i)/rad
+         shpfs(2,i)=shpfs(2,i)/rad
+         shpfs(3,i)=shpfs(3,i)/rad
+         shpfs(4,i)=shpfs(4,i)/rad
+         shpfs(5,i)=shpfs(5,i)/rad
+         shpfs(6,i)=shpfs(6,i)/rad
+         shpfs(7,i)=shpfs(7,i)*rad*rad
 !     The following 3 lines added 5-2-07 due to changes in scaling in
 !     membnx.
-         shpint(1,i) = shpint(1,i)*radx
-         shpint(2,i) = shpint(2,i)*radx
-         shpint(3,i) = shpint(3,i)*radx
+         shpint(1,i) = shpint(1,i)*rad
+         shpint(2,i) = shpint(2,i)*rad
+         shpint(3,i) = shpint(3,i)*rad
       enddo
       return
       end subroutine importmesh
@@ -129,7 +127,6 @@
 
       INTEGER NFSIZE,NFSIZE2
       parameter(nfsize=$nsnode$,nfsize2=$nselm$)
-      integer, parameter :: m_start=$m_start$, m_end=$m_end$
       double precision :: LCUBE,H,FOSTAR
       double precision :: R11,R12,R13,R21,R22,R23,R31,R32,R33
       double precision :: e1m,e2m,e3m,a1,a2,a3,xj1,xj2,xj3
@@ -480,14 +477,20 @@
       end if
       end subroutine capsuletable
 !**********************************************************************
-      subroutine make_cap_start_and_end(nnode, cap_start, cap_end)
+      subroutine make_cap_start_and_end(nnode, cap_n_start, cap_n_end,
+     &     nelm, cap_e_start, cap_e_end)
       implicit none
       integer i
-      integer nnode($ncap$), cap_start($ncap$), cap_end($ncap$)
-      cap_start(1)=1
-      cap_end(1)=nnode(1)
+      integer nnode($ncap$), cap_n_start($ncap$), cap_n_end($ncap$)
+      integer nelm($ncap$), cap_e_start($ncap$), cap_e_end($ncap$)
+      cap_n_start(1)=1
+      cap_n_end(1)=nnode(1)
+      cap_e_start(1)=1
+      cap_e_end(1)=nelm(1)
       do i=2,$ncap$
-         cap_start(i) = cap_end(i-1)+1
-         cap_end(i) = cap_start(i) - 1 + nnode(i)
+         cap_n_start(i) = cap_n_end(i-1)+1
+         cap_n_end(i) = cap_n_start(i) - 1 + nnode(i)
+         cap_e_start(i) = cap_e_end(i-1)+1
+         cap_e_end(i) = cap_e_start(i) - 1 + nelm(i)
       end do
       end subroutine make_cap_start_and_end
