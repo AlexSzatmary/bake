@@ -154,7 +154,7 @@
       PARAMETER(NGXP2=NGX+2,NGYP2=NGY+2,NGZP2=NGZ+2)
       PARAMETER(NGXB4=NGX/4,NGYB4=NGY/4,NGZB4=NGZ/4)
       PARAMETER(FLNGX=NGX,FLNGY=NGY,FLNGZ=NGZ)
-      PARAMETER(NFSIZE=$nsnode$)
+
       integer, parameter :: npl=$npl$
       double precision :: XPI(:,:)
       double precision :: XFN(:,:),FRC(:,:)
@@ -214,7 +214,7 @@ C SORT THE XFN DATA BY X-COORDINATE AND Y-COORDINATE USING LINKED LISTS
       PARAMETER(NGXB4=NGX/4,NGYB4=NGY/4,NGZB4=NGZ/4)
       PARAMETER(FLNGX=NGX,FLNGY=NGY,FLNGZ=NGZ)
       PARAMETER(NPTMAX=256)
-      double COMPLEX UR(:,:,:),VR(:,:,:), WR(:,:,:)
+      double COMPLEX UR(0:,0:,0:),VR(0:,0:,0:), WR(0:,0:,0:)
       double precision :: XFN(:,:),FRC(:,:)
       INTEGER FIRSTN(:,:),NUMBER(:,:),NEXTN(:)
       double precision :: FLIZP1,FLJZP1,RAD1,RAD2,RAD3,ARG1,ARG2,ARG3
@@ -523,7 +523,7 @@ C THAN THE INDEX ARRAY; THIS FACILITATES SATISFYING THE PERIODIC B.C.
       PARAMETER(NGXB4=NGX/4,NGYB4=NGY/4,NGZB4=NGZ/4)
       PARAMETER(FLNGX=NGX,FLNGY=NGY,FLNGZ=NGZ)
       PARAMETER(NPTMAX=256)
-      double complex :: ur(:,:,:), vr(:,:,:), wr(:,:,:)
+      double complex :: ur(0:,0:,0:), vr(0:,0:,0:), wr(0:,0:,0:)
       double precision :: XFN(:,:)
       integer firstn(:,:),number(:,:),nextn(:)
       double precision :: FLIZP1,FLJZP1,RAD1,RAD2,RAD3,ARG1,ARG2,ARG3

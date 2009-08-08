@@ -453,13 +453,13 @@ C**********************************************************************
             zcenterold(i) = zcenter(i)
          end do
 
-         message = 'cell l240'
          call meanfluidvelocity(ur, meanu)
          call meanfluidvelocity(vr, meanv)
          call meanfluidvelocity(wr, meanw)
          open(403, access='append')
          write(403,*) klok, dreal(meanu), dreal(meanv), dreal(meanw)
          close(403)
+         message = 'cell l240'
          call dumpstatus(klok, message)
          CALL pushup(KLOK,UR,VR,WR,XFN,FRC,FIRSTN,NUMBER,NEXTN)
          message = 'cell l243'
@@ -558,6 +558,6 @@ C          end if
       DEALLOCATE (UR,VR,WR,FIRSTN,NUMBER,NEXTN,XFN,FRC)
       DEALLOCATE(VXFACT,VYFACT,VZFACT)
       DEALLOCATE(PRDENO,QRFACT,elmnew,shpint,shpfs)
-  
+
       END PROGRAM cell
 !**********************************************************************
