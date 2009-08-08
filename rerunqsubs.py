@@ -6,9 +6,9 @@
 # having token codes like '$lngx$' present instead of an actual value, like 6.)
 # and translates each token to a value set in this file
 
-import os, time, os.path
+import os, time, os.path, sys
 
-hin = open('batch.parameter','r')
+hin = open(sys.argv[-1],'r')
 
 short_tokens = []
 tokens = []
@@ -16,8 +16,10 @@ list_values = []
 n_values = []
 m = 0
 for line in hin.readlines():
-  elements = line.split(',')
+  elements = line.split(';')
   elements[-1] = elements[-1].replace('\n','')
+  for i in range(len(elements)):
+    elements[i] = elements[i].replace('\\n','\n     & ')
   short_tokens.append(elements[0])
   tokens.append(elements[1])
   list_values.append(elements[2:])
