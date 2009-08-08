@@ -17,7 +17,7 @@
 ;$nmem$;10242
 ;$nselm$;20480
 ;$planey$;2.5d0
-l;$lngx$;5
+shearl;$lngx$;5
 ;$Eh$;1.d0
 g;$capillary_no$;1.d-2
 f;$FVS$;1
