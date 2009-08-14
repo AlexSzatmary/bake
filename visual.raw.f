@@ -69,7 +69,7 @@
             XFP(2,i) = XFN(2,i) - cgy
             XFP(3,i) = XFN(3,i) - cgz
          enddo
-         write(200,*) klok,cgx,cgy,cgz
+
          xo = 0.0d0
          ro =  ra/H64
          icount = 0
