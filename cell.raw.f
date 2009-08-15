@@ -12,63 +12,17 @@ C *              David M. McQueen    email: mcqueen@cims.nyu.edu      *
 C *********************************************************************
 C
 C**********************************************************************
-C  (FIBER ACTIVATION: AN INTEGER ARRAY, LAFLAG, FLAGS ACTIVE LINKS, [A AND V])
-c   fixed bug in subroutine fluidup:
-c   changed:
-c     WR(I,J,K) = (WR(I,J,K) + PR(I,J,K)*PRFACT(K))/QRFACT(I,J,K)
-c   to:
-c     WR(I,J,K) = (WR(I,J,K) + PR(I,J,K)*PRFACT(K+1))/QRFACT(I,J,K)
-c  (Combined upwind difference [hrtxp_61u6.f] and microtasking [hrtxp_61m3e.f])
 C  PARAMETERS: 
 C     PLANES ARE NG X NG
 C     BUT ARE STORED IN ARRAYS WITH DIMENSIONS
 C     (0:NB,1:NG)   WHERE NB=NG+2
 C
-C     A FIBER IS COMPOSED OF POINTS
-C     A GROUP IS COMPOSED OF FIBERS HAVING THE SAME NUMBER OF POINTS
-C     A BUNCH IS COMPOSED OF GROUPS
-C
-C     NBUNCH    = NUMBER OF BUNCHES IN THE ENTIRE STRUCTURE 
-C     NGROUPS(J)= NUMBER OF GROUPS IN BUNCH J, J=1,...,NBUNCH   (NGROUPS(0)=0)
-C     NFG(I)    = NUMBER OF FIBERS IN GROUP I, I=NGROUPS(J-1)+1,...,NGROUPS(J)
-C     NPF(I)    = NUMBER OF POINTS IN A FIBER IN GROUP I
-C     IMAX      = SUM(J=1,NBUNCH):NGROUPS(J)
-C                 IMAX IS THE TOTAL NUMBER OF GROUPS IN THE ENTIRE STRUCTURE.
-C
-C     NFSIZE    = MAX(J=1,NBUNCH):SUM(I=ISTART(J),ISTOP(J)):NFG(I)*NPF(I)
-C     ISTART(J) = NGROUPS(J-1)+1
-C     ISTOP (J) = NGROUPS(J)
-C     NGROUPS(0)=0
-C
-C     ASSUMED VALUE  MAX(I=1,IMAX):NFG(I)        =    64
-C     ASSUMED VALUE  MAX(I=1,IMAX):NPF(I)        =   530
-C     ASSUMED VALUE  MAX(I=1,IMAX):NFG(I)*NPF(I) = 33920
-C
-C     WARNING: THE ASSUMED VALUES GIVEN ABOVE
-C     AND THE CONSTANT NFSIZE=2020 GIVEN
-C     BELOW WERE DETERMINED EMPIRICALLY FOR A
-C     PARTICULAR HEART ANATOMY. ANY CHANGE TO
-C     THIS ANATOMY MAY REQUIRE ALTERATION OF
-C     OF THESE VALUES.
-C     A SIMILAR WARNING APPLIES TO NMSIZE.
-C
-c     nsrcs = the number of sources in the heart, reasonably 5:
-c             (1) superior vena cava
-c             (2) inferior vena cava
-c             (3) pulmonary veins (left  atrium)
-c             (4) pulmonary artery (normally thought of as a sink)
-c             (5) aorta            (normally thought of as a sink)
-c               
 C *********************************************************************
 C
 c     NOTES ON CHANGES MADE TO PROGRAM PULSE3D TO CONVERT IT TO
 c     RBC3D: SIMULATION CODE FOR THE STUDY OF ERYTHROCYTES IN 3D FLOW
 c     NOTES STARTED ON 1/19/95
 C
-c  1/19/95   removed FIBERX routines that calculate heart fiber forces
-c  replaced with MEMBNX and related routines that calculate forces
-c  exreted by an erythrocyte membrane
-c   added common block membrn
 C**********************************************************************
       PROGRAM cell
       IMPLICIT NONE
@@ -235,7 +189,6 @@ C**********************************************************************
       cap_center(1,:)=$xc_cap$
       cap_center(2,:)=$yc_cap$
       cap_center(3,:)=$zc_cap$
-
       rad = $rad$
 
       pi = 3.14159265358979323846d0 ! Taken from Wikipedia; 20 digits
@@ -243,12 +196,10 @@ C**********************************************************************
       nstep = $nstep$ ! Number of timesteps
       radx = $radx$ ! cell radius (cm)
 
-      if (b < 0) b = 2*(1+2*$gapratio$)*ngy/(ngy-3)
       lcube = radx*b ! Length of one edge of the fluid domain cube (cm)
       mu = 1.20d-2 ! Viscosity of plasma (poise), Eggleton & Popel 1998
       rho = 1.025d0 ! Density of plasma (g/(cm^3)), Neofytou 2004
       nu = mu/rho ! Kinematic density
-
       
 !     Shear rate, defined in terms of capillary number
       gamma_dot = Eh*capillary_no/(radx*mu)
@@ -256,7 +207,7 @@ C**********************************************************************
       gamma_dot_p = $gamma_dot_p$
 
       td = gamma_dot_p/gamma_dot ! Timestep (s)
-      h = lcube/flngx ! Fluid node spacing
+      h = lcube/flngx ! Fluid node spacing (cm)
 
 !     Establish conversion factors from cgs units to program units
 !     Running the program in these units simplifies several calculations;
