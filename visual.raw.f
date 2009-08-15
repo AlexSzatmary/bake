@@ -467,12 +467,11 @@ C          end if
       return
       end subroutine cellcenter
 !**********************************************************
-      subroutine dumpstatus(clock, message)
+      subroutine dumpstatus(clock, message, fname)
       integer clock
-      character*11 fname
+      character*14 fname
       character*80 message
-      fname='status.txt'
-      open(500,file=fname,status='unknown', access='append')
+      open(500,file=trim(fname),status='unknown', access='append')
       write(500, *) clock
       write(500, *) message
       close(500)

@@ -25,7 +25,9 @@ f;$FVS$;1
 ;$b$;4.d0
 g;$gamma_dot_p$;1.d-5
 f;$flow$;5
-;$nstep$;2000
+;$nstep$;10
 ;$vstable$;0
 ;$bfscmd$;2
 ;$mix$;0
+;$smalldumpint$;1
+;$bigdumpint$;5

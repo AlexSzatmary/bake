@@ -203,6 +203,10 @@ C**********************************************************************
 
       integer fp_start, fp_end
 
+!     End variable declaration, start real code
+
+      message = '               '
+
       fineness = $fineness$
       do i=1,$ncap$
          call capsuletable(fineness(i),nnode(i),nelm(i))
@@ -420,28 +424,35 @@ C**********************************************************************
 !     MAIN LOOP --
       DO 5 KLOK=KLOK1,KLOKEND
          message = 'cell l216'
-         call dumpstatus(klok, message)
-      T = T+TD
-      do i=1,$ncap$
-         CALL MEMBNX(KLOK,XFN,elmnew,shpint,shpfs,FRC,h,FOSTAR,RAD(i),
-     &        cap_n_start(i), cap_n_end(i))
-      end do
+         call dumpstatus(klok, message, 'status.txt')
+         T = T+TD
+         do i=1,$ncap$
+            CALL MEMBNX(KLOK,XFN,elmnew,shpint,shpfs,FRC,h,FOSTAR,
+     &           RAD(i), cap_n_start(i), cap_n_end(i))
+            write(message, *) 'frc(1,1)',frc(1,1)
+            call dumpstatus(klok, message, 'thumbprint.txt')
+            write(message, *) 'frc(3,nfsize)',frc(1,nfsize)
+            call dumpstatus(klok, message, 'thumbprint.txt')
+            write(message, *) 'frc(2,nfsize)',frc(1,nfsize/2)
+            call dumpstatus(klok, message, 'thumbprint.txt')
+         end do
+
          message = 'cell l220'
-         call dumpstatus(klok, message)
+         call dumpstatus(klok, message, 'status.txt')
          if ($npls$ > 0) then
             call pmhist(xpi,xfn,frc,firstn,nextn,number,
      &           10240.d0/dble($npl$), fp_start, fp_end, nfsize)
          end if
          message = 'cell l225'
-         call dumpstatus(klok, message)
+         call dumpstatus(klok, message, 'status.txt')
          call meanforce(klok, frc)
          message = 'cell l228'
-         call dumpstatus(klok, message)
+         call dumpstatus(klok, message, 'status.txt')
          do i=1,$ncap$
             call cellcenter(klok,xfn(1:3,cap_n_start(i):cap_n_end(i)), 
      &           nnode(i), i, xcenter(i), ycenter(i), zcenter(i))
             message = 'cell l232'
-            call dumpstatus(klok, message)
+            call dumpstatus(klok, message, 'status.txt')
 !     todo Make filename change with capsule index
             call makefilename('capsulev__', i,'.txt',strfname)
             open(402,file=strfname, access='append')
@@ -460,15 +471,24 @@ C**********************************************************************
          write(403,*) klok, dreal(meanu), dreal(meanv), dreal(meanw)
          close(403)
          message = 'cell l240'
-         call dumpstatus(klok, message)
+         call dumpstatus(klok, message, 'status.txt')
          CALL pushup(KLOK,UR,VR,WR,XFN,FRC,FIRSTN,NUMBER,NEXTN)
          message = 'cell l243'
-         call dumpstatus(klok, message)
+         call dumpstatus(klok, message, 'status.txt')
+         write(message, *) 'ur(3*ngx/4,ngy/2,ngz/4)', 
+     &        ur(3*ngx/4,ngy/2,ngz/4)
+         call dumpstatus(klok, message, 'thumbprint.txt')
+         write(message, *) 'vr(3*ngx/4,ngy/2,ngz/4)',
+     &        vr(3*ngx/4,ngy/2,ngz/4)
+         call dumpstatus(klok, message, 'thumbprint.txt')
+         write(message, *) 'wr(3*ngx/4,ngy/2,ngz/4)',
+     &        wr(3*ngx/4,ngy/2,ngz/4)
+         call dumpstatus(klok, message, 'thumbprint.txt')
          if (FVS == 0) then
             call bodyfs(klok, bfs, ur, vr, wr, vsc)
          end if
          message = 'cell l248'
-         call dumpstatus(klok, message)
+         call dumpstatus(klok, message, 'status.txt')
          if (fvs /= 0) then
             if ($bfscmd$ == 1) then
                call fvssub(ur, vr, wr, bfs, umean)
@@ -488,56 +508,72 @@ C**********************************************************************
             end if
          end if
          message = 'cell l252'
-         call dumpstatus(klok, message)
+         call dumpstatus(klok, message, 'status.txt')
          call wrap(klok, ur, vr, wr)
+         write(message, *) 'ur(3*ngx/4,ngy/2,ngz/4)', 
+     &        ur(3*ngx/4,ngy/2,ngz/4)
+         call dumpstatus(klok, message, 'thumbprint.txt')
+         write(message, *) 'vr(3*ngx/4,ngy/2,ngz/4)',
+     &        vr(3*ngx/4,ngy/2,ngz/4)
+         call dumpstatus(klok, message, 'thumbprint.txt')
+         write(message, *) 'wr(3*ngx/4,ngy/2,ngz/4)',
+     &        wr(3*ngx/4,ngy/2,ngz/4)
+         call dumpstatus(klok, message, 'thumbprint.txt')
          message = 'cell l255'
-         call dumpstatus(klok, message)
+         call dumpstatus(klok, message, 'status.txt')
          CALL MOVE(KLOK,UR,VR,WR,XFN,FIRSTN,NUMBER,NEXTN)
          message = 'cell l258'
-         call dumpstatus(klok, message)
+         call dumpstatus(klok, message, 'status.txt')
+         write(message, *) 'xfn(1,1)',xfn(1,1)
+         call dumpstatus(klok, message, 'thumbprint.txt')
+         write(message, *) 'xfn(3,nfsize)',xfn(3,nfsize)
+         call dumpstatus(klok, message, 'thumbprint.txt')
+         write(message, *) 'xfn(2,nfsize/2)',xfn(2,nfsize/2)
+         call dumpstatus(klok, message, 'thumbprint.txt')
+!     End of the loop, do post-processing stuff
          do i=1,$ncap$
             CALL SHAPE(LCUBE,h64,KLOK,TD,cap_n_start(i),cap_n_end(i),1,
      &           nfsize2,XFN, elmnew)
             message = 'cell l262'
-            call dumpstatus(klok, message)
+            call dumpstatus(klok, message, 'status.txt')
             call calculateDF(klok, i, xfn,cap_n_start(i), cap_n_end(i))
          end do
-      WRITE(206,*)' KLOK: ',KLOK,  ' ; TIME: ',T
+         WRITE(206,*)' KLOK: ',KLOK,  ' ; TIME: ',T
          message = 'cell l266'
-         call dumpstatus(klok, message)
+         call dumpstatus(klok, message, 'status.txt')
          call wrstart(lcube, nu, rho,td,klok,ur,vr,wr,
      &        xfn,xpi,firstn,number,nextn,elmnew,shpint,shpfs)
          message = 'cell l270'
-         call dumpstatus(klok, message)
-         if ((klok/1)*1 == klok) then
-         message = 'cell l273'
-         call dumpstatus(klok, message)
-         call wprofile(wr, klok)
-         message = 'cell l276'
-         call dumpstatus(klok, message)
+         call dumpstatus(klok, message, 'status.txt')
+         if ((klok/$smalldumpint$)*$smalldumpint$ == klok) then
+            message = 'cell l273'
+            call dumpstatus(klok, message, 'status.txt')
+            call wprofile(wr, klok)
+            message = 'cell l276'
+            call dumpstatus(klok, message, 'status.txt')
          end if
          message = 'cell l279'
-         call dumpstatus(klok, message)
+         call dumpstatus(klok, message, 'status.txt')
 
-      if ((klok/5)*5 == klok) then
-         call uvwpdump(ur, vr, wr, pr, KLOK)
-         message = 'cell l284'
-         call dumpstatus(klok, message)
-         call makefilename('solidnodes',KLOK,'.txt',strfname)
-         message = 'cell l287'
-         call dumpstatus(klok, message)
-         call saveallsolid(XFN,strfname)
-         message = 'cell l290'
-         call dumpstatus(klok, message)
-         call makefilename('solidforce',KLOK,'.txt',strfname)
-         message = 'cell l293'
-         call dumpstatus(klok, message)
-         call saveallsolid(frc,strfname)
-         message = 'cell l296'
-         call dumpstatus(klok, message)
+         if ((klok/$bigdumpint$)*$bigdumpint$ == klok) then
+            call uvwpdump(ur, vr, wr, pr, KLOK)
+            message = 'cell l284'
+            call dumpstatus(klok, message, 'status.txt')
+            call makefilename('solidnodes',KLOK,'.txt',strfname)
+            message = 'cell l287'
+            call dumpstatus(klok, message, 'status.txt')
+            call saveallsolid(XFN,strfname)
+            message = 'cell l290'
+            call dumpstatus(klok, message, 'status.txt')
+            call makefilename('solidforce',KLOK,'.txt',strfname)
+            message = 'cell l293'
+            call dumpstatus(klok, message, 'status.txt')
+            call saveallsolid(frc,strfname)
+            message = 'cell l296'
+            call dumpstatus(klok, message, 'status.txt')
       end if
          message = 'cell l299'
-         call dumpstatus(klok, message)
+         call dumpstatus(klok, message, 'status.txt')
 
 C          if ($vstable$ == 1) then
 C             if ($flow$ /= 3) then
@@ -553,7 +589,7 @@ C          end if
    6  CONTINUE
 
       message = 'cell l304'
-      call dumpstatus(klok, message)
+      call dumpstatus(klok, message, 'status.txt')
 
       DEALLOCATE (UR,VR,WR,FIRSTN,NUMBER,NEXTN,XFN,FRC)
       DEALLOCATE(VXFACT,VYFACT,VZFACT)

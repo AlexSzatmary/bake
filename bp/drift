@@ -28,3 +28,5 @@ f;$flow$;3
 ;$nstep$;10
 ;$mix$;0
 ;$bfscmd$;1
+;$smalldumpint$;1
+;$bigdumpint$;5
