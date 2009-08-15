@@ -108,6 +108,7 @@ C**********************************************************************
          integer nextn(:)
          double precision :: const
          integer fp_start, fp_end
+         integer nfsize
          end subroutine pmhist
 
          subroutine pushup(klok,ur,vr,wr,xfn,frc,firstn,number,nextn)
@@ -136,6 +137,7 @@ C**********************************************************************
       PARAMETER(NGXM1=NGX-1,NGYM1=NGY-1,NGZM1=NGZ-1)
       PARAMETER(FLNGX=NGX,FLNGY=NGY,FLNGZ=NGZ)
       integer, parameter :: npl=$npl$
+      double precision fnpl
       INTEGER KLOK,KLOK1,KLOK0,KLOKEND,NSTEP
       double precision :: T,H,h64,TD,VSC,TIME,RHO,PI,RADX,FOSTAR
       double precision :: rad($ncap$)
@@ -205,6 +207,7 @@ C**********************************************************************
 
 !     End variable declaration, start real code
 
+      fnpl = $npl$
       message = '               '
 
       fineness = $fineness$
@@ -441,7 +444,7 @@ C**********************************************************************
          call dumpstatus(klok, message, 'status.txt')
          if ($npls$ > 0) then
             call pmhist(xpi,xfn,frc,firstn,nextn,number,
-     &           10240.d0/dble($npl$), fp_start, fp_end, nfsize)
+     &           10240.d0/fnpl, fp_start, fp_end, nfsize)
          end if
          message = 'cell l225'
          call dumpstatus(klok, message, 'status.txt')

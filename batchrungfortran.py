@@ -75,11 +75,12 @@ for i in range(N_values):
   hin.close()
   houtcode.close()
   os.system('cp -r mesh ' + wd)
-  fortran_command = 'gfortran -g -o ' + os.path.join(wd, 'cell' + cd)
+  os.chdir(wd)
+  fortran_command = 'gfortran -g -o ' + 'cell' + cd
   for file in files:
-      fortran_command = fortran_command + ' ' + os.path.join(wd, file + file_out_suffix)
+      fortran_command = fortran_command + ' ' + file + file_out_suffix
   os.system(fortran_command)
-  os.system(os.path.join(wd, 'cell' + cd))
+  os.system('./cell' + cd)
   os.chdir(os.path.join('..', '..'))
   j = 0
   while i < N_values - 1:

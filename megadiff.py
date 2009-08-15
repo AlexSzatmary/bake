@@ -23,4 +23,4 @@ wd = sys.argv[-1]
 
 files = ['TaylorDF__00001.txt', 'capsulev__00001.txt', 'capsulex__00001.txt', 'fort.206', 'fort.403', 'fort.451', 'rbcshpk0000.pro', 'solidforce00000.txt', 'solidforce00005.txt', 'solidforce00010.txt', 'solidnodes00000.txt', 'solidnodes00005.txt', 'solidnodes00010.txt', 'status.txt', 'uvwpdump__00000.txt', 'uvwpdump__00005.txt', 'uvwpdump__00010.txt', 'wprofile__00000.txt', 'wprofile__00001.txt', 'wprofile__00002.txt', 'wprofile__00003.txt', 'wprofile__00004.txt', 'wprofile__00005.txt', 'wprofile__00006.txt', 'wprofile__00007.txt', 'wprofile__00008.txt', 'wprofile__00009.txt', 'wprofile__00010.txt']
 for file in files:
-    os.system('diff batch/'+wd+'/'+file+' '+wd+'/'+file)
+    os.system('diff batch/'+wd+'/'+file+' check/'+wd+'/'+file)

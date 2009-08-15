@@ -469,9 +469,9 @@ C          end if
 !**********************************************************
       subroutine dumpstatus(clock, message, fname)
       integer clock
-      character*14 fname
-      character*80 message
-      open(500,file=trim(fname),status='unknown', access='append')
+      character(len=*) fname
+      character(len=*) message
+      open(500,file=fname,status='unknown', access='append')
       write(500, *) clock
       write(500, *) message
       close(500)
