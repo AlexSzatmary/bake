@@ -142,7 +142,6 @@ C**********************************************************************
 
 !     Changes made 10-19-06 to implement BC Homog
       integer i, j, k
-      double precision :: gamma_dot, gamma_dot_p
       double precision :: bfs(3,3), umean(3)
 
 !     Handy string array for making file names.
@@ -196,17 +195,12 @@ C**********************************************************************
       nstep = $nstep$ ! Number of timesteps
       radx = $radx$ ! cell radius (cm)
 
-      lcube = radx*b ! Length of one edge of the fluid domain cube (cm)
-      mu = 1.20d-2 ! Viscosity of plasma (poise), Eggleton & Popel 1998
-      rho = 1.025d0 ! Density of plasma (g/(cm^3)), Neofytou 2004
-      nu = mu/rho ! Kinematic density
+      lcube = $lcube$ ! Length of one edge of the fluid domain cube (cm)
+      mu = $mu$
+      rho = $rho$
+      nu = $nu$ ! Kinematic viscosity
       
-!     Shear rate, defined in terms of capillary number
-      gamma_dot = Eh*capillary_no/(radx*mu)
-!     Shear rate in program units
-      gamma_dot_p = $gamma_dot_p$
-
-      td = gamma_dot_p/gamma_dot ! Timestep (s)
+      td = $td$ ! Timestep (s)
       h = lcube/flngx ! Fluid node spacing (cm)
 
 !     Establish conversion factors from cgs units to program units
@@ -239,28 +233,28 @@ C**********************************************************************
 !     Plane Shear
       if (1 == $flow$) then
          bfs(1,:) = (/0.d0, 0.d0, 0.d0/)
-         bfs(2,:) = (/0.d0, 0.d0, gamma_dot_p/2.d0/)
-         bfs(3,:) = (/0.d0, gamma_dot_p/2.d0, 0.d0/)
+         bfs(2,:) = (/0.d0, 0.d0, $gamma_dot_p$/2.d0/)
+         bfs(3,:) = (/0.d0, $gamma_dot_p$/2.d0, 0.d0/)
       end if
 !     Axisymmetric Extension
       if (2 == $flow$) then
-         bfs(1,:) = (/-gamma_dot_p/2.d0, 0.d0, 0.d0/)
-         bfs(2,:) = (/0.d0, -gamma_dot_p/2.d0, 0.d0/)
-         bfs(3,:) = (/0.d0, 0.d0, gamma_dot_p/)
+         bfs(1,:) = (/-$gamma_dot_p$/2.d0, 0.d0, 0.d0/)
+         bfs(2,:) = (/0.d0, -$gamma_dot_p$/2.d0, 0.d0/)
+         bfs(3,:) = (/0.d0, 0.d0, $gamma_dot_p$/)
       end if
 !     Wall
       if (3 == $flow$) then
          bfs(1,:) = (/0.d0, 0.d0, 0.d0/)
          bfs(2,:) = (/0.d0, 0.d0, 0.d0/)
-         bfs(3,:) = (/0.d0, gamma_dot_p, 0.d0/)
+         bfs(3,:) = (/0.d0, $gamma_dot_p$, 0.d0/)
       end if
       if (4 == $flow$) then
          mix = $mix$
-         bfs(1,:) = (/-mix*gamma_dot_p/2.d0, gamma_dot_p*(1-mix), 
+         bfs(1,:) = (/-mix*$gamma_dot_p$/2.d0, $gamma_dot_p$*(1-mix), 
      &        0.d0/)
-         bfs(2,:) = (/gamma_dot_p*(1-mix), -mix*gamma_dot_p/2.d0, 
+         bfs(2,:) = (/$gamma_dot_p$*(1-mix), -mix*$gamma_dot_p$/2.d0, 
      &        0.d0/)
-         bfs(3,:) = (/0.d0, 0.d0, gamma_dot_p*mix/)
+         bfs(3,:) = (/0.d0, 0.d0, $gamma_dot_p$*mix/)
       end if
       if (5 == $flow$) then
 !     Don't use bfs
@@ -344,7 +338,7 @@ C**********************************************************************
                call fvssub(ur, vr, wr, -bfs, -umean)
             end if
             if ($bfscmd$ == 2) then
-               call poiseuille(ur, vr, wr, pr, gamma_dot_p, vsc)
+               call poiseuille(ur, vr, wr, pr, $gamma_dot_p$, vsc)
             end if
          end if
          write(*,*) 'cell l352'
@@ -448,7 +442,7 @@ C**********************************************************************
                call fvssub(ur, vr, wr, bfs, umean)
             end if
             if ($bfscmd$ == 2) then
-               call poiseuille(ur, vr, wr, pr, -gamma_dot_p, vsc)
+               call poiseuille(ur, vr, wr, pr, -$gamma_dot_p$, vsc)
             end if
          end if
          CALL FLUIDUP(KLOK,UR,VR,WR, pr, VXFACT,VYFACT,VZFACT,
@@ -458,7 +452,7 @@ C**********************************************************************
                call fvssub(ur, vr, wr, -bfs, -umean)
             end if
             if ($bfscmd$ == 2) then
-               call poiseuille(ur, vr, wr, pr, gamma_dot_p, vsc)
+               call poiseuille(ur, vr, wr, pr, $gamma_dot_p$, vsc)
             end if
          end if
          message = 'cell l252'

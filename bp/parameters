@@ -1,0 +1,5 @@
+Here I cite sources for material properties that might be seen in batch
+parameter files
+
+mu = 1.20d-2 ! Viscosity of plasma (poise), Eggleton & Popel 1998
+rho = 1.025d0 ! Density of plasma (g/(cm^3)), Neofytou 2004
