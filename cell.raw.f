@@ -185,10 +185,6 @@ C**********************************************************************
       ALLOCATE(elmnew(1:3,1:NFSIZE2))
       ALLOCATE(shpint(1:3,1:NFSIZE2),shpfs(1:7,1:NFSIZE2))
 
-      cap_center(1,:)=$xc_cap$
-      cap_center(2,:)=$yc_cap$
-      cap_center(3,:)=$zc_cap$
-      rad = $rad$
 
       pi = 3.14159265358979323846d0 ! Taken from Wikipedia; 20 digits
 !     Physical parameters -- using cgs system
@@ -214,13 +210,17 @@ C**********************************************************************
 !     side length of h.
       mass = rho*h**3
 
-!     
       vsc = nu/((h**2)/td)
 !     h64 is used in converting from length in program units to
 !     non-dimensional units; currently, only used in shape.
       h64 = h/radx
 !     Characteristic force; divide by this to get force in program units.
       fostar = (mass*h/td**2)
+
+      rad = $rad$
+      cap_center(1,:)=$xc_cap$
+      cap_center(2,:)=$yc_cap$
+      cap_center(3,:)=$zc_cap$
 
 !     Added to implement BC homogenization
 !     These are in the program units for 1/T
@@ -230,49 +230,15 @@ C**********************************************************************
 !     bodyfs imposes stresses on the faces of the domain; these stresses are
 !     picked to generate the same flow field that FVS would, if there were
 !     no immersed body.
-!     Plane Shear
-      if (1 == $flow$) then
-         bfs(1,:) = (/0.d0, 0.d0, 0.d0/)
-         bfs(2,:) = (/0.d0, 0.d0, $gamma_dot_p$/2.d0/)
-         bfs(3,:) = (/0.d0, $gamma_dot_p$/2.d0, 0.d0/)
-      end if
-!     Axisymmetric Extension
-      if (2 == $flow$) then
-         bfs(1,:) = (/-$gamma_dot_p$/2.d0, 0.d0, 0.d0/)
-         bfs(2,:) = (/0.d0, -$gamma_dot_p$/2.d0, 0.d0/)
-         bfs(3,:) = (/0.d0, 0.d0, $gamma_dot_p$/)
-      end if
-!     Wall
-      if (3 == $flow$) then
-         bfs(1,:) = (/0.d0, 0.d0, 0.d0/)
-         bfs(2,:) = (/0.d0, 0.d0, 0.d0/)
-         bfs(3,:) = (/0.d0, $gamma_dot_p$, 0.d0/)
-      end if
-      if (4 == $flow$) then
-         mix = $mix$
-         bfs(1,:) = (/-mix*$gamma_dot_p$/2.d0, $gamma_dot_p$*(1-mix), 
-     &        0.d0/)
-         bfs(2,:) = (/$gamma_dot_p$*(1-mix), -mix*$gamma_dot_p$/2.d0, 
-     &        0.d0/)
-         bfs(3,:) = (/0.d0, 0.d0, $gamma_dot_p$*mix/)
-      end if
-      if (5 == $flow$) then
-!     Don't use bfs
-         bfs(1,:) = (/0.d0, 0.d0, 0.d0/)
-         bfs(2,:) = (/0.d0, 0.d0, 0.d0/)
-         bfs(3,:) = (/0.d0, 0.d0, 0.d0/)
-      end if
+      mix = $mix$
+      bfs(1,:) = $bfs1$
+      bfs(2,:) = $bfs2$
+      bfs(3,:) = $bfs3$
 
 !     This is the mean fluid velocity vector. For unbounded flows, this is
 !     typically zero, so that a capsule in the center is immobilized.
 !     In program units for velocity (unitless)
-      if (3 /= $flow$) then
-         umean(:)= (/0.d0,0.d0,0.d0/)
-      end if
-!     This makes the flow zero at the wall
-      if (3 == $flow$) then
-         umean(:) = (/0.d0, 0.d0, bfs(3,2)*((flngy+1.d0)/2.d0-planey)/)
-      end if
+      umean(:)= $umean$
 
 !     This automatically restarts an aborted run.
       klok = 0

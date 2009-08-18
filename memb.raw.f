@@ -63,21 +63,9 @@
          y = XFN(1,i)*dsin(theta) + XFN(2,i)*dcos(theta)
 !     Move the sphere to the center of the flow field, give it radius rad.
 
-         if ($flow$ == 1 .or. $flow$ == 2 .or. $flow$ == 4) then
-            XFN(1,i) =RAD*x/H + my_cap_center(1)
-            XFN(2,i) =RAD*y/H + my_cap_center(2)
-            XFN(3,i) =RAD*XFN(3,i)/H + my_cap_center(3)
-         end if
-         if ($flow$ == 3) then
-            XFN(1,i) =RAD*x/H + 0.5d0*(flngx+1.d0)
-            XFN(2,i) =RAD*y/H + RAD/H*(gapratio+1.d0)+2.5d0
-            XFN(3,i) =RAD*XFN(3,i)/H + 0.5d0*(flngz-1.d0)
-         end if
-         if ($flow$ == 5) then
-            XFN(1,i) =RAD*x/H + my_cap_center(1)
-            XFN(2,i) =RAD*y/H + my_cap_center(2)
-            XFN(3,i) =RAD*XFN(3,i)/H + my_cap_center(3)
-         end if
+         XFN(1,i) =RAD*x/H + my_cap_center(1)
+         XFN(2,i) =RAD*y/H + my_cap_center(2)
+         XFN(3,i) =RAD*XFN(3,i)/H + my_cap_center(3)
       enddo
 
       do i = 1, my_nelm
