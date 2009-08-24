@@ -1,6 +1,6 @@
       subroutine fvssub(ur, vr, wr, bfs, umean)
 !     Subtracts out the imposed linear flow
-
+      implicit none
       integer, parameter :: lxng=$lngx$,lyng=lxng,lzng=lxng
       integer, parameter :: ngx=2**lxng,ngy=2**lyng,ngz=2**lzng
       double precision, parameter :: flngx=ngx, flngy=ngy, flngz=ngz
@@ -28,9 +28,9 @@
       return
       end subroutine fvssub
 
-      subroutine poiseuille(ur, vr, wr, pr, gamma_dot_p, vsc)
+      subroutine poiseuille(ur, vr, wr, pr, dpdz, vsc)
 !     Imposes Poiseuille flow
-
+      implicit none
       integer, parameter :: lxng=$lngx$,lyng=lxng,lzng=lxng
       integer, parameter :: ngx=2**lxng,ngy=2**lyng,ngz=2**lzng
       double precision, parameter :: flngx=ngx, flngy=ngy, flngz=ngz
@@ -40,10 +40,7 @@
      &     pr(0:ngx+2, 0:ngy+2, 0:ngz-1)
 
       integer i, j, k
-      double precision gamma_dot_p, vsc
-      double precision :: dpdz
-
-      dpdz = -2*vsc*gamma_dot_p/ngy
+      double precision :: vsc, dpdz
 
       do i = 1,ngx
          do j = 1,ngy
@@ -55,7 +52,7 @@
                   wr(i,j,k) = wr(i,j,k) + ((1/(2*vsc))*(-dpdz)*
      &                 ((ngy+j-$planey$)*ngy-(ngy+j-$planey$)**2))
                end if
-               pr(i,j,k) = pr(i,j,k) + (-2*vsc*gamma_dot_p*k/ngy)
+               pr(i,j,k) = pr(i,j,k) + dpdz*k
             end do
          end do
       end do

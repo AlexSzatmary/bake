@@ -33,6 +33,7 @@ extensional;$lngx$;5
 ;$rho$;1.025d0
 ;$td$;($gamma_dot_p$/$gamma_dot$)
 ;$gamma_dot$;($Eh$*$capillary_no$/($radx$*$mu$))
+;$dpdz$;0.d0
 ;$gamma_dot_p$;($t_end$/$nstep$)
 ;$t_end$;1.d-2
 ;$Eh$;1.d0

@@ -300,12 +300,9 @@ C**********************************************************************
 !     Initialize velocity
 !     Throughout, u is in program units (normalized by h/td)
          if (fvs /= 0) then
-            if ($bfscmd$ == 1) then
-               call fvssub(ur, vr, wr, -bfs, -umean)
-            end if
-            if ($bfscmd$ == 2) then
-               call poiseuille(ur, vr, wr, pr, $gamma_dot_p$, vsc)
-            end if
+            call fvssub(ur, vr, wr, -bfs, -umean)
+            call poiseuille(ur, vr, wr, pr, 
+     &           $dpdz$, vsc)
          end if
          write(*,*) 'cell l352'
 
@@ -404,22 +401,16 @@ C**********************************************************************
          message = 'cell l248'
          call dumpstatus(klok, message, 'status.txt')
          if (fvs /= 0) then
-            if ($bfscmd$ == 1) then
-               call fvssub(ur, vr, wr, bfs, umean)
-            end if
-            if ($bfscmd$ == 2) then
-               call poiseuille(ur, vr, wr, pr, -$gamma_dot_p$, vsc)
-            end if
+            call fvssub(ur, vr, wr, bfs, umean)
+            call poiseuille(ur, vr, wr, pr,
+     &           -$dpdz$, vsc)
          end if
          CALL FLUIDUP(KLOK,UR,VR,WR, pr, VXFACT,VYFACT,VZFACT,
      &        PRDENO,QRFACT, DSQ, DX, DY, DZ)
          if (fvs /= 0) then
-            if ($bfscmd$ == 1) then
-               call fvssub(ur, vr, wr, -bfs, -umean)
-            end if
-            if ($bfscmd$ == 2) then
-               call poiseuille(ur, vr, wr, pr, $gamma_dot_p$, vsc)
-            end if
+            call fvssub(ur, vr, wr, -bfs, -umean)
+            call poiseuille(ur, vr, wr, pr, 
+     &           $dpdz$, vsc)
          end if
          message = 'cell l252'
          call dumpstatus(klok, message, 'status.txt')
