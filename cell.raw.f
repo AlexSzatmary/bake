@@ -65,17 +65,15 @@ C**********************************************************************
          integer nfsize
          end subroutine pmhist
 
-         subroutine pushup(klok,ur,vr,wr,xfn,frc,firstn,number,nextn)
+         subroutine pushup(ur,vr,wr,xfn,frc,firstn,number,nextn)
          implicit none
-         integer klok
          double complex ur(:,:,:), vr(:,:,:), wr(:,:,:)
          double precision :: xfn(:,:),frc(:,:)
          integer firstn(:,:),number(:,:),nextn(:)
          end subroutine pushup
 
-         subroutine move(klok,ur,vr,wr,xfn,firstn,number,nextn)
+         subroutine move(ur,vr,wr,xfn,firstn,number,nextn)
          implicit none
-         integer klok
          double complex :: ur(:,:,:), vr(:,:,:), wr(:,:,:)
          double precision :: XFN(:,:)
          integer firstn(:,:),number(:,:),nextn(:)
@@ -394,7 +392,7 @@ C**********************************************************************
          close(403)
          message = 'cell l240'
          call dumpstatus(klok, message, 'status.txt')
-         CALL pushup(KLOK,UR,VR,WR,XFN,FRC,FIRSTN,NUMBER,NEXTN)
+         CALL pushup(UR,VR,WR,XFN,FRC,FIRSTN,NUMBER,NEXTN)
          message = 'cell l243'
          call dumpstatus(klok, message, 'status.txt')
          write(message, *) 'ur(3*ngx/4,ngy/2,ngz/4)', 
@@ -407,7 +405,7 @@ C**********************************************************************
      &        wr(3*ngx/4,ngy/2,ngz/4)
          call dumpstatus(klok, message, 'thumbprint.txt')
          if (FVS == 0) then
-            call bodyfs(klok, bfs, ur, vr, wr, vsc)
+            call bodyfs(bfs, ur, vr, wr, vsc)
          end if
          message = 'cell l248'
          call dumpstatus(klok, message, 'status.txt')
@@ -424,7 +422,7 @@ C**********************************************************************
          end if
          message = 'cell l252'
          call dumpstatus(klok, message, 'status.txt')
-         call wrap(klok, ur, vr, wr)
+         call wrap(ur, vr, wr)
          write(message, *) 'ur(3*ngx/4,ngy/2,ngz/4)', 
      &        ur(3*ngx/4,ngy/2,ngz/4)
          call dumpstatus(klok, message, 'thumbprint.txt')
@@ -436,7 +434,7 @@ C**********************************************************************
          call dumpstatus(klok, message, 'thumbprint.txt')
          message = 'cell l255'
          call dumpstatus(klok, message, 'status.txt')
-         CALL MOVE(KLOK,UR,VR,WR,XFN,FIRSTN,NUMBER,NEXTN)
+         CALL MOVE(UR,VR,WR,XFN,FIRSTN,NUMBER,NEXTN)
          message = 'cell l258'
          call dumpstatus(klok, message, 'status.txt')
          write(message, *) 'xfn(1,1)',xfn(1,1)

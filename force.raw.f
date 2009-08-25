@@ -1,5 +1,5 @@
 !*********************************************************************
-      subroutine bodyfs(klok,bfs,ur, vr, wr, vsc)
+      subroutine bodyfs(bfs,ur, vr, wr, vsc)
       IMPLICIT NONE
       INTEGER LXNG,LYNG,LZNG,NGX,NGY,NGZ
       INTEGER NGXM1,NGYM1,NGZM1,NBX,NBY,NBZ
@@ -9,31 +9,31 @@
       PARAMETER(NBX=NGX+2,NBY=NGY+2,NBZ=NGZ+2)
       PARAMETER(NGXM1=NGX-1,NGYM1=NGY-1,NGZM1=NGZ-1)
       PARAMETER(FLNGX=NGX,FLNGY=NGY,FLNGZ=NGZ)
-      INTEGER I,J,K,KLOK,iunit
+      integer i,j,k
       double precision :: bfs(3,3), vsc
       double COMPLEX :: UR(0:NBX,0:NBY,0:NGZM1)
       double COMPLEX :: VR(0:NBX,0:NBY,0:NGZM1)
       double COMPLEX :: WR(0:NBX,0:NBY,0:NGZM1)
 
-      do i = 0, nby
-         do j = 0, ngz - 1
-            ur(ngx,i,j) = ur(ngx,i,j) + bfs(1,1)*vsc*flngx
-            ur(1,i,j) = ur(1,i,j) - bfs(1,1)*vsc*flngx
-            vr(ngx,i,j) = vr(ngx,i,j) + bfs(2,1)*vsc*flngx
-            vr(1,i,j) = vr(1,i,j) - bfs(2,1)*vsc*flngx
-            wr(ngx,i,j) = wr(ngx,i,j) + bfs(3,1)*vsc*flngx
-            wr(1,i,j) = wr(1,i,j) - bfs(3,1)*vsc*flngx
+      do j = 0, nby
+         do k = 0, ngz - 1
+            ur(ngx,j,k) = ur(ngx,j,k) + bfs(1,1)*vsc*flngx
+            ur(1,j,k) = ur(1,j,k) - bfs(1,1)*vsc*flngx
+            vr(ngx,j,k) = vr(ngx,j,k) + bfs(2,1)*vsc*flngx
+            vr(1,j,k) = vr(1,j,k) - bfs(2,1)*vsc*flngx
+            wr(ngx,j,k) = wr(ngx,j,k) + bfs(3,1)*vsc*flngx
+            wr(1,j,k) = wr(1,j,k) - bfs(3,1)*vsc*flngx
          end do
       end do
 
       do i=0,nbx
-         do j=0,ngzm1
-            ur(i,ngy,j) = ur(i,ngy,j) + bfs(1,2)*vsc*flngy
-            ur(i,1,j) = ur(i,1,j) - bfs(1,2)*vsc*flngy
-            vr(i,ngy,j) = vr(i,ngy,j) + bfs(2,2)*vsc*flngy
-            vr(i,1,j) = vr(i,1,j) - bfs(2,2)*vsc*flngy
-            wr(i,ngy,j) = wr(i,ngy,j) + bfs(3,2)*vsc*flngy
-            wr(i,1,j) = wr(i,1,j) - bfs(3,2)*vsc*flngy
+         do k=0,ngzm1
+            ur(i,ngy,k) = ur(i,ngy,k) + bfs(1,2)*vsc*flngy
+            ur(i,1,k) = ur(i,1,k) - bfs(1,2)*vsc*flngy
+            vr(i,ngy,k) = vr(i,ngy,k) + bfs(2,2)*vsc*flngy
+            vr(i,1,k) = vr(i,1,k) - bfs(2,2)*vsc*flngy
+            wr(i,ngy,k) = wr(i,ngy,k) + bfs(3,2)*vsc*flngy
+            wr(i,1,k) = wr(i,1,k) - bfs(3,2)*vsc*flngy
          end do
       end do
 
@@ -51,7 +51,18 @@
       RETURN
       END SUBROUTINE BODYFS
 !*********************************************************************
-      SUBROUTINE wrap(KLOK,UR,VR,WR)
+      SUBROUTINE wrap(UR,VR,WR)
+!     This subroutine wraps the velocities in the x and y directions.
+!     The velocity arrays are dimensioned from 0 to ng+2, instead of
+!     from 1 to ng. This is because the discrete Dirac delta has a
+!     width of 4 nodes (two in each direction). When the discrete Dirac
+!     delta is evaluated, it may need points outside of the flow field.
+!     Rather than doing complicated and fragile mod arithmetic, we
+!     simply say that u(0) = u(ng), u(ng+1)=u(1), and u(ng+2)=u(2)
+!     by periodicity. This doesn't actually make sense, I suppose,
+!     for cases in which the flow field is nonperiodic, but it keeps
+!     the code running.
+!     Commented by Alex Szatmary 25-08-2009
       IMPLICIT NONE
 !     This subroutine contains microtasking directives.
       INTEGER LXNG,LYNG,LZNG,NGX,NGY,NGZ
@@ -68,25 +79,28 @@
       PARAMETER(NGXP2=NGX+2,NGYP2=NGY+2,NGZP2=NGZ+2)
       PARAMETER(NGXB4=NGX/4,NGYB4=NGY/4,NGZB4=NGZ/4)
       PARAMETER(FLNGX=NGX,FLNGY=NGY,FLNGZ=NGZ)
-      INTEGER I,J,K,NUVW,KLOK,iunit
+      INTEGER I,J,K
       double COMPLEX :: UR(0:NBX,0:NBY,0:NGZM1)
       double complex :: VR(0:NBX,0:NBY,0:NGZM1)
       double COMPLEX :: WR(0:NBX,0:NBY,0:NGZM1)
 
 !$OMP   PARALLEL DO SHARED(UR,VR,WR) PRIVATE(J,K)
-      DO 105 K=0,NGZM1
-      do 105 j=1,ngy
-      UR(    0,J,K) = UR(NGX,J,K)
-      UR(NGXP1,J,K) = UR(  1,J,K)
-      ur(ngx+2, j, k) = ur(2, j, k)
-      VR(    0,J,K) = VR(NGX,J,K)
-      VR(NGXP1,J,K) = VR(  1,J,K)
-      vr(ngx+2, j, k) = vr(2, j, k)
-      WR(    0,J,K) = WR(NGX,J,K)
-      WR(NGXP1,J,K) = WR(  1,J,K)
-      wr(ngx+2, j, k) = wr(2, j, k)
-  105 CONTINUE
+!     Wrap velocities for periodicity in the x direction
+      do k=0,ngzm1
+         do j=1,ngy
+            ur(0, j,k) = ur(ngx,j,k)
+            ur(ngx+1, j, k) = ur(1, j, k)
+            ur(ngx+2, j, k) = ur(2, j, k)
+            vr(0, j, k) = vr(ngx, j, k)
+            vr(ngx+1, j, k) = vr(1, j, k)
+            vr(ngx+2, j, k) = vr(2, j, k)
+            wr(0, j, k) = wr(ngx, j, k)
+            wr(ngx+1, j, k) = wr(1, j, k)
+            wr(ngx+2, j, k) = wr(2, j, k)
+         end do
+      end do
 
+!     Wrap velocities for periodicity in the y direction
       do k = 0, ngz - 1
          do i = 1, ngx
             ur(i, 0, k) = ur(i, ngy, k)
@@ -114,10 +128,9 @@
       PARAMETER(NBX=NGX+2,NBY=NGY+2,NBZ=NGZ+2)
       PARAMETER(NGXM1=NGX-1,NGYM1=NGY-1,NGZM1=NGZ-1)
       PARAMETER(FNGX=NGX,FNGY=NGY,FNGZ=NGZ)
-      INTEGER I,J,K
+      integer i,j
       double precision :: xfn(:,:)
       integer, parameter :: sqrtnpl=$sqrtnpl$
-      integer :: nnodes
 
       double precision :: XPI(:,:)
       do i=0,sqrtnpl-1
@@ -160,7 +173,7 @@
       double precision :: XFN(:,:),FRC(:,:)
       integer firstn(:,:),number(:,:)
       integer nextn(:)
-      INTEGER I,J,K,II,JJ,N
+      integer i,ii,jj,n
       double precision :: CONST
 
       DO 1 I=fp_start,fp_end
@@ -196,7 +209,7 @@ C SORT THE XFN DATA BY X-COORDINATE AND Y-COORDINATE USING LINKED LISTS
       RETURN
       END SUBROUTINE PMHIST
 !********************************************************************
-      SUBROUTINE pushup(KLOK,UR,VR,WR,XFN,FRC,FIRSTN,NUMBER,NEXTN)
+      SUBROUTINE pushup(UR,VR,WR,XFN,FRC,FIRSTN,NUMBER,NEXTN)
       IMPLICIT NONE
       INTEGER LXNG,LYNG,LZNG,NGX,NGY,NGZ
       INTEGER NGXM1,NGYM1,NGZM1,NBX,NBY,NBZ
@@ -220,7 +233,7 @@ C SORT THE XFN DATA BY X-COORDINATE AND Y-COORDINATE USING LINKED LISTS
       double precision :: FLIZP1,FLJZP1,RAD1,RAD2,RAD3,ARG1,ARG2,ARG3
       INTEGER I,J,K,L,M,N,IZERO,JZERO,MZERO,NPT,NPOINTS,NUMREM
       INTEGER II,JJ,IJ,I3D,J3D,K3D,NEXTNOLD,NPREV,IR
-      INTEGER MSHIFT,I0,IZ,JZ,KZ,IN,JN,KLOK,NUVW
+      INTEGER MSHIFT,I0,IZ,JZ,KZ,IN,JN
       double precision,ALLOCATABLE :: XFN1OLD(:),XFN2OLD(:),XFN3OLD(:)
       double precision,ALLOCATABLE  :: FORCE1(:), FORCE2(:), FORCE3(:)
       double precision,ALLOCATABLE  ::  D1(:,:),   D2(:,:),   D3(:,:)
@@ -504,7 +517,7 @@ C THAN THE INDEX ARRAY; THIS FACILITATES SATISFYING THE PERIODIC B.C.
       RETURN
       END SUBROUTINE pushup
 !********************************************************************
-      SUBROUTINE MOVE(KLOK,UR,VR,WR,XFN,FIRSTN,NUMBER,NEXTN)
+      SUBROUTINE MOVE(UR,VR,WR,XFN,FIRSTN,NUMBER,NEXTN)
       IMPLICIT NONE
 !     This subroutine contains microtasking directives.
       INTEGER LXNG,LYNG,LZNG,NGX,NGY,NGZ
@@ -527,9 +540,9 @@ C THAN THE INDEX ARRAY; THIS FACILITATES SATISFYING THE PERIODIC B.C.
       double precision :: XFN(:,:)
       integer firstn(:,:),number(:,:),nextn(:)
       double precision :: FLIZP1,FLJZP1,RAD1,RAD2,RAD3,ARG1,ARG2,ARG3
-      INTEGER I,J,K,L,M,N,IZERO,JZERO,MZERO,NPT,NPOINTS,NUMREM
-      INTEGER II,JJ,IJ,I3D,J3D,K3D,IR,NUVW
-      INTEGER MSHIFT,I0,IZ,JZ,KZ,IN,JN,KLOK,iunit
+      INTEGER I,J,K,L,M,MZERO,NPT,NPOINTS,NUMREM
+      INTEGER II,JJ,IJ,I3D,J3D,K3D,NUVW
+      INTEGER I0,IZ,JZ,KZ
       double precision, ALLOCATABLE :: XFN1OLD(:),XFN2OLD(:),
      &     XFN3OLD(:)
       double precision :: xfn3oldold(nptmax)
@@ -540,7 +553,6 @@ C THAN THE INDEX ARRAY; THIS FACILITATES SATISFYING THE PERIODIC B.C.
       double precision,ALLOCATABLE :: UINT(:,:),VINT(:,:),WINT(:,:)
       double precision,ALLOCATABLE ::FLKZP1(:)
       INTEGER,ALLOCATABLE :: lindx(:)
-      character*19 strfname
 C     THIS ROUTINE MOVES THE FIBER POINTS AT THE LOCAL FLUID VELOCITY.
 C
 C     FIBER POINT L IS INFLUENCED BY FLUID POINT (I,J,K) IFF
