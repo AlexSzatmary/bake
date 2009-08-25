@@ -1,4 +1,4 @@
-      SUBROUTINE RESTART(LCUBE,NU,RHO,TD,KLOK,UR,VR,WR,
+      SUBROUTINE RESTART(LCUBE,NU,RHO,TD,UR,VR,WR,
      & XFN,xpi,FIRSTN,NUMBER,NEXTN,elmnew,shpint,shpfs)
       IMPLICIT NONE
       INTEGER LXNG,LYNG,LZNG,NGX,NGY,NGZ,NFSIZE,NFSIZE2
@@ -11,7 +11,6 @@
       PARAMETER(FLNGX=NGX,FLNGY=NGY,FLNGZ=NGZ)
       parameter(nfsize=$nsnode$,nfsize2=$nselm$)
       double precision :: LCUBE,NU,TD,RHO
-      INTEGER KLOK
       double COMPLEX :: UR(0:NBX,0:NBY,0:NGZM1)
       double complex :: VR(0:NBX,0:NBY,0:NGZM1)
       double COMPLEX :: WR(0:NBX,0:NBY,0:NGZM1)
@@ -21,8 +20,6 @@
       double precision :: xpi(1:3,1:npl)
       INTEGER elmnew(1:3,1:NFSIZE2)
       double precision :: shpint(1:3,1:NFSIZE2),shpfs(1:7,1:NFSIZE2)
-!      read(100) klok
-!      rewind(100)
       READ(101)LCUBE,NU,RHO,TD
       REWIND(101)
       READ(102) UR

@@ -309,8 +309,7 @@ C**********************************************************************
 !     Throughout, u is in program units (normalized by h/td)
          if (fvs /= 0) then
             call fvssub(ur, vr, wr, -bfs, -umean)
-            call poiseuille(ur, vr, wr, pr, 
-     &           $dpdz$, vsc)
+            call poiseuille(wr, pr, $dpdz$, vsc)
          end if
          write(*,*) 'cell l352'
 
@@ -322,7 +321,7 @@ C**********************************************************************
          call makefilename('solidforce', 0,'.txt',strfname)
          call saveallsolid(frc,strfname)
          do i = 1,$ncap$
-            call shape(lcube,h64,klok,td,cap_n_start(i),cap_n_end(i),
+            call shape(h64,klok,td,cap_n_start(i),cap_n_end(i),
      &           cap_e_start(i), cap_e_end(i),xfn,elmnew)
             call calculateDF(klok, i, xfn, cap_n_start(i), 
      &           cap_n_end(i))
@@ -330,7 +329,7 @@ C**********************************************************************
          t=0.d0
       else
          write(*,*) 'cell l367 Restarting'
-         call restart(lcube, nu, rho,td,klok,ur,vr,wr,
+         call restart(lcube, nu, rho,td,ur,vr,wr,
      &        xfn,xpi,firstn,number,nextn,elmnew,shpint,shpfs)
          T=klok*time
       end if
@@ -411,14 +410,12 @@ C**********************************************************************
          call dumpstatus(klok, message, 'status.txt')
          if (fvs /= 0) then
             call fvssub(ur, vr, wr, bfs, umean)
-            call poiseuille(ur, vr, wr, pr,
-     &           -$dpdz$, vsc)
+            call poiseuille(wr, pr, -$dpdz$, vsc)
          end if
          CALL FLUIDUP(KLOK,UR,VR,WR, pr, QRFACT, DSQ, DX, DY, DZ)
          if (fvs /= 0) then
             call fvssub(ur, vr, wr, -bfs, -umean)
-            call poiseuille(ur, vr, wr, pr, 
-     &           $dpdz$, vsc)
+            call poiseuille(wr, pr, $dpdz$, vsc)
          end if
          message = 'cell l252'
          call dumpstatus(klok, message, 'status.txt')
@@ -445,7 +442,7 @@ C**********************************************************************
          call dumpstatus(klok, message, 'thumbprint.txt')
 !     End of the loop, do post-processing stuff
          do i=1,$ncap$
-            CALL SHAPE(LCUBE,h64,KLOK,TD,cap_n_start(i),cap_n_end(i),1,
+            CALL SHAPE(h64,KLOK,TD,cap_n_start(i),cap_n_end(i),1,
      &           nfsize2,XFN, elmnew)
             message = 'cell l262'
             call dumpstatus(klok, message, 'status.txt')

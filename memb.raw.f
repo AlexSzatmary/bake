@@ -117,7 +117,6 @@
       double precision :: R11,R12,R13,R21,R22,R23,R31,R32,R33
       double precision :: e1m,e2m,e3m,a1,a2,a3
       double precision :: e21,e22,e23,e31,e32,e33,et1,et2, et3
-      double precision :: RADX
       double precision :: x1,x2,x3,y1,y2,y3,z1,z2,z3
       double precision :: xjl1,xkl1,xkl2
       double precision :: fx1,fx2,fx3,fy1,fy2,fy3,fz1,fz2,fz3 

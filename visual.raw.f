@@ -1,5 +1,5 @@
 !**********************************************************
-      SUBROUTINE SHAPE(LCUBE,H64,KLOK,TD,NBEG,NENDS,NELM1,NELM2,XFN,
+      SUBROUTINE SHAPE(H64,KLOK,TD,NBEG,NENDS,NELM1,NELM2,XFN,
      &     elmnew)
       implicit none
       integer, parameter :: nfsize=$nsnode$,nfsize2=$nselm$
@@ -8,7 +8,6 @@
       integer, parameter :: lxng=$lngx$,lyng=lxng,lzng=lxng
       integer, parameter :: ngx=2**lxng,ngy=2**lyng,ngz=2**lzng
       integer, parameter :: fngx=ngx,fngy=ngy,fngz=ngz
-      double precision :: LCUBE
       CHARACTER*15 filepro
       double precision :: XFN(1:3,1:NFSIZE)
       INTEGER elmnew(1:3,1:NFSIZE2)
@@ -134,21 +133,18 @@
                zy(1,icount) = zc
                zy(2,icount) = yc
             endif
- 110        format(i5,x,i4,x,i4,x,6(f7.4,x))
- 111        format(i5,x,3(e11.4,x))
          enddo
 !     printout profile in the zy plane and value of Dxy
-         call Dzy(zy,t,ro,icount,KLOK,NBEG)
+         call dzy(zy,icount,klok)
       ENDIF
       DEALLOCATE (zy,XFP)
       return 
       end subroutine SHAPE
 !********************************************************
-      subroutine Dzy(zy,t,ro,icount,KLOK,NBEG)
+      subroutine dzy(zy,icount,klok)
       implicit none
       double precision :: zy(2,8000)
-      INTEGER NBEG
-      double precision :: rmax, rmin, pi, r, r2, ro, t, theta, ddzy
+      double precision :: rmax, rmin, pi, r, r2, theta, ddzy
       integer icount, klok
       integer k
 !     !m Change these numbers so that they're a lot bigger

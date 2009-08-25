@@ -28,15 +28,13 @@
       return
       end subroutine fvssub
 
-      subroutine poiseuille(ur, vr, wr, pr, dpdz, vsc)
+      subroutine poiseuille(wr, pr, dpdz, vsc)
 !     Imposes Poiseuille flow
       implicit none
       integer, parameter :: lxng=$lngx$,lyng=lxng,lzng=lxng
       integer, parameter :: ngx=2**lxng,ngy=2**lyng,ngz=2**lzng
       double precision, parameter :: flngx=ngx, flngy=ngy, flngz=ngz
-      double complex :: ur(0:ngx+2, 0:ngy+2,0:ngz-1), 
-     &     vr(0:ngx+2, 0:ngy+2, 0:ngz-1),
-     &     wr(0:ngx+2, 0:ngy+2, 0:ngz-1),
+      double complex :: wr(0:ngx+2, 0:ngy+2, 0:ngz-1),
      &     pr(0:ngx+2, 0:ngy+2, 0:ngz-1)
 
       integer i, j, k
