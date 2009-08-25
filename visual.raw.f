@@ -1,27 +1,21 @@
 !**********************************************************
-      SUBROUTINE SHAPE(H64,KLOK,TD,NBEG,NENDS,NELM1,NELM2,XFN,
-     &     elmnew)
+      SUBROUTINE SHAPE(H64,KLOK,xfn,nnode,elmnew,nelm)
       implicit none
-      integer, parameter :: nfsize=$nsnode$,nfsize2=$nselm$
-      integer, parameter :: m_start=$m_start$, m_end=$m_end$
-
       integer, parameter :: lxng=$lngx$,lyng=lxng,lzng=lxng
       integer, parameter :: ngx=2**lxng,ngy=2**lyng,ngz=2**lzng
       integer, parameter :: fngx=ngx,fngy=ngy,fngz=ngz
       CHARACTER*15 filepro
-      double precision :: XFN(1:3,1:NFSIZE)
-      INTEGER elmnew(1:3,1:NFSIZE2)
-      double precision :: h64, td, ra, cgx, cgy, cgz, xo, ro, 
-     &     t, xa, ya, za
+      double precision :: XFN(:,:)
+      INTEGER elmnew(:,:)
+      double precision :: h64, ra, cgx, cgy, cgz, xo, ro, xa, ya, za
       double precision ::  xb, yb, zb, xc, yc, zc, check2, check3
-      integer klok, nbeg, nends, nelm1, nelm2, i, icount, k, j1, j2, 
-     &     j3
+      integer :: klok, nnode, nelm, i, icount, k, j1, j2, j3
       double precision, allocatable :: xfp(:, :), zy(:, :)
 
-      ALLOCATE (XFP(3,NFSIZE))
+      ALLOCATE (XFP(3,nnode))
       ALLOCATE (zy(2,8000))
 
-      IF(NBEG.EQ.1) THEN
+      IF(1.EQ.1) THEN
          IF ((KLOK/400)*400.EQ.KLOK) THEN
             if(klok == 0) 
      &           write(filepro,305)'rbcshpk0000.pro'
@@ -39,7 +33,7 @@
      &           write(filepro,304)'rbcshpk',KLOK,'.pro'
  304        format(a7,i4,a4)
             open(25,file=filepro,status='unknown')
-            DO i=m_start,m_end
+            DO i=1, nnode
                IF((XFN(1,i) >fngx/2.d0-1.d0).AND.(XFN(1,i) 
      &              <fngx/2.d0+1.d0)) THEN
                   write(25,300) XFN(2,i),XFN(3,i)
@@ -55,15 +49,15 @@
          cgx = 0.0d0
          cgy = 0.0d0
          cgz = 0.0d0
-         do i = NBEG,NENDS
+         do i = 1, nnode
             cgx = cgx + XFN(1,i)
             cgy = cgy + XFN(2,i)
             cgz = cgz + XFN(3,i)
          enddo
-         cgx = cgx/dble(m_end-m_start+1)
-         cgy = cgy/dble(m_end-m_start+1)
-         cgz = cgz/dble(m_end-m_start+1)
-         do i = NBEG,NENDS
+         cgx = cgx/dble(nnode)
+         cgy = cgy/dble(nnode)
+         cgz = cgz/dble(nnode)
+         do i = 1, nnode
             XFP(1,i) = XFN(1,i) - cgx
             XFP(2,i) = XFN(2,i) - cgy
             XFP(3,i) = XFN(3,i) - cgz
@@ -72,8 +66,8 @@
          xo = 0.0d0
          ro =  ra/H64
          icount = 0
-         t = dble(KLOK)*TD
-         do k = NELM1,NELM2
+
+         do k = 1, nelm
             j1 = elmnew(1,k)
             j2 = elmnew(2,k)
             j3 = elmnew(3,k)
@@ -171,12 +165,10 @@
       return
       end subroutine Dzy
 !**********************************************************************
-      subroutine calculateDF(clock, cap_i, xfn, nbeg, nend)
+      subroutine calculateDF(clock, cap_i, xfn, my_nnode)
       implicit none
-      integer nbeg, nend
-      integer, parameter :: nfsize = $nsnode$
-      integer, parameter :: nmem = $nmem$
-      double precision :: xfn(3, nfsize)
+      integer my_nnode
+      double precision :: xfn(:, :)
       integer cap_i, i
       integer clock
       double precision :: rmin, rmax, r
@@ -187,39 +179,23 @@
       rmin = 1000d0
       rmax = -1000d0
 
-!      if (clock == 1) then
-!         write(*,*) 'nbeg', nbeg, 'nbeg', nend, 'nmem', nmem
-!         write(*,*) 'rmin', rmin, 'rmax', rmax
-!      end if
-
       cgx = 0.0d0
       cgy = 0.0d0
       cgz = 0.0d0
-      do i = nbeg,nend
+      do i = 1, my_nnode
          cgx = cgx + xfn(1,i)
          cgy = cgy + xfn(2,i)
          cgz = cgz + xfn(3,i)
       enddo
-      cgx = cgx/dble(nmem)
-      cgy = cgy/dble(nmem)
-      cgz = cgz/dble(nmem)
-C       if (clock == 1) then
-C          write(*,*) 'cgx', cgx, 'cgy', cgy, 'cgz', cgz
-C       end if
+      cgx = cgx/dble(my_nnode)
+      cgy = cgy/dble(my_nnode)
+      cgz = cgz/dble(my_nnode)
 
-      do i = nbeg, nend
+      do i = 1, my_nnode
          r = dsqrt((xfn(1,i)-cgx)**2 + (xfn(2,i)-cgy)**2 + 
      &        (xfn(3,i)-cgz)**2)
-C          if (clock == 1) then
-C             write(*,*) 'r', r
-C          end if
          if(r > rmax) rmax = r
          if(r < rmin) rmin = r
-C          if (clock == 1) then
-C             write(*,*) 'rmin', rmin, 'rmax', rmax
-C             write(*,*) 'i', i, 'x', xfn(1,i), 'y', xfn(2,i), 
-C      &           'z', xfn(3,i)
-C          end if
       end do
 
       DF = (rmax - rmin)/(rmax+rmin)
