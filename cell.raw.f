@@ -96,7 +96,7 @@ C**********************************************************************
       PARAMETER(FLNGX=NGX,FLNGY=NGY,FLNGZ=NGZ)
       integer, parameter :: npl=$npl$
       double precision fnpl
-      INTEGER KLOK,KLOK1,KLOK0,KLOKEND,NSTEP
+      INTEGER KLOK,KLOK1,KLOKEND,NSTEP
       double precision :: T,H,h64,TD,VSC,TIME,RHO,PI,RADX,FOSTAR
       double precision, allocatable :: rad(:)
       double precision, allocatable :: xcenter(:), ycenter(:), 
@@ -108,7 +108,6 @@ C**********************************************************************
 !     Velocities are always expressed in program units
       double COMPLEX,ALLOCATABLE :: UR(:,:,:),VR(:,:,:),WR(:,:,:)
       double complex :: pr(0:NBX,0:NBY,0:NGZM1)
-      double complex :: meanstablev
       double complex :: meanu, meanv, meanw
 !     Handy look-up tables for fluid mechanics calculations.
       double COMPLEX, ALLOCATABLE :: VXFACT(:),VYFACT(:),VZFACT(:)
@@ -120,7 +119,6 @@ C**********************************************************************
       double precision, parameter :: Eh = $Eh$
       double precision, parameter :: capillary_no = $capillary_no$
       integer, parameter :: FVS = $FVS$
-      double precision :: planey = $planey$
 
 !     cap_n_start is an array of the indices to xfn, the *n*ode indices
 !     for each capsule. cap_n_end is the indices for the end of each
@@ -146,7 +144,7 @@ C**********************************************************************
       INTEGER, ALLOCATABLE :: elmnew(:,:)
 
 !     Changes made 10-19-06 to implement BC Homog
-      integer i, j, k
+      integer i
       double precision :: bfs(3,3), umean(3)
 
 !     Handy string array for making file names.
@@ -495,19 +493,7 @@ C**********************************************************************
       end if
          message = 'cell l299'
          call dumpstatus(klok, message, 'status.txt')
-
-C          if ($vstable$ == 1) then
-C             if ($flow$ /= 3) then
-C                call meanfluidvelocity(ur, meanstablev)
-C                ur = ur - meanstablev
-C                call meanfluidvelocity(vr, meanstablev)
-C                vr = vr - meanstablev
-C                call meanfluidvelocity(wr, meanstablev)
-C                wr = wr - meanstablev
-C             end if
-C          end if
-   5  CONTINUE
-   6  CONTINUE
+ 5    CONTINUE
 
       message = 'cell l304'
       call dumpstatus(klok, message, 'status.txt')
