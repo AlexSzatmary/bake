@@ -31,14 +31,14 @@
       RETURN
       END SUBROUTINE INHIST
 !**********************************************************************
-      subroutine importmesh(LCUBE,RAD,H,XFN, elmnew,shpint,shpfs,
+      subroutine importmesh(RAD,H,XFN, elmnew,shpint,shpfs,
      $     my_nnode, my_nelm, my_cap_center)
       IMPLICIT NONE
       integer, parameter :: lxng=$lngx$,lyng=lxng,lzng=lxng
       integer, parameter :: ngx=2**lxng,ngy=2**lyng,ngz=2**lzng
       double precision, parameter :: flngx=ngx,flngy=ngy,flngz=ngz
       INTEGER n1,n2,i
-      double precision LCUBE,H,pi,theta,x,y,rad
+      double precision H,pi,theta,x,y,rad
       double precision :: XFN(:,:)
 !      double precision :: XFN(3,$nsnode$)
       INTEGER elmnew(:,:)
@@ -95,8 +95,8 @@
       return
       end subroutine importmesh
 !************************************************************
-      subroutine MEMBNX(KLOK,XFN,elmnew,shpint,shpfs,FRC,
-     & H,FOSTAR,RADX, my_cap_start, my_cap_end)
+      subroutine MEMBNX(XFN,elmnew,shpint,shpfs,FRC,
+     & H,FOSTAR, my_cap_start, my_cap_end)
       IMPLICIT NONE
       integer my_cap_start, my_cap_end
       INTERFACE ELM
@@ -113,22 +113,21 @@
 
       INTEGER NFSIZE,NFSIZE2
       parameter(nfsize=$nsnode$,nfsize2=$nselm$)
-      double precision :: LCUBE,H,FOSTAR
+      double precision :: H,FOSTAR
       double precision :: R11,R12,R13,R21,R22,R23,R31,R32,R33
-      double precision :: e1m,e2m,e3m,a1,a2,a3,xj1,xj2,xj3
-      double precision :: e11,e12,e13,e21,e22,e23,e31,e32,e33,et1,et2,
-     &     et3
+      double precision :: e1m,e2m,e3m,a1,a2,a3
+      double precision :: e21,e22,e23,e31,e32,e33,et1,et2, et3
       double precision :: RADX
-      double precision :: x1,x2,x3,y1,y2,y3,z1,z2,z3,xn,yn,zn
+      double precision :: x1,x2,x3,y1,y2,y3,z1,z2,z3
       double precision :: xjl1,xkl1,xkl2
       double precision :: fx1,fx2,fx3,fy1,fy2,fy3,fz1,fz2,fz3 
-      double precision :: fx11,fx12,fx13,fx21,fx22,fx23,fx31,fx32,fx33
-      double precision :: fy11,fy12,fy13,fy21,fy22,fy23,fy31,fy32,fy33
-      double precision :: fz11,fz12,fz13,fz21,fz22,fz23,fz31,fz32,fz33
+      double precision :: fx12,fx22,fx32
+      double precision :: fy12,fy22,fy32
+      double precision :: fz12,fz22,fz32
       double precision :: FORCEX1,FORCEY1,FORCEZ1
       double precision :: FORCEX2,FORCEY2,FORCEZ2
-      integer j1,j2,j3,klok
-      integer i,icount,iunit1,iunit2
+      integer j1,j2,j3
+      integer i
       double precision :: XFN(1:3,1:NFSIZE),FRC(1:3,1:NFSIZE)
       INTEGER elmnew(1:3,1:NFSIZE2)
       double precision :: shpint(1:3,1:NFSIZE2),shpfs(1:7,1:NFSIZE2)
@@ -246,7 +245,7 @@
       double precision, INTENT (OUT) :: fx1,fx2,fx3,fy1,fy2,fy3,fz1,
      &     fz2,fz3
       double precision :: u1,v1,v2
-      double precision :: a0,a1,a2,a3,b1,b2,b3,b,bmu,c,cK
+      double precision :: a0,a1,a2,a3,b1,b2,b3
       double precision :: sumua,sumub,sumva,sumvb
       double precision :: g11,g22,g12,t0,t1,t2,t3,eh
       double precision :: dg11u1,dg11u2,dg11u3,dg11v1,dg11v2,dg11v3
@@ -473,10 +472,12 @@
       cap_n_end(1)=nnode(1)
       cap_e_start(1)=1
       cap_e_end(1)=nelm(1)
-      do i=2,$ncap$
-         cap_n_start(i) = cap_n_end(i-1)+1
-         cap_n_end(i) = cap_n_start(i) - 1 + nnode(i)
-         cap_e_start(i) = cap_e_end(i-1)+1
-         cap_e_end(i) = cap_e_start(i) - 1 + nelm(i)
-      end do
+      if ($ncap$ > 1) then
+         do i=2,$ncap$
+            cap_n_start(i) = cap_n_end(i-1)+1
+            cap_n_end(i) = cap_n_start(i) - 1 + nnode(i)
+            cap_e_start(i) = cap_e_end(i-1)+1
+            cap_e_end(i) = cap_e_start(i) - 1 + nelm(i)
+         end do
+      end if
       end subroutine make_cap_start_and_end

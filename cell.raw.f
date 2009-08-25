@@ -28,7 +28,7 @@ C**********************************************************************
       IMPLICIT NONE
 
       interface
-         subroutine importmesh(LCUBE,RAD,H,XFN, elmnew,shpint,shpfs,
+         subroutine importmesh(RAD,H,XFN, elmnew,shpint,shpfs,
      &        my_nnode, my_nelm, my_cap_center)
          implicit none
          double precision lcube, h, pi, rad
@@ -263,7 +263,7 @@ C**********************************************************************
          do i = 1,$ncap$
             write(*,*) 'l290', cap_n_start(i), cap_n_end(i), 
      &           cap_e_start(i),cap_e_end(i), cap_center(:,i)
-            call importmesh(lcube,rad(i),h,
+            call importmesh(rad(i),h,
      &           xfn(1:3,cap_n_start(i):cap_n_end(i)),
      &           elmnew(1:3,cap_e_start(i):cap_e_end(i)),
      &           shpint(1:3,cap_e_start(i):cap_e_end(i)),
@@ -347,8 +347,8 @@ C**********************************************************************
          call dumpstatus(klok, message, 'status.txt')
          T = T+TD
          do i=1,$ncap$
-            CALL MEMBNX(KLOK,XFN,elmnew,shpint,shpfs,FRC,h,FOSTAR,
-     &           RAD(i), cap_n_start(i), cap_n_end(i))
+            CALL MEMBNX(XFN,elmnew,shpint,shpfs,FRC,h,FOSTAR,
+     &           cap_n_start(i), cap_n_end(i))
             write(message, *) 'frc(1,1)',frc(1,1)
             call dumpstatus(klok, message, 'thumbprint.txt')
             write(message, *) 'frc(3,nfsize)',frc(1,nfsize)
