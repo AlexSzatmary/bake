@@ -43,7 +43,6 @@
 !      double precision :: XFN(3,$nsnode$)
       INTEGER elmnew(:,:)
       double precision :: shpint(:,:), shpfs(:,:)
-      double precision :: gapratio=$gapratio$
       integer my_nnode, my_nelm
       double precision my_cap_center(3)
 
@@ -76,7 +75,6 @@
  103     format(3(i8))
  104     format(1pe15.8,3x,1pe15.8,3x,1pe15.8,3x,1pe15.8)
  105     format(1pe15.8,3x,1pe15.8,3x,1pe15.8)
- 106     format(3(i8))
       enddo
 !     This scales the sphere's (non-dimensional) finite element parameters
 !     to real units.
