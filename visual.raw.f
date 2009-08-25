@@ -447,6 +447,10 @@ C          end if
       double precision :: xfn(:,:)
       integer i, klok, my_nnode
       character*19 strfname
+
+      xcenter = 0.d0
+      ycenter = 0.d0
+      zcenter = 0.d0
       
       do i = 1, my_nnode
          xcenter = xcenter + XFN(1,i)

@@ -72,8 +72,10 @@
       double precision :: XFN(1:3,1:NFSIZE)
       INTEGER elmnew(1:3,1:NFSIZE2)
       double precision :: shpint(1:3,1:NFSIZE2),shpfs(1:7,1:NFSIZE2)
+      open(100, position='rewind', form='unformatted')
       write(100) klok
       rewind(100)
+      close(100)
       WRITE(101)LCUBE,NU,RHO,TD
       REWIND(101)
       WRITE(102) UR

@@ -94,11 +94,12 @@ C**********************************************************************
       double precision fnpl
       INTEGER KLOK,KLOK1,KLOK0,KLOKEND,NSTEP
       double precision :: T,H,h64,TD,VSC,TIME,RHO,PI,RADX,FOSTAR
-      double precision :: rad($ncap$)
-      double precision :: xcenter($ncap$), ycenter($ncap$),
-     &     zcenter($ncap$)
-      double precision :: xcenterold($ncap$), ycenterold($ncap$), 
-     &     zcenterold($ncap$)
+      double precision, allocatable :: rad(:)
+      double precision, allocatable :: xcenter(:), ycenter(:), 
+     &     zcenter(:)
+      double precision, allocatable :: xcenterold(:), ycenterold(:), 
+     &     zcenterold(:)
+      integer ncap
       double precision ::  LCUBE,NU,MU,MASS,LENGTH
 !     Velocities are always expressed in program units
       double COMPLEX,ALLOCATABLE :: UR(:,:,:),VR(:,:,:),WR(:,:,:)
@@ -121,8 +122,8 @@ C**********************************************************************
 !     for each capsule. cap_n_end is the indices for the end of each
 !     capsule's node index count. cap_e_start is similar, but for
 !     element indexing, and cap_e_end likewise.
-      integer cap_n_start($ncap$), cap_n_end($ncap$)
-      integer cap_e_start($ncap$), cap_e_end($ncap$)
+      integer, allocatable :: cap_n_start(:), cap_n_end(:)
+      integer, allocatable :: cap_e_start(:), cap_e_end(:)
       character*80 message
 
 !     Array of linked lists representing the solid nodes for a given 
@@ -133,12 +134,12 @@ C**********************************************************************
 !     units.
 !     shpint and shpfs are arrays of finite element shape factor parameters.
 !     These are in real dimensions.
-      double precision,ALLOCATABLE :: XFN(:,:),FRC(:,:),shpint(:,:),
+      double precision, ALLOCATABLE :: XFN(:,:),FRC(:,:),shpint(:,:),
      &     shpfs(:,:)
       double precision xpi(1:3,1:npl)
 !     This array associates 3 nodes with a numbered element; three corners
 !     on a triangle.
-      INTEGER,ALLOCATABLE :: elmnew(:,:)
+      INTEGER, ALLOCATABLE :: elmnew(:,:)
 
 !     Changes made 10-19-06 to implement BC Homog
       integer i, j, k
@@ -153,12 +154,21 @@ C**********************************************************************
       double precision :: b = $b$
       double precision :: mix
 
-      integer fineness($ncap$), nnode($ncap$), nelm($ncap$)
+      integer, allocatable :: fineness(:), nnode(:), nelm(:)
       double precision :: cap_center(3,$ncap$)
 
       integer fp_start, fp_end
 
+!**********************************************************************
 !     End variable declaration, start real code
+!**********************************************************************
+
+      ncap=$ncap$
+      allocate(rad(ncap), xcenter(ncap), ycenter(ncap), zcenter(ncap),
+     &     xcenterold(ncap), ycenterold(ncap), zcenterold(ncap))
+      allocate(cap_n_start(ncap), cap_n_end(ncap), cap_e_start(ncap),
+     &     cap_e_end(ncap))
+      allocate(fineness(ncap), nnode(ncap), nelm(ncap))
 
       fnpl = $npl$
       message = '               '
@@ -319,10 +329,12 @@ C**********************************************************************
             call calculateDF(klok, i, xfn, cap_n_start(i), 
      &           cap_n_end(i))
          end do
+         t=0.d0
       else
          write(*,*) 'cell l367 Restarting'
          call restart(lcube, nu, rho,td,klok,ur,vr,wr,
      &        xfn,xpi,firstn,number,nextn,elmnew,shpint,shpfs)
+         T=klok*time
       end if
       call inhist(xfn,firstn,number,nextn)
 !     Initialize the fluid solver
@@ -499,6 +511,10 @@ C          end if
       DEALLOCATE (UR,VR,WR,FIRSTN,NUMBER,NEXTN,XFN,FRC)
       DEALLOCATE(VXFACT,VYFACT,VZFACT)
       DEALLOCATE(PRDENO,QRFACT,elmnew,shpint,shpfs)
-
+      deallocate(fineness, nnode, nelm)
+      deallocate(cap_n_start, cap_n_end, cap_e_start,
+     &     cap_e_end)
+      deallocate(rad, xcenter, ycenter, zcenter,
+     &     xcenterold, ycenterold, zcenterold)
       END PROGRAM cell
 !**********************************************************************
