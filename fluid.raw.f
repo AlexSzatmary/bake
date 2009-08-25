@@ -1,5 +1,4 @@
-      SUBROUTINE FLUIDUP(KLOK,UR,VR,WR, pr, VXFACT,VYFACT,VZFACT,
-     &     PRDENO,QRFACT,DSQ, DX, DY, DZ)
+      SUBROUTINE FLUIDUP(klok,UR,VR,WR, pr, QRFACT,DSQ, DX, DY, DZ)
       IMPLICIT NONE
       INTEGER LXNG,LYNG,LZNG,NGX,NGY,NGZ
       INTEGER NGXM1,NGYM1,NGZM1,NBX,NBY,NBZ
@@ -25,9 +24,7 @@
       double COMPLEX :: UR(0:NBX,0:NBY,0:NGZM1),VR(0:NBX,0:NBY,0:NGZM1)
       double COMPLEX :: WR(0:NBX,0:NBY,0:NGZM1)
       double COMPLEX :: PR(0:NBX,0:NBY,0:NGZM1)
-      double COMPLEX VXFACT(0:NBX),VYFACT(0:NBY),VZFACT(0:NBZ)
-      double precision ::  QRFACT(0:NBX,0:NBY,0:NGZM1),
-     &     PRDENO(0:NBX,0:NBY,0:NGZM1)
+      double precision ::  QRFACT(0:NBX,0:NBY,0:NGZM1)
       double COMPLEX :: DX(0:NBX,0:NBY,0:NGZM1),DY(0:NBX,0:NBY,0:NGZM1)
       double COMPLEX :: DZ(0:NBX,0:NBY,0:NGZM1)
       double precision :: DSQ(0:NBX,0:NBY,0:NGZM1)
@@ -57,12 +54,11 @@
       CALL CFFT3D(+1,1.0d0,VR,TABX,TABY,TABZ)
       CALL CFFT3D(+1,1.0d0,WR,TABX,TABY,TABZ)
       call cfft3d(+1,1.0d0,pr,tabx,taby,tabz)
-
+      call dumpstatus(klok, 'fluid l60', 'status.txt')
       RETURN
       END SUBROUTINE FLUIDUP
 !*********************************************************************
-      SUBROUTINE INFLUIDU(VSC,VXFACT,VYFACT,VZFACT,PRDENO,QRFACT,
-     & DSQ,DX,DY,DZ)
+      SUBROUTINE INFLUIDU(VSC,QRFACT, DSQ,DX,DY,DZ)
       IMPLICIT NONE
       INTEGER LXNG,LYNG,LZNG,NGX,NGY,NGZ
       INTEGER NGXM1,NGYM1,NGZM1,NBX,NBY,NBZ
@@ -83,16 +79,13 @@
       COMMON/FFTX/TABY(2*NGY,-1:1)
       COMMON/FFTX/TABZ(2*NGZ,-1:1)
       double COMPLEX TABX,TABY,TABZ
-      double precision :: FSCALE,VSC,FOURNU,PI,TWOPI,SINSQ
+      double precision :: FSCALE,VSC,FOURNU,PI,TWOPI
       INTEGER I,J,K,KS,MIDPTX,MIDPTY,MIDPTZ
       double precision :: SINSQX(-1:NGXP1),SINSQY(-1:NGYP1),
      &     SINSQZ(-1:NGZP1)
-      double precision :: PRDENO(-1:NGXP1,-1:NGYP1,0:NGZM1) 
       double precision :: QRFACT(-1:NGXP1,-1:NGYP1,0:NGZM1) 
       double precision :: DXG(-1:NGXP1),DYG(-1:NGYP1),DZG(-1:NGZP1)
       double precision :: DXO(-1:NGXP1),DYO(-1:NGYP1),DZO(-1:NGZP1)
-      double COMPLEX :: VXFACT(-1:NGXP1),VYFACT(-1:NGYP1),
-     &     VZFACT(-1:NGZP1) 
       double COMPLEX :: DX(-1:NGXP1,-1:NGYP1,0:NGZM1)
       double complex :: DY(-1:NGXP1,-1:NGYP1,0:NGZM1)
       double COMPLEX :: DZ(-1:NGXP1,-1:NGYP1,0:NGZM1)
@@ -112,32 +105,32 @@
       DZO=dCMPLX(0.d0,0.d0)
       DSQ=0.d0
       DO 11 KS=0,NGXM1
-      VXFACT(KS) =  dCMPLX(0.d0,-dSIN(TWOPI*KS/FLNGX))
+!      VXFACT(KS) =  dCMPLX(0.d0,-dSIN(TWOPI*KS/FLNGX))
       DXG(KS) =  dSIN(TWOPI*KS/FLNGX)*(dsqrt(2.d0)/2.d0+
      & (1.d0-dsqrt(2.d0)/2.d0)*dCOS(TWOPI*KS/FLNGX))
       DXO(KS) =  ((dCOS(PI*KS/FLNGX))**2)*(1.d0-2.d0* 
      & (1.d0-2.d0*dsqrt(2.d0)/PI)*((dSIN(PI*KS/FLNGX))**2))
    11 CONTINUE
       DO 12 KS=0,NGYM1
-      VYFACT(KS) =  dCMPLX(0.d0,-dSIN(TWOPI*KS/FLNGY))
+!      VYFACT(KS) =  dCMPLX(0.d0,-dSIN(TWOPI*KS/FLNGY))
       DYG(KS) =  dSIN(TWOPI*KS/FLNGY)*(dsqrt(2.d0)/2.d0+ 
      & (1.d0-dsqrt(2.d0)/2.d0)*dCOS(TWOPI*KS/FLNGY))
       DYO(KS) =  ((dCOS(PI*KS/FLNGY))**2)*(1.d0-2.d0* 
      & (1.d0-2.d0*dsqrt(2.d0)/PI)*((dSIN(PI*KS/FLNGY))**2))
    12 CONTINUE
       DO 13 KS=0,NGZM1
-      VZFACT(KS) =  dCMPLX(0.d0,-dSIN(TWOPI*KS/FLNGZ))
+!      VZFACT(KS) =  dCMPLX(0.d0,-dSIN(TWOPI*KS/FLNGZ))
       DZG(KS) =  dSIN(TWOPI*KS/FLNGZ)*(dsqrt(2.d0)/2.d0+ 
      & (1.d0-dsqrt(2.d0)/2.d0)*dCOS(TWOPI*KS/FLNGZ))
       DZO(KS) =  ((dCOS(PI*KS/FLNGZ))**2)*(1.d0-2.d0* 
      & (1.d0-2.d0*dsqrt(2.d0)/PI)*((dSIN(PI*KS/FLNGZ))**2))
    13 CONTINUE
-      VXFACT(-1) = (0.0d0,0.0d0)
-      VXFACT(MIDPTX) = (0.0d0,0.0d0)
-      VYFACT(-1) = (0.0d0,0.0d0)
-      VYFACT(MIDPTY) = (0.0d0,0.0d0)
-      VZFACT(-1) = (0.0d0,0.0d0)
-      VZFACT(MIDPTZ) = (0.0d0,0.0d0)
+C$$$      VXFACT(-1) = (0.0d0,0.0d0)
+C$$$      VXFACT(MIDPTX) = (0.0d0,0.0d0)
+C$$$      VYFACT(-1) = (0.0d0,0.0d0)
+C$$$      VYFACT(MIDPTY) = (0.0d0,0.0d0)
+C$$$      VZFACT(-1) = (0.0d0,0.0d0)
+C$$$      VZFACT(MIDPTZ) = (0.0d0,0.0d0)
       DXG(-1)=0.0d0
       DYG(-1)=0.0d0
       DZG(-1)=0.0d0
@@ -179,7 +172,7 @@
       DO 35 K=0,NGZM1
       DO 35 J=0,NGYM1
       DO 35 I=0,NGXM1
-      PRDENO(I,J,K) = (SINSQX(I)+SINSQY(J)+SINSQZ(K))
+!      PRDENO(I,J,K) = (SINSQX(I)+SINSQY(J)+SINSQZ(K))
       IF(((I.EQ.0).AND.(J.EQ.0).AND.(K.EQ.0)).OR.
      & (I.EQ.MIDPTX).OR.(J.EQ.MIDPTY).OR.(K.EQ.MIDPTZ)) THEN
       DSQ(I,J,K)=0.d0
@@ -189,14 +182,14 @@
      & (DXO(I)*DYG(J)*DZO(K))**2+(DXO(I)*DYO(J)*DZG(K))**2)
       ENDIF
    35 CONTINUE
-      PRDENO(     0,     0,     0) = 1.0d0
-      PRDENO(MIDPTX,     0,     0) = 1.0d0
-      PRDENO(     0,MIDPTY,     0) = 1.0d0
-      PRDENO(MIDPTX,MIDPTY,     0) = 1.0d0
-      PRDENO(     0,     0,MIDPTZ) = 1.0d0
-      PRDENO(MIDPTX,     0,MIDPTZ) = 1.0d0
-      PRDENO(     0,MIDPTY,MIDPTZ) = 1.0d0
-      PRDENO(MIDPTX,MIDPTY,MIDPTZ) = 1.0d0
+C$$$      PRDENO(     0,     0,     0) = 1.0d0
+C$$$      PRDENO(MIDPTX,     0,     0) = 1.0d0
+C$$$      PRDENO(     0,MIDPTY,     0) = 1.0d0
+C$$$      PRDENO(MIDPTX,MIDPTY,     0) = 1.0d0
+C$$$      PRDENO(     0,     0,MIDPTZ) = 1.0d0
+C$$$      PRDENO(MIDPTX,     0,MIDPTZ) = 1.0d0
+C$$$      PRDENO(     0,MIDPTY,MIDPTZ) = 1.0d0
+C$$$      PRDENO(MIDPTX,MIDPTY,MIDPTZ) = 1.0d0
       FSCALE = (1.d0/(FLNGX*FLNGY*FLNGZ))
 !     DO 38 K=0,NGZ
 !     DO 38 J=0,NGY
@@ -323,7 +316,7 @@
         B(I,IV,IW) = TY(IV)
    92   CONTINUE
       END IF
-   15 K = NVX2
+      K = NVX2
    16 IF (K.LT.J) THEN
         J = J-K
         K = K/2
@@ -364,7 +357,7 @@
         B(IW,I,IV) = TZ(IV)
   192   CONTINUE
       END IF
-  115 K = NVY2
+      K = NVY2
   116 IF (K.LT.J) THEN
         J = J-K
         K = K/2
@@ -405,7 +398,7 @@
         B(IV,IW,I) = TX(IV)
   292   CONTINUE
       END IF
-  215 K = NVZ2
+      K = NVZ2
   216 IF (K.LT.J) THEN
         J = J-K
         K = K/2

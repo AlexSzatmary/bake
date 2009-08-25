@@ -110,8 +110,7 @@ C**********************************************************************
       double complex :: pr(0:NBX,0:NBY,0:NGZM1)
       double complex :: meanu, meanv, meanw
 !     Handy look-up tables for fluid mechanics calculations.
-      double COMPLEX, ALLOCATABLE :: VXFACT(:),VYFACT(:),VZFACT(:)
-      double precision,ALLOCATABLE :: PRDENO(:,:,:),QRFACT(:,:,:)
+      double precision,ALLOCATABLE :: QRFACT(:,:,:)
       double COMPLEX :: DX(0:NBX,0:NBY,0:NGZM1)
       double complex :: DY(0:NBX,0:NBY,0:NGZM1)
       double COMPLEX :: DZ(0:NBX,0:NBY,0:NGZM1)
@@ -190,8 +189,7 @@ C**********************************************************************
 
       ALLOCATE(UR(0:NBX,0:NBY,0:NGZM1),VR(0:NBX,0:NBY,0:NGZM1))
       ALLOCATE(WR(0:NBX,0:NBY,0:NGZM1))
-      ALLOCATE(QRFACT(0:NBX,0:NBY,0:NGZM1),PRDENO(0:NBX,0:NBY,0:NGZM1))
-      ALLOCATE(VXFACT(0:NBX),VYFACT(0:NBY),VZFACT(0:NBZ))
+      ALLOCATE(QRFACT(0:NBX,0:NBY,0:NGZM1))
       ALLOCATE(FIRSTN(1:NGX,1:NGY),NUMBER(1:NGX,1:NGY))
       ALLOCATE(NEXTN(1:NFSIZE),XFN(1:3,1:NFSIZE),FRC(1:3,1:NFSIZE))
       ALLOCATE(elmnew(1:3,1:NFSIZE2))
@@ -340,8 +338,7 @@ C**********************************************************************
       end if
       call inhist(xfn,firstn,number,nextn)
 !     Initialize the fluid solver
-      call influidu(vsc,vxfact,vyfact,vzfact,prdeno,qrfact, dsq,dx,
-     &     dy,dz)
+      call influidu(vsc,qrfact, dsq,dx,dy,dz)
 
       klok1 = klok + 1
       klokend = nstep + klok/nstep*nstep
@@ -419,8 +416,7 @@ C**********************************************************************
             call poiseuille(ur, vr, wr, pr,
      &           -$dpdz$, vsc)
          end if
-         CALL FLUIDUP(KLOK,UR,VR,WR, pr, VXFACT,VYFACT,VZFACT,
-     &        PRDENO,QRFACT, DSQ, DX, DY, DZ)
+         CALL FLUIDUP(KLOK,UR,VR,WR, pr, QRFACT, DSQ, DX, DY, DZ)
          if (fvs /= 0) then
             call fvssub(ur, vr, wr, -bfs, -umean)
             call poiseuille(ur, vr, wr, pr, 
@@ -499,8 +495,7 @@ C**********************************************************************
       call dumpstatus(klok, message, 'status.txt')
 
       DEALLOCATE (UR,VR,WR,FIRSTN,NUMBER,NEXTN,XFN,FRC)
-      DEALLOCATE(VXFACT,VYFACT,VZFACT)
-      DEALLOCATE(PRDENO,QRFACT,elmnew,shpint,shpfs)
+      DEALLOCATE(QRFACT,elmnew,shpint,shpfs)
       deallocate(fineness, nnode, nelm)
       deallocate(cap_n_start, cap_n_end, cap_e_start,
      &     cap_e_end)
