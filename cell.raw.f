@@ -47,10 +47,10 @@ C**********************************************************************
          double precision :: xcenter, ycenter, zcenter
          end subroutine cellcenter
 
-         subroutine inplane(xpi, xfn,fp_start,fp_end)
+         subroutine inplane(xpi, xfn)
          implicit none
          double precision :: xpi(:,:), xfn(:,:)
-         integer fp_start, fp_end
+         integer nnodes
          end subroutine inplane
 
          subroutine pmhist(xpi,xfn,frc,firstn,nextn,number,const,
@@ -81,6 +81,10 @@ C**********************************************************************
          integer firstn(:,:),number(:,:),nextn(:)
          end subroutine move
       end interface
+
+!**********************************************************************
+!     Start variable declaration
+!**********************************************************************
 
       integer lxng,lyng,lzng,ngx,ngy,ngz,nfsize,nfsize2
       INTEGER NGXM1,NGYM1,NGZM1,NBX,NBY,NBZ
@@ -276,7 +280,7 @@ C**********************************************************************
 !     $npls$ is the number of planes. If there is one, it should be
 !     initialized.
          if ($npls$ > 0) then
-            call inplane(xpi, xfn, fp_start, fp_end)
+            call inplane(xpi, xfn(1:3,fp_start:fp_end))
          end if
          write(*,*) 'cell l316'
 !     Get an initial measurement of the center of the capsule

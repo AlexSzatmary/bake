@@ -104,7 +104,7 @@
       RETURN
       END SUBROUTINE wrap
 !*********************************************************************
-      SUBROUTINE INPLANE(XPI,xfn, fp_start, fp_end)
+      SUBROUTINE INPLANE(XPI,xfn)
       IMPLICIT NONE
       INTEGER LXNG,LYNG,LZNG,NGX,NGY,NGZ
       INTEGER NGXM1,NGYM1,NGZM1,NBX,NBY,NBZ
@@ -117,7 +117,7 @@
       INTEGER I,J,K
       double precision :: xfn(:,:)
       integer, parameter :: sqrtnpl=$sqrtnpl$
-      integer :: fp_start, fp_end
+      integer :: nnodes
 
       double precision :: XPI(:,:)
       do i=0,sqrtnpl-1
@@ -127,9 +127,9 @@
             xpi(2,i*sqrtnpl+j+1)=$planey$
             xpi(3,i*sqrtnpl+j+1)=(fngz-2*fngz/dble(sqrtnpl))*j/
      &           (dble(sqrtnpl)-1)+fngz/dble(sqrtnpl)
-            xfn(1,i*sqrtnpl+j+fp_start)=xpi(1,i*sqrtnpl+j+1)
-            xfn(2,i*sqrtnpl+j+fp_start)=xpi(2,i*sqrtnpl+j+1)
-            xfn(3,i*sqrtnpl+j+fp_start)=xpi(3,i*sqrtnpl+j+1)
+            xfn(1,i*sqrtnpl+j+1)=xpi(1,i*sqrtnpl+j+1)
+            xfn(2,i*sqrtnpl+j+1)=xpi(2,i*sqrtnpl+j+1)
+            xfn(3,i*sqrtnpl+j+1)=xpi(3,i*sqrtnpl+j+1)
          end do
       end do
       return
