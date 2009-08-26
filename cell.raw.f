@@ -79,10 +79,10 @@ C**********************************************************************
          integer firstn(:,:),number(:,:),nextn(:)
          end subroutine move
 
-         subroutine shape(h64, klok, xfn, nnode, elmnew, nelm)
+         subroutine shape(h64, klok, cap_i, xfn, nnode, elmnew, nelm)
          implicit none
          double precision :: h64, xfn(:,:)
-         integer :: klok, nnode, elmnew(:,:), nelm
+         integer :: klok, nnode, elmnew(:,:), nelm, cap_i
          end subroutine shape
 
          subroutine calculateDF(clock, cap_i, xfn, my_nnode)
@@ -90,6 +90,11 @@ C**********************************************************************
          integer clock, cap_i, my_nnode
          double precision :: xfn(:,:)
          end subroutine calculateDF
+         subroutine profile(cap_i, xfn, clock)
+         implicit none
+         integer cap_i, clock
+         double precision :: xfn(:,:)
+         end subroutine profile
       end interface
 
 !**********************************************************************
@@ -333,11 +338,14 @@ C**********************************************************************
          call makefilename('solidforce', 0,'.txt',strfname)
          call saveallsolid(frc,strfname)
          do i = 1,$ncap$
-            call shape(h64,klok,xfn(1:3, cap_n_start(i):cap_n_end(i)),
+            call shape(h64,klok, i, xfn(1:3, cap_n_start(i):
+     &           cap_n_end(i)),
      &           nnode(i), elmnew(1:3, cap_e_start(i):cap_e_end(i)),
      &           nelm(i))
             call calculateDF(klok, i, xfn(1:3, cap_n_start(i):
      &           cap_n_end(i)), nnode(i))
+            call profile(i, xfn(1:3,cap_n_start(i):cap_n_end(i)),
+     &           klok)
          end do
          t=0.d0
       else
@@ -455,13 +463,19 @@ C**********************************************************************
          call dumpstatus(klok, message, 'thumbprint.txt')
 !     End of the loop, do post-processing stuff
          do i=1,$ncap$
-            call shape(h64,klok,xfn(1:3, cap_n_start(i):cap_n_end(i)),
+            call shape(h64,klok, i, xfn(1:3, cap_n_start(i):
+     &           cap_n_end(i)),
      &           nnode(i), elmnew(1:3, cap_e_start(i):cap_e_end(i)),
      &           nelm(i))
             message = 'cell l262'
             call dumpstatus(klok, message, 'status.txt')
             call calculateDF(klok, i, xfn(1:3, cap_n_start(i):
      &           cap_n_end(i)), nnode(i))
+            
+            if ((klok/400)*400==klok) then
+               call profile(i, xfn(1:3,cap_n_start(i):cap_n_end(i)),
+     &              klok)
+            end if
          end do
          WRITE(206,*)' KLOK: ',KLOK,  ' ; TIME: ',T
          message = 'cell l266'

@@ -1,49 +1,51 @@
+!**********************************************************************
+!     Makes a kind of crappy profile out of the capsule by looking
+!     to see which nodes are within one fluid node of the assumed
+!     centerline.
+!     !m This subroutine is obsolescent. Instead, a subroutine
+!     that plots zy in shape should be used.
+      subroutine profile(cap_i, xfn, clock)
+      implicit none
+      integer, parameter :: lngx = $lngx$
+      integer, parameter :: ngx = 2**lngx
+      double precision, parameter :: fngx = ngx
+      character*21 strfname
+      integer cap_i, clock, i
+      double precision :: xfn(:, :)
+      integer nnode
+
+      nnode = size(xfn,2)
+
+      write(strfname,'(A6,I4,A1,I6,A4)') 'cappro', cap_i, '_', clock,
+     &     '.txt'
+      call padzeros(strfname)
+      open(25, file=strfname, access='append')
+      DO i=1, nnode
+         IF((XFN(1,i) >fngx/2.d0-1.d0).AND.(XFN(1,i) 
+     &        <fngx/2.d0+1.d0)) THEN
+            write(25,300) XFN(2,i),XFN(3,i)
+ 300        format(e12.5,3x,e12.5)
+         ENDIF
+      ENDDO
+      close(25)
+      end subroutine profile
 !**********************************************************
-      SUBROUTINE SHAPE(H64,KLOK,xfn,nnode,elmnew,nelm)
+      SUBROUTINE SHAPE(H64,KLOK, cap_i, xfn,nnode,elmnew,nelm)
       implicit none
       integer, parameter :: lxng=$lngx$,lyng=lxng,lzng=lxng
       integer, parameter :: ngx=2**lxng,ngy=2**lyng,ngz=2**lzng
       integer, parameter :: fngx=ngx,fngy=ngy,fngz=ngz
-      CHARACTER*15 filepro
       double precision :: XFN(:,:)
       INTEGER elmnew(:,:)
       double precision :: h64, ra, cgx, cgy, cgz, xo, ro, xa, ya, za
       double precision ::  xb, yb, zb, xc, yc, zc, check2, check3
       integer :: klok, nnode, nelm, i, icount, k, j1, j2, j3
       double precision, allocatable :: xfp(:, :), zy(:, :)
+      integer cap_i
 
       ALLOCATE (XFP(3,nnode))
       ALLOCATE (zy(2,8000))
 
-      IF(1.EQ.1) THEN
-         IF ((KLOK/400)*400.EQ.KLOK) THEN
-            if(klok == 0) 
-     &           write(filepro,305)'rbcshpk0000.pro'
- 305        format(a15)
-            if((KLOK.ge.1).and.(KLOK .lt. 10)) 
-     &           write(filepro,301)'rbcshpk000',KLOK,'.pro'
- 301        format(a10,i1,a4)
-            if(KLOK .ge. 10 .and. KLOK .lt. 100) 
-     &           write(filepro,302)'rbcshpk00',KLOK,'.pro'
- 302        format(a9,i2,a4)
-            if(KLOK.ge.100.and.KLOK.lt.1000) 
-     &           write(filepro,303)'rbcshpk0',KLOK,'.pro'
- 303        format(a8,i3,a4)
-            if(KLOK.ge.1000.and.KLOK.lt.10000) 
-     &           write(filepro,304)'rbcshpk',KLOK,'.pro'
- 304        format(a7,i4,a4)
-            open(25,file=filepro,status='unknown')
-            DO i=1, nnode
-               IF((XFN(1,i) >fngx/2.d0-1.d0).AND.(XFN(1,i) 
-     &              <fngx/2.d0+1.d0)) THEN
-                  write(25,300) XFN(2,i),XFN(3,i)
- 300              format(e12.5,3x,e12.5)
-               ENDIF
-            ENDDO
-         ENDIF
-      ENDIF
-
-      IF((KLOK/1)*1.EQ.KLOK) THEN
 !     define GROUP and Point parameters
          ra = 1.0d0
          cgx = 0.0d0
@@ -129,18 +131,17 @@
             endif
          enddo
 !     printout profile in the zy plane and value of Dxy
-         call dzy(zy,icount,klok)
-      ENDIF
+         call dzy(zy,icount,klok, cap_i)
       DEALLOCATE (zy,XFP)
       return 
       end subroutine SHAPE
 !********************************************************
-      subroutine dzy(zy,icount,klok)
+      subroutine dzy(zy,icount,klok, cap_i)
       implicit none
       double precision :: zy(2,8000)
       double precision :: rmax, rmin, pi, r, r2, theta, ddzy
       integer icount, klok
-      integer k
+      integer k, cap_i
 !     !m Change these numbers so that they're a lot bigger
       rmax = -100.d0
       rmin =  100.d0
@@ -158,9 +159,12 @@
 
       ddzy = (rmax - rmin)/(rmax+rmin)
 
-      write(202,*)klok,theta
+      open(202, access='append')
+      write(202,*)klok,theta, cap_i
+      close(202)
+
       open(203, access='append')
-      write(203,*)klok,ddzy
+      write(203,*)klok,ddzy, cap_i
       close(203)
       return
       end subroutine Dzy
@@ -470,3 +474,13 @@
       meanstablev = meanstablev/(ngx*ngy*ngz)
       return
       end subroutine meanfluidvelocity
+!**********************************************************************
+      subroutine padzeros(str)
+      implicit none
+      integer i
+      character(len=*) str
+      do i=1,len(str)
+         if (str(i:i) == ' ') str(i:i) = '0'
+      end do
+      end subroutinepadzeros
+!**********************************************************************
