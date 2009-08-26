@@ -142,6 +142,8 @@
       double precision :: rmax, rmin, pi, r, r2, theta, ddzy
       integer icount, klok
       integer k, cap_i
+      character*14 strfname
+
 !     !m Change these numbers so that they're a lot bigger
       rmax = -100.d0
       rmin =  100.d0
@@ -159,12 +161,16 @@
 
       ddzy = (rmax - rmin)/(rmax+rmin)
 
-      open(202, access='append')
-      write(202,*)klok,theta, cap_i
+      write(strfname,'(A6I4A4)') 'theta_', cap_i, '.txt'
+      call padzeros(strfname)
+      open(202, file=strfname, access='append')
+      write(202,*)klok,theta
       close(202)
 
-      open(203, access='append')
-      write(203,*)klok,ddzy, cap_i
+      write(strfname,'(A6I4A4)') 'crapdf_', cap_i, '.txt'
+      call padzeros(strfname)
+      open(203, file=strfname, access='append')
+      write(203,*)klok, ddzy
       close(203)
       return
       end subroutine Dzy
