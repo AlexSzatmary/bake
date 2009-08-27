@@ -8,7 +8,7 @@
 ;$yc_cap$;(/rad(1)/H*($gapratio$+1.d0)+2.5d0/)
 ;$zc_cap$;(/0.5d0*(flngz-1.d0)/)
 ;$fineness$;(/5/)
-;$mesh$;$m_end$.sph
+;$mesh$;(/'$m_end$.sph'/)
 ;$fp_end$;($fp_start$-1+$npl$)
 ;$fp_start$;($m_end$+1)
 ;$m_start$;1

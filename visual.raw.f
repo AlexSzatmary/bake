@@ -161,13 +161,13 @@
 
       ddzy = (rmax - rmin)/(rmax+rmin)
 
-      write(strfname,'(A6I4A4)') 'theta_', cap_i, '.txt'
+      write(strfname,'(A6,I4,A4)') 'theta_', cap_i, '.txt'
       call padzeros(strfname)
       open(202, file=strfname, access='append')
       write(202,*)klok,theta
       close(202)
 
-      write(strfname,'(A6I4A4)') 'crapdf_', cap_i, '.txt'
+      write(strfname,'(A6,I4,A4)') 'crapdf', cap_i, '.txt'
       call padzeros(strfname)
       open(203, file=strfname, access='append')
       write(203,*)klok, ddzy
