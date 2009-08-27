@@ -32,7 +32,7 @@
       END SUBROUTINE INHIST
 !**********************************************************************
       subroutine importmesh(RAD,H,XFN, elmnew,shpint,shpfs,
-     $     my_nnode, my_nelm, my_cap_center)
+     $     my_nnode, my_nelm, my_cap_center, meshfile)
       IMPLICIT NONE
       integer, parameter :: lxng=$lngx$,lyng=lxng,lzng=lxng
       integer, parameter :: ngx=2**lxng,ngy=2**lyng,ngz=2**lzng
@@ -45,11 +45,12 @@
       double precision :: shpint(:,:), shpfs(:,:)
       integer my_nnode, my_nelm
       double precision my_cap_center(3)
+      character(len=*) meshfile
 
-      open(20,file='mesh/mesh.$mesh$',status='unknown')
-      open(21,file='mesh/shpfcta.$mesh$',status='unknown')
-      open(22,file='mesh/shpfctb.$mesh$',status='unknown')
-      open(23,file='mesh/shpint.$mesh$',status='unknown')
+      open(20,file='mesh/mesh.'//meshfile,status='unknown')
+      open(21,file='mesh/shpfcta.'//meshfile,status='unknown')
+      open(22,file='mesh/shpfctb.'//meshfile,status='unknown')
+      open(23,file='mesh/shpint.'//meshfile,status='unknown')
       read(20,100)n1,n2
  100  format(7x,i5,2x,i5)
       pi = 3.14159265358979323846d0 ! Taken from Wikipedia; 20 digits
@@ -92,6 +93,12 @@
          shpint(2,i) = shpint(2,i)*rad
          shpint(3,i) = shpint(3,i)*rad
       enddo
+
+      close(20)
+      close(21)
+      close(22)
+      close(23)
+      
       return
       end subroutine importmesh
 !************************************************************

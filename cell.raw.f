@@ -29,7 +29,7 @@ C**********************************************************************
 
       interface
          subroutine importmesh(RAD,H,XFN, elmnew,shpint,shpfs,
-     &        my_nnode, my_nelm, my_cap_center)
+     &        my_nnode, my_nelm, my_cap_center, meshfile)
          implicit none
          double precision lcube, h, pi, rad
          double precision :: XFN(:,:)
@@ -37,6 +37,7 @@ C**********************************************************************
          double precision :: shpint(:,:),shpfs(:,:)
          integer my_nnode, my_nelm
          double precision my_cap_center(3)
+         character(len=*) meshfile
          end subroutine
 
          subroutine cellcenter(klok, xfn, my_nnode, cap_i, xcenter, 
@@ -174,6 +175,8 @@ C**********************************************************************
       double precision :: cap_center(3,$ncap$)
 
       integer fp_start, fp_end
+      character*(*), parameter :: 
+     &     meshfile(2)=$mesh$
 
 !**********************************************************************
 !     End variable declaration, start real code
@@ -285,7 +288,7 @@ C**********************************************************************
      &           elmnew(1:3,cap_e_start(i):cap_e_end(i)),
      &           shpint(1:3,cap_e_start(i):cap_e_end(i)),
      &           shpfs(1:7,cap_e_start(i):cap_e_end(i)), 
-     &           nnode(i), nelm(i), cap_center(:,i))
+     &           nnode(i), nelm(i), cap_center(:,i), meshfile(i))
             write(*,*) 'cell l309'
          end do
 !     $npls$ is the number of planes. If there is one, it should be
@@ -369,13 +372,13 @@ C**********************************************************************
          do i=1,$ncap$
             CALL MEMBNX(XFN,elmnew,shpint,shpfs,FRC,h,FOSTAR,
      &           cap_n_start(i), cap_n_end(i))
-            write(message, *) 'frc(1,1)',frc(1,1)
-            call dumpstatus(klok, message, 'thumbprint.txt')
-            write(message, *) 'frc(3,nfsize)',frc(1,nfsize)
-            call dumpstatus(klok, message, 'thumbprint.txt')
-            write(message, *) 'frc(2,nfsize)',frc(1,nfsize/2)
-            call dumpstatus(klok, message, 'thumbprint.txt')
          end do
+         write(message, *) 'frc(1,1)',frc(1,1)
+         call dumpstatus(klok, message, 'thumbprint.txt')
+         write(message, *) 'frc(3,nfsize)',frc(1,nfsize)
+         call dumpstatus(klok, message, 'thumbprint.txt')
+         write(message, *) 'frc(2,nfsize)',frc(1,nfsize/2)
+         call dumpstatus(klok, message, 'thumbprint.txt')
 
          message = 'cell l220'
          call dumpstatus(klok, message, 'status.txt')
@@ -410,37 +413,49 @@ C**********************************************************************
          open(403, access='append')
          write(403,*) klok, dreal(meanu), dreal(meanv), dreal(meanw)
          close(403)
+
          message = 'cell l240'
          call dumpstatus(klok, message, 'status.txt')
+
          CALL pushup(UR,VR,WR,XFN,FRC,FIRSTN,NUMBER,NEXTN)
          message = 'cell l243'
+
          call dumpstatus(klok, message, 'status.txt')
          write(message, *) 'ur(3*ngx/4,ngy/2,ngz/4)', 
      &        ur(3*ngx/4,ngy/2,ngz/4)
          call dumpstatus(klok, message, 'thumbprint.txt')
+
          write(message, *) 'vr(3*ngx/4,ngy/2,ngz/4)',
      &        vr(3*ngx/4,ngy/2,ngz/4)
          call dumpstatus(klok, message, 'thumbprint.txt')
+
          write(message, *) 'wr(3*ngx/4,ngy/2,ngz/4)',
      &        wr(3*ngx/4,ngy/2,ngz/4)
          call dumpstatus(klok, message, 'thumbprint.txt')
+
          if (FVS == 0) then
             call bodyfs(bfs, ur, vr, wr, vsc)
          end if
+
          message = 'cell l248'
          call dumpstatus(klok, message, 'status.txt')
+
          if (fvs /= 0) then
             call fvssub(ur, vr, wr, bfs, umean)
             call poiseuille(wr, pr, -$dpdz$, vsc)
          end if
+
          CALL FLUIDUP(KLOK,UR,VR,WR, pr, QRFACT, DSQ, DX, DY, DZ)
          if (fvs /= 0) then
             call fvssub(ur, vr, wr, -bfs, -umean)
             call poiseuille(wr, pr, $dpdz$, vsc)
          end if
+
          message = 'cell l252'
          call dumpstatus(klok, message, 'status.txt')
+
          call wrap(ur, vr, wr)
+
          write(message, *) 'ur(3*ngx/4,ngy/2,ngz/4)', 
      &        ur(3*ngx/4,ngy/2,ngz/4)
          call dumpstatus(klok, message, 'thumbprint.txt')
@@ -450,9 +465,11 @@ C**********************************************************************
          write(message, *) 'wr(3*ngx/4,ngy/2,ngz/4)',
      &        wr(3*ngx/4,ngy/2,ngz/4)
          call dumpstatus(klok, message, 'thumbprint.txt')
+
          message = 'cell l255'
          call dumpstatus(klok, message, 'status.txt')
          CALL MOVE(UR,VR,WR,XFN,FIRSTN,NUMBER,NEXTN)
+
          message = 'cell l258'
          call dumpstatus(klok, message, 'status.txt')
          write(message, *) 'xfn(1,1)',xfn(1,1)
@@ -461,6 +478,7 @@ C**********************************************************************
          call dumpstatus(klok, message, 'thumbprint.txt')
          write(message, *) 'xfn(2,nfsize/2)',xfn(2,nfsize/2)
          call dumpstatus(klok, message, 'thumbprint.txt')
+
 !     End of the loop, do post-processing stuff
          do i=1,$ncap$
             call shape(h64,klok, i, xfn(1:3, cap_n_start(i):
@@ -477,12 +495,15 @@ C**********************************************************************
      &              klok)
             end if
          end do
+
          WRITE(206,*)' KLOK: ',KLOK,  ' ; TIME: ',T
          message = 'cell l266'
+
          call dumpstatus(klok, message, 'status.txt')
          call wrstart(lcube, nu, rho,td,klok,ur,vr,wr,
      &        xfn,xpi,firstn,number,nextn,elmnew,shpint,shpfs)
          message = 'cell l270'
+
          call dumpstatus(klok, message, 'status.txt')
          if ((klok/$smalldumpint$)*$smalldumpint$ == klok) then
             message = 'cell l273'
