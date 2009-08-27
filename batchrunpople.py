@@ -40,6 +40,10 @@ files = ['cell', 'fluid', 'force', 'memb', 'rewr', 'visual', 'fvs']
 file_in_suffix = '.raw.f'
 file_out_suffix = '.run.f'
 
+visualfiles = ['profilemovie']
+visual_file_in_suffix = '.raw.m'
+visual_file_out_suffix = '.run.m'
+
 list_i = []
 values = []
 for i in range(m):
@@ -59,6 +63,15 @@ for i in range(N_values):
   for file in files:
       hin = open(file + file_in_suffix,'r')
       houtcode = open(os.path.join(wd, file + file_out_suffix), 'w')
+      for line in hin.readlines():
+          for j in range(0,len(tokens)):
+              line = line.replace(tokens[j], values[j])
+          houtcode.write(line)
+      hin.close()
+      houtcode.close()
+  for file in visual_files:
+      hin = open(file + visual_file_in_suffix,'r')
+      houtcode = open(os.path.join(wd, file + visual_file_out_suffix), 'w')
       for line in hin.readlines():
           for j in range(0,len(tokens)):
               line = line.replace(tokens[j], values[j])
