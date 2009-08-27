@@ -490,7 +490,7 @@ C**********************************************************************
             call calculateDF(klok, i, xfn(1:3, cap_n_start(i):
      &           cap_n_end(i)), nnode(i))
             
-            if ((klok/400)*400==klok) then
+            if ((klok/$smalldumpint$)*$smalldumpint$==klok) then
                call profile(i, xfn(1:3,cap_n_start(i):cap_n_end(i)),
      &              klok)
             end if
