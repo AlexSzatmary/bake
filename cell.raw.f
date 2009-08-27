@@ -176,7 +176,7 @@ C**********************************************************************
 
       integer fp_start, fp_end
       character*(*), parameter :: 
-     &     meshfile(2)=$mesh$
+     &     meshfile($ncap$)=$mesh$
 
 !**********************************************************************
 !     End variable declaration, start real code

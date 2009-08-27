@@ -40,7 +40,6 @@
       INTEGER n1,n2,i
       double precision H,pi,theta,x,y,rad
       double precision :: XFN(:,:)
-!      double precision :: XFN(3,$nsnode$)
       INTEGER elmnew(:,:)
       double precision :: shpint(:,:), shpfs(:,:)
       integer my_nnode, my_nelm
