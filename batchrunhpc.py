@@ -38,7 +38,7 @@ for i in n_values:
 
 files = ['cell', 'fluid', 'force', 'memb', 'rewr', 'visual', 'fvs']
 file_in_suffix = '.raw.f'
-file_out_suffix = '.run.f'
+file_out_suffix = '_run.f'
 
 list_i = []
 values = []

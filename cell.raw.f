@@ -96,6 +96,13 @@ C**********************************************************************
          integer cap_i, clock
          double precision :: xfn(:,:)
          end subroutine profile
+
+         subroutine membnx(xfn, elmnew, shpint, shpfs, FRC,h,FOSTAR)
+         implicit none
+         double precision :: xfn(:,:), shpint(:,:),
+     $        shpfs(:,:), frc(:,:), h, fostar
+         integer :: elmnew(:,:)
+         end subroutine membnx
       end interface
 
 !**********************************************************************
@@ -370,8 +377,11 @@ C**********************************************************************
          call dumpstatus(klok, message, 'status.txt')
          T = T+TD
          do i=1,$ncap$
-            CALL MEMBNX(XFN,elmnew,shpint,shpfs,FRC,h,FOSTAR,
-     &           cap_n_start(i), cap_n_end(i))
+            CALL MEMBNX(XFN(:,cap_n_start(i):cap_n_end(i)),
+     &           elmnew(:,cap_e_start(i):cap_e_end(i)),
+     &           shpint(:,cap_e_start(i):cap_e_end(i)),
+     &           shpfs(:,cap_e_start(i):cap_e_end(i)),
+     &           FRC(:,cap_n_start(i):cap_n_end(i)),h,FOSTAR)
          end do
          write(message, *) 'frc(1,1)',frc(1,1)
          call dumpstatus(klok, message, 'thumbprint.txt')

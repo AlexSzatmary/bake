@@ -42,7 +42,7 @@ file_out_suffix = '.run.f'
 
 visualfiles = ['profilemovie']
 visual_file_in_suffix = '.raw.m'
-visual_file_out_suffix = '.run.m'
+visual_file_out_suffix = '_run.m'
 
 list_i = []
 values = []

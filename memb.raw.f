@@ -101,10 +101,8 @@
       return
       end subroutine importmesh
 !************************************************************
-      subroutine MEMBNX(XFN,elmnew,shpint,shpfs,FRC,
-     & H,FOSTAR, my_cap_start, my_cap_end)
+      subroutine MEMBNX(XFN,elmnew,shpint,shpfs,FRC, H,FOSTAR)
       IMPLICIT NONE
-      integer my_cap_start, my_cap_end
       INTERFACE ELM
       subroutine elmfrc(shpfs,ielm,u2,u3,v3,fx1,fy1,fx2,fy2,
      &     fx3,fy3,fz1,fz2,fz3)
@@ -117,8 +115,6 @@
       END subroutine elmfrc
       END INTERFACE ELM
 
-      INTEGER NFSIZE,NFSIZE2
-      parameter(nfsize=$nsnode$,nfsize2=$nselm$)
       double precision :: H,FOSTAR
       double precision :: R11,R12,R13,R21,R22,R23,R31,R32,R33
       double precision :: e1m,e2m,e3m,a1,a2,a3
@@ -133,9 +129,16 @@
       double precision :: FORCEX2,FORCEY2,FORCEZ2
       integer j1,j2,j3
       integer i
-      double precision :: XFN(1:3,1:NFSIZE),FRC(1:3,1:NFSIZE)
-      INTEGER elmnew(1:3,1:NFSIZE2)
-      double precision :: shpint(1:3,1:NFSIZE2),shpfs(1:7,1:NFSIZE2)
+
+
+      double precision :: XFN(:,:),FRC(:,:)
+      INTEGER elmnew(:,:)
+      double precision :: shpint(:,:),shpfs(:,:)
+
+      integer nnode, nelm
+
+      nnode = size(xfn,2)
+      nelm = size(elmnew,2)
 
       FORCEX1=0.d0
       FORCEY1=0.d0
@@ -144,13 +147,13 @@
       FORCEY2=0.d0
       FORCEZ2=0.d0
 
-      do 20 i = my_cap_start, my_cap_end
+      do 20 i = 1, nnode
          FRC(1,i) = 0.0d0
          FRC(2,i) = 0.0d0
          FRC(3,i) = 0.0d0
  20   continue 
 
-      do 50 i = 1,nfsize2
+      do 50 i = 1, nelm
          j1 = elmnew(1,i)
          j2 = elmnew(2,i)
          j3 = elmnew(3,i)

@@ -42,7 +42,7 @@ file_out_suffix = '.run.f'
 
 visual_files = ['profilemovie']
 visual_file_in_suffix = '.raw.m'
-visual_file_out_suffix = '.run.m'
+visual_file_out_suffix = '_run.m'
 
 list_i = []
 values = []
@@ -78,14 +78,6 @@ for i in range(N_values):
           houtcode.write(line)
       hin.close()
       houtcode.close()
-  houtcode = open(os.path.join(wd, 'qsub_script.run'), 'w')
-  for line in hin.readlines():
-      for j in range(0,len(tokens)):
-          line = line.replace(tokens[j], values[j])
-      line = line.replace('$cd$', cd)
-      houtcode.write(line)
-  hin.close()
-  houtcode.close()
   os.system('cp -r mesh ' + wd)
   os.chdir(wd)
   fortran_command = 'gfortran -Wall -g -o ' + 'cell' + cd
