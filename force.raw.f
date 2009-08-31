@@ -135,11 +135,11 @@
       double precision :: XPI(:,:)
       do i=0,sqrtnpl-1
          do j=0,sqrtnpl-1
-            xpi(1,i*sqrtnpl+j+1)=(fngx-2*fngx/dble(sqrtnpl))*i/
-     &           (dble(sqrtnpl)-1)+fngx/dble(sqrtnpl)+1.d0
+            xpi(1,i*sqrtnpl+j+1)=(fngx-2*fngx/dble(sqrtnpl))*i/ &
+                (dble(sqrtnpl)-1)+fngx/dble(sqrtnpl)+1.d0
             xpi(2,i*sqrtnpl+j+1)=$planey$
-            xpi(3,i*sqrtnpl+j+1)=(fngz-2*fngz/dble(sqrtnpl))*j/
-     &           (dble(sqrtnpl)-1)+fngz/dble(sqrtnpl)
+            xpi(3,i*sqrtnpl+j+1)=(fngz-2*fngz/dble(sqrtnpl))*j/ &
+                (dble(sqrtnpl)-1)+fngz/dble(sqrtnpl)
             xfn(1,i*sqrtnpl+j+1)=xpi(1,i*sqrtnpl+j+1)
             xfn(2,i*sqrtnpl+j+1)=xpi(2,i*sqrtnpl+j+1)
             xfn(3,i*sqrtnpl+j+1)=xpi(3,i*sqrtnpl+j+1)
@@ -148,8 +148,8 @@
       return
       end subroutine inplane
 !*********************************************************************
-      SUBROUTINE PMHIST(XPI,XFN,FRC,FIRSTN,NEXTN,NUMBER,CONST,
-     &     fp_start, fp_end, nfsize)
+      SUBROUTINE PMHIST(XPI,XFN,FRC,FIRSTN,NEXTN,NUMBER,CONST, &
+          fp_start, fp_end, nfsize)
       IMPLICIT NONE
       INTEGER LXNG,LYNG,LZNG,NGX,NGY,NGZ
       INTEGER NGXM1,NGYM1,NGZM1,NBX,NBY,NBZ
@@ -197,7 +197,7 @@
   18  CONTINUE
 
 !     Completely re-do firstn, nextn, number?
-C SORT THE XFN DATA BY X-COORDINATE AND Y-COORDINATE USING LINKED LISTS
+! SORT THE XFN DATA BY X-COORDINATE AND Y-COORDINATE USING LINKED LISTS
       DO 20 N=1,nfsize
          JJ=MOD(INT(xfn(2,N)+FLNGY)-1+NGY,NGY) + 1
          II=MOD(INT(xfn(1,N)+FLNGX)-1+NGX,NGX) + 1
@@ -242,49 +242,49 @@ C SORT THE XFN DATA BY X-COORDINATE AND Y-COORDINATE USING LINKED LISTS
       double precision,ALLOCATABLE  :: ULIN(:),VLIN(:),WLIN(:)
       INTEGER,ALLOCATABLE ::LINDX(:),ID(:,:)
       double precision,ALLOCATABLE :: FLKZP1(:)
-C
-C     THIS ROUTINE APPLIES THE FIBER FORCES TO THE FLUID.
-C
-C     FIBER POINT L INFLUENCES FLUID POINT (I,J,K) IFF
-C     ALL OF THE FOLLOWING CONDITIONS ARE SATISFIED: 
-C
-C     ABS(I-XFN(1,L)) < 2.
-C     ABS(J-XFN(2,L)) < 2.
-C     ABS(K-XFN(3,L)) < 2.
-C
-C     USING FORTRAN THESE VALUES OF (I,J,K) ARE FOUND AS FOLLOWS: 
-C
-C     IZ=   XFN(1,L) -1.
-C     JZ=   XFN(2,L) -1.
-C     KZ=   XFN(3,L) -1.
-C
-C     THEN
-C
-C     I = IZ,IZ+3
-C     J = JZ,JZ+3
-C     K = KZ,KZ+3
-C
-C     IF THESE CONDITIONS ARE SATISFIED, THE COEFFICIENT THAT LINKS
-C     FIBER POINT L TO THE FLUID POINT (I,J,K) IS: 
-C
-C     D = DEL(I-XFN(1,L)) * DEL(J-XFN(2,L)) * DEL(K-XFN(3,L))
-C
-C     WHERE
-C     DEL(R) = (1. + COS((PI/2.)*R)) / 4.
-C
-C     ALGORITHM IS AS FOLLOWS: 
-C
-C     LET L=1,2, ... ,NP
-C     FOR EACH L, LET (I,J,K) COVER RANGE OF VALUES DEFINED ABOVE.
-C
-C     FOR EACH VALUE OF (L,I,J,K)
-C
-C     U(I,J,K) = U(I,J,K) + D * FRC(1,L)
-C     V(I,J,K) = V(I,J,K) + D * FRC(2,L)
-C     W(I,J,K) = W(I,J,K) + D * FRC(3,L)
-C
-C     WHERE D WAS DEFINED ABOVE.
-C
+!
+!     THIS ROUTINE APPLIES THE FIBER FORCES TO THE FLUID.
+!
+!     FIBER POINT L INFLUENCES FLUID POINT (I,J,K) IFF
+!     ALL OF THE FOLLOWING CONDITIONS ARE SATISFIED: 
+!
+!     ABS(I-XFN(1,L)) < 2.
+!     ABS(J-XFN(2,L)) < 2.
+!     ABS(K-XFN(3,L)) < 2.
+!
+!     USING FORTRAN THESE VALUES OF (I,J,K) ARE FOUND AS FOLLOWS: 
+!
+!     IZ=   XFN(1,L) -1.
+!     JZ=   XFN(2,L) -1.
+!     KZ=   XFN(3,L) -1.
+!
+!     THEN
+!
+!     I = IZ,IZ+3
+!     J = JZ,JZ+3
+!     K = KZ,KZ+3
+!
+!     IF THESE CONDITIONS ARE SATISFIED, THE COEFFICIENT THAT LINKS
+!     FIBER POINT L TO THE FLUID POINT (I,J,K) IS: 
+!
+!     D = DEL(I-XFN(1,L)) * DEL(J-XFN(2,L)) * DEL(K-XFN(3,L))
+!
+!     WHERE
+!     DEL(R) = (1. + COS((PI/2.)*R)) / 4.
+!
+!     ALGORITHM IS AS FOLLOWS: 
+!
+!     LET L=1,2, ... ,NP
+!     FOR EACH L, LET (I,J,K) COVER RANGE OF VALUES DEFINED ABOVE.
+!
+!     FOR EACH VALUE OF (L,I,J,K)
+!
+!     U(I,J,K) = U(I,J,K) + D * FRC(1,L)
+!     V(I,J,K) = V(I,J,K) + D * FRC(2,L)
+!     W(I,J,K) = W(I,J,K) + D * FRC(3,L)
+!
+!     WHERE D WAS DEFINED ABOVE.
+!
 
 !      write(*,*) 'force l143'
 
@@ -302,26 +302,26 @@ C
    82 JN   = MOD((INT(XFN(2,N)+FLNGY)-1+NGY),NGY) + 1
       IN   = MOD((INT(XFN(1,N)+FLNGX)-1+NGX),NGX) + 1
       IF ((IN.NE.II) .OR. (JN.NE.JJ)) THEN
-c       point N is in the wrong linked list
-c       remember the pointer to the next one in the present linked list
+!       point N is in the wrong linked list
+!       remember the pointer to the next one in the present linked list
         NEXTNOLD      = NEXTN(N)
-c       add point N to the correct linked list
+!       add point N to the correct linked list
         NEXTN(N)      = FIRSTN(IN,JN)
         FIRSTN(IN,JN) = N
         NUMBER(IN,JN) = NUMBER(IN,JN) + 1
-c       remove point N from the present linked list
+!       remove point N from the present linked list
         IF (NPREV .EQ. 0) THEN
           FIRSTN(II,JJ) = NEXTNOLD
         ELSE
           NEXTN(NPREV)  = NEXTNOLD
         END IF
         NUMBER(II,JJ) = NUMBER(II,JJ) - 1
-c       advance to the remembered next point in the present linked list
-c       the previous-point pointer is unchanged
+!       advance to the remembered next point in the present linked list
+!       the previous-point pointer is unchanged
         N             = NEXTNOLD
       ELSE
-c       point N is in the correct linked list
-c       advance the previous-point pointer and then the current-point pointer
+!       point N is in the correct linked list
+!       advance the previous-point pointer and then the current-point pointer
         NPREV = N
         N     = NEXTN(N)
       END IF
@@ -329,14 +329,14 @@ c       advance the previous-point pointer and then the current-point pointer
    85 CONTINUE
 !$OMP END PARALLEL DO
    89 CONTINUE
-C FIRSTN(I,J) CONTAINS THE INDEX OF THE FIRST POINT WHICH SIMULTANEOUSLY IS
-C BETWEEN PLANES I AND I+1 AND IS BETWEEN PLANES J AND J+1.
-C THIS POINT HAS COORDINATES:
-C (XFN(1,FIRSTN(I,J)),XFN(2,FIRSTN(I,J)),XFN(3,FIRSTN(I,J))).
-C NEXTN(FIRSTN(I,J)) CONTAINS THE INDEX OF THE SECOND SUCH POINT
-C NEXTN(NEXTN(FIRSTN(I,J))) CONTAINS THE INDEX OF THE THIRD SUCH POINT
-C ETC.
-C IF FIRSTN(I,J) CONTAINS THE VALUE 0, THERE ARE NO SUCH POINTS.
+! FIRSTN(I,J) CONTAINS THE INDEX OF THE FIRST POINT WHICH SIMULTANEOUSLY IS
+! BETWEEN PLANES I AND I+1 AND IS BETWEEN PLANES J AND J+1.
+! THIS POINT HAS COORDINATES:
+! (XFN(1,FIRSTN(I,J)),XFN(2,FIRSTN(I,J)),XFN(3,FIRSTN(I,J))).
+! NEXTN(FIRSTN(I,J)) CONTAINS THE INDEX OF THE SECOND SUCH POINT
+! NEXTN(NEXTN(FIRSTN(I,J))) CONTAINS THE INDEX OF THE THIRD SUCH POINT
+! ETC.
+! IF FIRSTN(I,J) CONTAINS THE VALUE 0, THERE ARE NO SUCH POINTS.
 
 !      write(*,*) 'force l179'
 
@@ -368,11 +368,11 @@ C IF FIRSTN(I,J) CONTAINS THE VALUE 0, THERE ARE NO SUCH POINTS.
       ALLOCATE (FLKZP1(NPTMAX))
       ALLOCATE  (lindx(NPTMAX))
       ALLOCATE  (ID(1:3,-15:16*NGZP2))
-C CONSTRUCT THE INDEX ARRAY FOR SUBSEQUENT GATHERING AND SCATTERING OF THE
-C VELOCITY DATA FOR THE APPROPRIATE 4 X 4 X NG COLUMN OF THE 3D GRID INTO
-C AND OUT OF THE APPROPRIATE LINEAR ARRAYS, ONE FOR EACH DIRECTION.
-C ZERO-FILL THE LINEAR ARRAYS. NOTICE THAT THE LINEAR DATA ARRAYS ARE LARGER
-C THAN THE INDEX ARRAY; THIS FACILITATES SATISFYING THE PERIODIC B.C.
+! CONSTRUCT THE INDEX ARRAY FOR SUBSEQUENT GATHERING AND SCATTERING OF THE
+! VELOCITY DATA FOR THE APPROPRIATE 4 X 4 X NG COLUMN OF THE 3D GRID INTO
+! AND OUT OF THE APPROPRIATE LINEAR ARRAYS, ONE FOR EACH DIRECTION.
+! ZERO-FILL THE LINEAR ARRAYS. NOTICE THAT THE LINEAR DATA ARRAYS ARE LARGER
+! THAN THE INDEX ARRAY; THIS FACILITATES SATISFYING THE PERIODIC B.C.
       DO 4 K=0,NGZM1
       DO 4 J=-1,2
       J3D   = MOD((JJ+J-1+NGY),NGY)+1
@@ -543,8 +543,8 @@ C THAN THE INDEX ARRAY; THIS FACILITATES SATISFYING THE PERIODIC B.C.
       INTEGER I,J,K,L,M,MZERO,NPT,NPOINTS,NUMREM
       INTEGER II,JJ,IJ,I3D,J3D,K3D
       INTEGER I0,IZ,JZ,KZ
-      double precision, ALLOCATABLE :: XFN1OLD(:),XFN2OLD(:),
-     &     XFN3OLD(:)
+      double precision, ALLOCATABLE :: XFN1OLD(:),XFN2OLD(:), &
+          XFN3OLD(:)
       double precision :: xfn3oldold(nptmax)
       double precision,ALLOCATABLE :: D1(:,:),D2(:,:),D3(:,:)
       double precision,ALLOCATABLE :: D12(:,:,:)
@@ -553,47 +553,47 @@ C THAN THE INDEX ARRAY; THIS FACILITATES SATISFYING THE PERIODIC B.C.
       double precision,ALLOCATABLE :: UINT(:,:),VINT(:,:),WINT(:,:)
       double precision,ALLOCATABLE ::FLKZP1(:)
       INTEGER,ALLOCATABLE :: lindx(:)
-C     THIS ROUTINE MOVES THE FIBER POINTS AT THE LOCAL FLUID VELOCITY.
-C
-C     FIBER POINT L IS INFLUENCED BY FLUID POINT (I,J,K) IFF
-C     ALL THE FOLLOWING CONDITIONS ARE SATISFIED: 
-C
-C     ABS(I - XFN(1,L)) < 2.
-C     ABS(J - XFN(2,L)) < 2.
-C     ABS(K - XFN(3,L)) < 2.
-C
-C     USING FORTRAN, THESE VALUES OF (I,J,K) ARE FOUND AS FOLLOWS: 
-C
-C     IZ = XFN(1,L) -1.
-C     JZ = XFN(2,L) -1.
-C     KZ = XFN(3,L) -1.
-C
-C     THEN
-C     I = IZ,IZ+3
-C     J = JZ,JZ+3
-C     K = KZ,KZ+3
-C
-C     IF THESE CONDITIONS ARE SATISFIED, THE COEFFICIENT THAT LINKS
-C     FIBER POINT L TO FLUID POINT (I,J,K) IS: 
-C
-C     D = DEL(I-XFN(1,L)) * DEL(J-XFN(2,L)) * DEL(K-XFN(3,L))
-C
-C     WHERE
-C
-C     DEL(R) = (1. + COS((PI/2.)*R))/4. 
-C
-C     ALGORITHM IS AS FOLLOWS: 
-C
-C     LET L=1,2, ... ,NP
-C     FOR EACH L, LET (I,J,K) COVER RANGE OF VALUES DEFINED ABOVE.
-C
-C     FOR EACH VALUE OF (L,I,J,K)
-C
-C     XFN(1,L) = XFN(1,L) + D * U(I,J,K)
-C     XFN(2,L) = XFN(2,L) + D * V(I,J,K)
-C     XFN(3,L) = XFN(3,L) + D * W(I,J,K)
-C
-C     WHERE D WAS DEFINED ABOVE.
+!     THIS ROUTINE MOVES THE FIBER POINTS AT THE LOCAL FLUID VELOCITY.
+!
+!     FIBER POINT L IS INFLUENCED BY FLUID POINT (I,J,K) IFF
+!     ALL THE FOLLOWING CONDITIONS ARE SATISFIED: 
+!
+!     ABS(I - XFN(1,L)) < 2.
+!     ABS(J - XFN(2,L)) < 2.
+!     ABS(K - XFN(3,L)) < 2.
+!
+!     USING FORTRAN, THESE VALUES OF (I,J,K) ARE FOUND AS FOLLOWS: 
+!
+!     IZ = XFN(1,L) -1.
+!     JZ = XFN(2,L) -1.
+!     KZ = XFN(3,L) -1.
+!
+!     THEN
+!     I = IZ,IZ+3
+!     J = JZ,JZ+3
+!     K = KZ,KZ+3
+!
+!     IF THESE CONDITIONS ARE SATISFIED, THE COEFFICIENT THAT LINKS
+!     FIBER POINT L TO FLUID POINT (I,J,K) IS: 
+!
+!     D = DEL(I-XFN(1,L)) * DEL(J-XFN(2,L)) * DEL(K-XFN(3,L))
+!
+!     WHERE
+!
+!     DEL(R) = (1. + COS((PI/2.)*R))/4. 
+!
+!     ALGORITHM IS AS FOLLOWS: 
+!
+!     LET L=1,2, ... ,NP
+!     FOR EACH L, LET (I,J,K) COVER RANGE OF VALUES DEFINED ABOVE.
+!
+!     FOR EACH VALUE OF (L,I,J,K)
+!
+!     XFN(1,L) = XFN(1,L) + D * U(I,J,K)
+!     XFN(2,L) = XFN(2,L) + D * V(I,J,K)
+!     XFN(3,L) = XFN(3,L) + D * W(I,J,K)
+!
+!     WHERE D WAS DEFINED ABOVE.
 
 !$OMP  PARALLEL DO &
 !$OMP& SHARED(FIRSTN,NEXTN,NUMBER,UR,VR,WR,XFN)&
@@ -613,8 +613,8 @@ C     WHERE D WAS DEFINED ABOVE.
       ALLOCATE    (DELTA(0:64,NPTMAX))
       ALLOCATE (FLKZP1(NPTMAX))
       ALLOCATE  (lindx(NPTMAX))
-      ALLOCATE (ULIN(-15:16*NGZP2),VLIN(-15:16*NGZP2),
-     &     WLIN(-15:16*NGZP2))
+      ALLOCATE (ULIN(-15:16*NGZP2),VLIN(-15:16*NGZP2), &
+          WLIN(-15:16*NGZP2))
       ALLOCATE (UINT(0:64,NPTMAX),VINT(0:64,NPTMAX),WINT(0:64,NPTMAX))
       DO 2 K=-1,NGZ+1
       K3D   = MOD(K+NGZ,NGZ)

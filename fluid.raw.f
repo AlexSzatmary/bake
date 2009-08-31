@@ -41,8 +41,8 @@
       UR(I,J,K) = UR(I,J,K)/QRFACT(I,J,K) 
       VR(I,J,K) = VR(I,J,K)/QRFACT(I,J,K)
       WR(I,J,K) = WR(I,J,K)/QRFACT(I,J,K)
-      PR(I,J,K) = (UR(I,J,K)*DX(I,J,K)+VR(I,J,K)*DY(I,J,K)
-     &  + WR(I,J,K)*DZ(I,J,K))*DSQ(I,J,K) 
+      PR(I,J,K) = (UR(I,J,K)*DX(I,J,K)+VR(I,J,K)*DY(I,J,K) &
+       + WR(I,J,K)*DZ(I,J,K))*DSQ(I,J,K) 
       UR(I,J,K) = UR(I,J,K) + PR(I,J,K)*DX(I,J,K) 
       VR(I,J,K) = VR(I,J,K) + PR(I,J,K)*DY(I,J,K)
       WR(I,J,K) = WR(I,J,K) + PR(I,J,K)*DZ(I,J,K)
@@ -81,8 +81,8 @@
       double COMPLEX TABX,TABY,TABZ
       double precision :: FSCALE,VSC,FOURNU,PI,TWOPI
       INTEGER I,J,K,KS,MIDPTX,MIDPTY,MIDPTZ
-      double precision :: SINSQX(-1:NGXP1),SINSQY(-1:NGYP1),
-     &     SINSQZ(-1:NGZP1)
+      double precision :: SINSQX(-1:NGXP1),SINSQY(-1:NGYP1), &
+          SINSQZ(-1:NGZP1)
       double precision :: QRFACT(-1:NGXP1,-1:NGYP1,0:NGZM1) 
       double precision :: DXG(-1:NGXP1),DYG(-1:NGYP1),DZG(-1:NGZP1)
       double precision :: DXO(-1:NGXP1),DYO(-1:NGYP1),DZO(-1:NGZP1)
@@ -106,31 +106,31 @@
       DSQ=0.d0
       DO 11 KS=0,NGXM1
 !      VXFACT(KS) =  dCMPLX(0.d0,-dSIN(TWOPI*KS/FLNGX))
-      DXG(KS) =  dSIN(TWOPI*KS/FLNGX)*(dsqrt(2.d0)/2.d0+
-     & (1.d0-dsqrt(2.d0)/2.d0)*dCOS(TWOPI*KS/FLNGX))
-      DXO(KS) =  ((dCOS(PI*KS/FLNGX))**2)*(1.d0-2.d0* 
-     & (1.d0-2.d0*dsqrt(2.d0)/PI)*((dSIN(PI*KS/FLNGX))**2))
+      DXG(KS) =  dSIN(TWOPI*KS/FLNGX)*(dsqrt(2.d0)/2.d0+ &
+      (1.d0-dsqrt(2.d0)/2.d0)*dCOS(TWOPI*KS/FLNGX))
+      DXO(KS) =  ((dCOS(PI*KS/FLNGX))**2)*(1.d0-2.d0* &
+      (1.d0-2.d0*dsqrt(2.d0)/PI)*((dSIN(PI*KS/FLNGX))**2))
    11 CONTINUE
       DO 12 KS=0,NGYM1
 !      VYFACT(KS) =  dCMPLX(0.d0,-dSIN(TWOPI*KS/FLNGY))
-      DYG(KS) =  dSIN(TWOPI*KS/FLNGY)*(dsqrt(2.d0)/2.d0+ 
-     & (1.d0-dsqrt(2.d0)/2.d0)*dCOS(TWOPI*KS/FLNGY))
-      DYO(KS) =  ((dCOS(PI*KS/FLNGY))**2)*(1.d0-2.d0* 
-     & (1.d0-2.d0*dsqrt(2.d0)/PI)*((dSIN(PI*KS/FLNGY))**2))
+      DYG(KS) =  dSIN(TWOPI*KS/FLNGY)*(dsqrt(2.d0)/2.d0+ &
+      (1.d0-dsqrt(2.d0)/2.d0)*dCOS(TWOPI*KS/FLNGY))
+      DYO(KS) =  ((dCOS(PI*KS/FLNGY))**2)*(1.d0-2.d0* &
+      (1.d0-2.d0*dsqrt(2.d0)/PI)*((dSIN(PI*KS/FLNGY))**2))
    12 CONTINUE
       DO 13 KS=0,NGZM1
 !      VZFACT(KS) =  dCMPLX(0.d0,-dSIN(TWOPI*KS/FLNGZ))
-      DZG(KS) =  dSIN(TWOPI*KS/FLNGZ)*(dsqrt(2.d0)/2.d0+ 
-     & (1.d0-dsqrt(2.d0)/2.d0)*dCOS(TWOPI*KS/FLNGZ))
-      DZO(KS) =  ((dCOS(PI*KS/FLNGZ))**2)*(1.d0-2.d0* 
-     & (1.d0-2.d0*dsqrt(2.d0)/PI)*((dSIN(PI*KS/FLNGZ))**2))
+      DZG(KS) =  dSIN(TWOPI*KS/FLNGZ)*(dsqrt(2.d0)/2.d0+ &
+      (1.d0-dsqrt(2.d0)/2.d0)*dCOS(TWOPI*KS/FLNGZ))
+      DZO(KS) =  ((dCOS(PI*KS/FLNGZ))**2)*(1.d0-2.d0* &
+      (1.d0-2.d0*dsqrt(2.d0)/PI)*((dSIN(PI*KS/FLNGZ))**2))
    13 CONTINUE
-C$$$      VXFACT(-1) = (0.0d0,0.0d0)
-C$$$      VXFACT(MIDPTX) = (0.0d0,0.0d0)
-C$$$      VYFACT(-1) = (0.0d0,0.0d0)
-C$$$      VYFACT(MIDPTY) = (0.0d0,0.0d0)
-C$$$      VZFACT(-1) = (0.0d0,0.0d0)
-C$$$      VZFACT(MIDPTZ) = (0.0d0,0.0d0)
+!$$$      VXFACT(-1) = (0.0d0,0.0d0)
+!$$$      VXFACT(MIDPTX) = (0.0d0,0.0d0)
+!$$$      VYFACT(-1) = (0.0d0,0.0d0)
+!$$$      VYFACT(MIDPTY) = (0.0d0,0.0d0)
+!$$$      VZFACT(-1) = (0.0d0,0.0d0)
+!$$$      VZFACT(MIDPTZ) = (0.0d0,0.0d0)
       DXG(-1)=0.0d0
       DYG(-1)=0.0d0
       DZG(-1)=0.0d0
@@ -173,23 +173,23 @@ C$$$      VZFACT(MIDPTZ) = (0.0d0,0.0d0)
       DO 35 J=0,NGYM1
       DO 35 I=0,NGXM1
 !      PRDENO(I,J,K) = (SINSQX(I)+SINSQY(J)+SINSQZ(K))
-      IF(((I.EQ.0).AND.(J.EQ.0).AND.(K.EQ.0)).OR.
-     & (I.EQ.MIDPTX).OR.(J.EQ.MIDPTY).OR.(K.EQ.MIDPTZ)) THEN
+      IF(((I.EQ.0).AND.(J.EQ.0).AND.(K.EQ.0)).OR. &
+      (I.EQ.MIDPTX).OR.(J.EQ.MIDPTY).OR.(K.EQ.MIDPTZ)) THEN
       DSQ(I,J,K)=0.d0
       ELSE
 !     DSQ(I,J,K)=1.d0/((DX(I,J,K))**2+(DY(I,J,K))**2+(DZ(I,J,K))**2)
-      DSQ(I,J,K)=1.d0/((DXG(I)*DYO(J)*DZO(K))**2+
-     & (DXO(I)*DYG(J)*DZO(K))**2+(DXO(I)*DYO(J)*DZG(K))**2)
+      DSQ(I,J,K)=1.d0/((DXG(I)*DYO(J)*DZO(K))**2+ &
+      (DXO(I)*DYG(J)*DZO(K))**2+(DXO(I)*DYO(J)*DZG(K))**2)
       ENDIF
    35 CONTINUE
-C$$$      PRDENO(     0,     0,     0) = 1.0d0
-C$$$      PRDENO(MIDPTX,     0,     0) = 1.0d0
-C$$$      PRDENO(     0,MIDPTY,     0) = 1.0d0
-C$$$      PRDENO(MIDPTX,MIDPTY,     0) = 1.0d0
-C$$$      PRDENO(     0,     0,MIDPTZ) = 1.0d0
-C$$$      PRDENO(MIDPTX,     0,MIDPTZ) = 1.0d0
-C$$$      PRDENO(     0,MIDPTY,MIDPTZ) = 1.0d0
-C$$$      PRDENO(MIDPTX,MIDPTY,MIDPTZ) = 1.0d0
+!$$$      PRDENO(     0,     0,     0) = 1.0d0
+!$$$      PRDENO(MIDPTX,     0,     0) = 1.0d0
+!$$$      PRDENO(     0,MIDPTY,     0) = 1.0d0
+!$$$      PRDENO(MIDPTX,MIDPTY,     0) = 1.0d0
+!$$$      PRDENO(     0,     0,MIDPTZ) = 1.0d0
+!$$$      PRDENO(MIDPTX,     0,MIDPTZ) = 1.0d0
+!$$$      PRDENO(     0,MIDPTY,MIDPTZ) = 1.0d0
+!$$$      PRDENO(MIDPTX,MIDPTY,MIDPTZ) = 1.0d0
       FSCALE = (1.d0/(FLNGX*FLNGY*FLNGZ))
 !     DO 38 K=0,NGZ
 !     DO 38 J=0,NGY

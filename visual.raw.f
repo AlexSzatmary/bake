@@ -16,13 +16,13 @@
 
       nnode = size(xfn,2)
 
-      write(strfname,'(A6,I4,A1,I6,A4)') 'cappro', cap_i, '_', clock,
-     &     '.txt'
+      write(strfname,'(A6,I4,A1,I6,A4)') 'cappro', cap_i, '_', clock, &
+          '.txt'
       call padzeros(strfname)
       open(25, file=strfname, access='append')
       DO i=1, nnode
-         IF((XFN(1,i) >fngx/2.d0-1.d0).AND.(XFN(1,i) 
-     &        <fngx/2.d0+1.d0)) THEN
+         IF((XFN(1,i) >fngx/2.d0-1.d0).AND.(XFN(1,i) &
+             <fngx/2.d0+1.d0)) THEN
             write(25,300) XFN(2,i),XFN(3,i)
  300        format(e12.5,3x,e12.5)
          ENDIF
@@ -202,8 +202,8 @@
       cgz = cgz/dble(my_nnode)
 
       do i = 1, my_nnode
-         r = dsqrt((xfn(1,i)-cgx)**2 + (xfn(2,i)-cgy)**2 + 
-     &        (xfn(3,i)-cgz)**2)
+         r = dsqrt((xfn(1,i)-cgx)**2 + (xfn(2,i)-cgy)**2 + &
+             (xfn(3,i)-cgz)**2)
          if(r > rmax) rmax = r
          if(r < rmin) rmin = r
       end do
@@ -212,7 +212,7 @@
 
       call makefilename('TaylorDF__', cap_i,'.txt',strfname)
       open(204, file=strfname, access='append')
-      write(204,*) clock, ',', DF
+      write(204,*) clock, DF
       close(204)
 
       return
@@ -358,8 +358,8 @@
       do i =1,ngx
          do j = 1,ngy
             do k = 0,ngz-1
-               write(25,*) i,j,k, dreal(ur(i,j,k)), dreal(vr(i,j,k)), 
-     &              dreal(wr(i,j,k)), dreal(pr(i,j,k))
+               write(25,*) i,j,k, dreal(ur(i,j,k)), dreal(vr(i,j,k)), &
+                   dreal(wr(i,j,k)), dreal(pr(i,j,k))
             end do
          end do
       end do
@@ -421,8 +421,8 @@
       close(451)
       end subroutine meanforce
 !**********************************************************
-      subroutine cellcenter(klok, xfn, my_nnode, cap_i, xcenter,
-     &     ycenter, zcenter)
+      subroutine cellcenter(klok, xfn, my_nnode, cap_i, xcenter, &
+          ycenter, zcenter)
       implicit none
       integer cap_i
       double precision :: xcenter, ycenter, zcenter
@@ -488,5 +488,5 @@
       do i=1,len(str)
          if (str(i:i) == ' ') str(i:i) = '0'
       end do
-      end subroutinepadzeros
+      end subroutine padzeros
 !**********************************************************************

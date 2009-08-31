@@ -31,8 +31,8 @@
       RETURN
       END SUBROUTINE INHIST
 !**********************************************************************
-      subroutine importmesh(RAD,H,XFN, elmnew,shpint,shpfs,
-     $     my_nnode, my_nelm, my_cap_center, meshfile)
+      subroutine importmesh(RAD,H,XFN, elmnew,shpint,shpfs, &
+          my_nnode, my_nelm, my_cap_center, meshfile)
       IMPLICIT NONE
       integer, parameter :: lxng=$lngx$,lyng=lxng,lzng=lxng
       integer, parameter :: ngx=2**lxng,ngy=2**lyng,ngz=2**lzng
@@ -104,14 +104,14 @@
       subroutine MEMBNX(XFN,elmnew,shpint,shpfs,FRC, H,FOSTAR)
       IMPLICIT NONE
       INTERFACE ELM
-      subroutine elmfrc(shpfs,ielm,u2,u3,v3,fx1,fy1,fx2,fy2,
-     &     fx3,fy3,fz1,fz2,fz3)
+      subroutine elmfrc(shpfs,ielm,u2,u3,v3,fx1,fy1,fx2,fy2, &
+          fx3,fy3,fz1,fz2,fz3)
       IMPLICIT NONE
       INTEGER,  INTENT (IN) :: ielm
       double precision,DIMENSION(:,:), INTENT (IN) :: shpfs
       double precision, INTENT (IN) :: u2,u3,v3
-      double precision, INTENT (OUT) :: fx1,fx2,fx3,fy1,fy2,fy3,fz1,
-     &     fz2,fz3
+      double precision, INTENT (OUT) :: fx1,fx2,fx3,fy1,fy2,fy3,fz1, &
+          fz2,fz3
       END subroutine elmfrc
       END INTERFACE ELM
 
@@ -217,8 +217,8 @@
          xkl1 = xkl1 - shpint(2,i)
          xkl2 = xkl2 - shpint(3,i)
 
-         call elmfrc(shpfs,i,xjl1,xkl1,xkl2,fx1,fy1,fx2,fy2,
-     &        fx3,fy3,fz1,fz2,fz3)
+         call elmfrc(shpfs,i,xjl1,xkl1,xkl2,fx1,fy1,fx2,fy2, &
+             fx3,fy3,fz1,fz2,fz3)
 !     Rotate forces from the 2-d plane to the actual orientation of the
 !     element; scale force from cgs to program units.
          fx12 =(R11*fx1 + R21*fy1 + R31*fz1)/FOSTAR
@@ -244,14 +244,14 @@
       return
       end subroutine MEMBNX
 !**********************************************************************
-      subroutine elmfrc(shpfs,ielm,u2,u3,v3,fx1,fy1,fx2,fy2,
-     &     fx3,fy3,fz1,fz2,fz3)
+      subroutine elmfrc(shpfs,ielm,u2,u3,v3,fx1,fy1,fx2,fy2, &
+          fx3,fy3,fz1,fz2,fz3)
       IMPLICIT NONE
       INTEGER,  INTENT (IN) :: ielm
       double precision, DIMENSION(:,:), INTENT (IN) :: shpfs
       double precision, INTENT (IN) :: u2,u3,v3
-      double precision, INTENT (OUT) :: fx1,fx2,fx3,fy1,fy2,fy3,fz1,
-     &     fz2,fz3
+      double precision, INTENT (OUT) :: fx1,fx2,fx3,fy1,fy2,fy3,fz1, &
+          fz2,fz3
       double precision :: u1,v1,v2
       double precision :: a0,a1,a2,a3,b1,b2,b3
       double precision :: sumua,sumub,sumva,sumvb
@@ -330,8 +330,8 @@
 
       t2 = dg11u1 - dg22u1 
       if(dabs(t0) .gt. 1.0d-03) then 
-         t3 = 0.5d0/t0*(2.d0*(g11-g22)*(dg11u1 - dg22u1) + 
-     &        8.d0*g12*dg12u1)
+         t3 = 0.5d0/t0*(2.d0*(g11-g22)*(dg11u1 - dg22u1) + &
+             8.d0*g12*dg12u1)
       else       
          t3 = 0.0d0
       endif
@@ -340,8 +340,8 @@
 
       t2 = dg11u2 - dg22u2
       if(dabs(t0) .gt. 1.0d-03) then
-         t3 = 0.5d0/t0*(2.d0*(g11-g22)*(dg11u2 - dg22u2) + 
-     &        8.d0*g12*dg12u2)
+         t3 = 0.5d0/t0*(2.d0*(g11-g22)*(dg11u2 - dg22u2) + &
+             8.d0*g12*dg12u2)
       else
          t3 =0.0d0
       endif
@@ -350,8 +350,8 @@
 
       t2 = dg11u3 + dg22u3
       if(dabs(t0) .gt. 1.0d-03) then
-         t3  = + 0.5d0/t0*(2.d0*(g11-g22)*(dg11u3 - dg22u3)
-     &        + 8.d0*g12*dg12u3 )
+         t3  = + 0.5d0/t0*(2.d0*(g11-g22)*(dg11u3 - dg22u3) &
+             + 8.d0*g12*dg12u3 )
       else
          t3 = 0.0d0
       endif
@@ -360,8 +360,8 @@
 
       t2 = dg11v1 + dg22v1
       if(dabs(t0) .gt. 1.0d-03) then
-         t3  = + 0.5d0/t0*(2.d0*(g11-g22)*(dg11v1 - dg22v1)
-     &        + 8.d0*g12*dg12v1 )
+         t3  = + 0.5d0/t0*(2.d0*(g11-g22)*(dg11v1 - dg22v1) &
+             + 8.d0*g12*dg12v1 )
       else
          t3 = 0.0d0
       endif
@@ -370,8 +370,8 @@
 
       t2 = dg11v2 + dg22v2
       if(dabs(t0) .gt. 1.0d-03) then
-         t3  = + 0.5d0/t0*(2.d0*(g11-g22)*(dg11v2 - dg22v2)
-     &        + 8.d0*g12*dg12v2 )
+         t3  = + 0.5d0/t0*(2.d0*(g11-g22)*(dg11v2 - dg22v2) &
+             + 8.d0*g12*dg12v2 )
       else
          t3 = 0.0d0
       endif
@@ -380,8 +380,8 @@
 
       t2 = dg11v3 + dg22v3
       if(dabs(t0) .gt. 1.0d-03) then
-         t3  = + 0.5d0/t0*(2.d0*(g11-g22)*(dg11v3 - dg22v3)
-     &        + 8.d0*g12*dg12v3 )
+         t3  = + 0.5d0/t0*(2.d0*(g11-g22)*(dg11v3 - dg22v3) &
+             + 8.d0*g12*dg12v3 )
       else
          t3 = 0.0d0
       endif
@@ -470,8 +470,8 @@
       end if
       end subroutine capsuletable
 !**********************************************************************
-      subroutine make_cap_start_and_end(nnode, cap_n_start, cap_n_end,
-     &     nelm, cap_e_start, cap_e_end)
+      subroutine make_cap_start_and_end(nnode, cap_n_start, cap_n_end, &
+          nelm, cap_e_start, cap_e_end)
       implicit none
       integer i
       integer nnode($ncap$), cap_n_start($ncap$), cap_n_end($ncap$)

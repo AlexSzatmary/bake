@@ -2,34 +2,34 @@
 !     these changes, which, unfortunately, are not, at the moment,
 !     clearly marked, but he's a nice guy and is generally happy to 
 !     share.
-C *********************************************************************
-C *     Copyright 1994 Charles S. Peskin and David M. McQueen         *
-C *     All rights reserved. No portion of this program may be        *
-C *     transmitted to any persons without the prior permission       *
-C *     of the Copyright holders.                                     *
-C *     Contact: Charles S. Peskin   email:  peskin@cims.nyu.edu      *
-C *              David M. McQueen    email: mcqueen@cims.nyu.edu      *
-C *********************************************************************
-C
-C**********************************************************************
-C  PARAMETERS: 
-C     PLANES ARE NG X NG
-C     BUT ARE STORED IN ARRAYS WITH DIMENSIONS
-C     (0:NB,1:NG)   WHERE NB=NG+2
-C
-C *********************************************************************
-C
-c     NOTES ON CHANGES MADE TO PROGRAM PULSE3D TO CONVERT IT TO
-c     RBC3D: SIMULATION CODE FOR THE STUDY OF ERYTHROCYTES IN 3D FLOW
-c     NOTES STARTED ON 1/19/95
-C
-C**********************************************************************
+! *********************************************************************
+! *     Copyright 1994 Charles S. Peskin and David M. McQueen         *
+! *     All rights reserved. No portion of this program may be        *
+! *     transmitted to any persons without the prior permission       *
+! *     of the Copyright holders.                                     *
+! *     Contact: Charles S. Peskin   email:  peskin@cims.nyu.edu      *
+! *              David M. McQueen    email: mcqueen@cims.nyu.edu      *
+! *********************************************************************
+!
+!**********************************************************************
+!  PARAMETERS: 
+!     PLANES ARE NG X NG
+!     BUT ARE STORED IN ARRAYS WITH DIMENSIONS
+!     (0:NB,1:NG)   WHERE NB=NG+2
+!
+! *********************************************************************
+!
+!     NOTES ON CHANGES MADE TO PROGRAM PULSE3D TO CONVERT IT TO
+!     RBC3D: SIMULATION CODE FOR THE STUDY OF ERYTHROCYTES IN 3D FLOW
+!     NOTES STARTED ON 1/19/95
+!
+!**********************************************************************
       PROGRAM cell
       IMPLICIT NONE
 
       interface
-         subroutine importmesh(RAD,H,XFN, elmnew,shpint,shpfs,
-     &        my_nnode, my_nelm, my_cap_center, meshfile)
+         subroutine importmesh(RAD,H,XFN, elmnew,shpint,shpfs, &
+             my_nnode, my_nelm, my_cap_center, meshfile)
          implicit none
          double precision lcube, h, pi, rad
          double precision :: XFN(:,:)
@@ -40,8 +40,8 @@ C**********************************************************************
          character(len=*) meshfile
          end subroutine
 
-         subroutine cellcenter(klok, xfn, my_nnode, cap_i, xcenter, 
-     &     ycenter, zcenter)
+         subroutine cellcenter(klok, xfn, my_nnode, cap_i, xcenter, &
+          ycenter, zcenter)
          implicit none
          integer klok, my_nnode, cap_i
          double precision :: xfn(:,:)
@@ -54,8 +54,8 @@ C**********************************************************************
          integer nnodes
          end subroutine inplane
 
-         subroutine pmhist(xpi,xfn,frc,firstn,nextn,number,const,
-     &     fp_start, fp_end, nfsize)
+         subroutine pmhist(xpi,xfn,frc,firstn,nextn,number,const, &
+          fp_start, fp_end, nfsize)
          implicit none
          double precision :: xpi(:,:)
          double precision :: xfn(:,:),frc(:,:)
@@ -122,10 +122,10 @@ C**********************************************************************
       INTEGER KLOK,KLOK1,KLOKEND,NSTEP
       double precision :: T,H,h64,TD,VSC,TIME,RHO,PI,RADX,FOSTAR
       double precision, allocatable :: rad(:)
-      double precision, allocatable :: xcenter(:), ycenter(:), 
-     &     zcenter(:)
-      double precision, allocatable :: xcenterold(:), ycenterold(:), 
-     &     zcenterold(:)
+      double precision, allocatable :: xcenter(:), ycenter(:), &
+          zcenter(:)
+      double precision, allocatable :: xcenterold(:), ycenterold(:), & 
+          zcenterold(:)
       integer ncap
       double precision ::  LCUBE,NU,MU,MASS,LENGTH
 !     Velocities are always expressed in program units
@@ -158,8 +158,8 @@ C**********************************************************************
 !     units.
 !     shpint and shpfs are arrays of finite element shape factor parameters.
 !     These are in real dimensions.
-      double precision, ALLOCATABLE :: XFN(:,:),FRC(:,:),shpint(:,:),
-     &     shpfs(:,:)
+      double precision, ALLOCATABLE :: XFN(:,:),FRC(:,:),Foptical(:,:),shpint(:,:), &
+          shpfs(:,:), rays(:,:)
       double precision xpi(1:3,1:npl)
 !     This array associates 3 nodes with a numbered element; three corners
 !     on a triangle.
@@ -182,18 +182,26 @@ C**********************************************************************
       double precision :: cap_center(3,$ncap$)
 
       integer fp_start, fp_end
-      character*(*), parameter :: 
-     &     meshfile($ncap$)=$mesh$
-
+      character*(*), parameter :: &
+          meshfile($ncap$)=$mesh$
+			 
+!**********************************************************************
+!     Optical variables declaration
+!**********************************************************************
+      double precision, parameter :: nm = $nm$ , np = $np$ , omega_zero = $omega_zero$, epsilono = $epsilono$ 
+      double precision, parameter :: lambda= $lambda$ , opticalPower = $opticalPower$, lightSpeed = $lightSpeed$ 
+		integer, parameter ::  numberOfMaxReflections = $numberOfMaxReflections$, index = $index$
+		double precision :: disp  , z0
+		integer numberOfRays
 !**********************************************************************
 !     End variable declaration, start real code
 !**********************************************************************
 
       ncap=$ncap$
-      allocate(rad(ncap), xcenter(ncap), ycenter(ncap), zcenter(ncap),
-     &     xcenterold(ncap), ycenterold(ncap), zcenterold(ncap))
-      allocate(cap_n_start(ncap), cap_n_end(ncap), cap_e_start(ncap),
-     &     cap_e_end(ncap))
+      allocate(rad(ncap), xcenter(ncap), ycenter(ncap), zcenter(ncap), &
+          xcenterold(ncap), ycenterold(ncap), zcenterold(ncap))
+      allocate(cap_n_start(ncap), cap_n_end(ncap), cap_e_start(ncap), &
+          cap_e_end(ncap))
       allocate(fineness(ncap), nnode(ncap), nelm(ncap))
 
       fnpl = $npl$
@@ -203,8 +211,8 @@ C**********************************************************************
       do i=1,$ncap$
          call capsuletable(fineness(i),nnode(i),nelm(i))
       end do
-      call make_cap_start_and_end(nnode, cap_n_start, cap_n_end,
-     &     nelm, cap_e_start, cap_e_end)
+      call make_cap_start_and_end(nnode, cap_n_start, cap_n_end, &
+          nelm, cap_e_start, cap_e_end)
 
       nfsize=cap_n_end($ncap$)+$npl$
       nfsize2=cap_e_end($ncap$)
@@ -216,15 +224,17 @@ C**********************************************************************
       ALLOCATE(WR(0:NBX,0:NBY,0:NGZM1))
       ALLOCATE(QRFACT(0:NBX,0:NBY,0:NGZM1))
       ALLOCATE(FIRSTN(1:NGX,1:NGY),NUMBER(1:NGX,1:NGY))
-      ALLOCATE(NEXTN(1:NFSIZE),XFN(1:3,1:NFSIZE),FRC(1:3,1:NFSIZE))
+      ALLOCATE(NEXTN(1:NFSIZE),XFN(1:3,1:NFSIZE),FRC(1:3,1:NFSIZE),Foptical(1:3,1:NFSIZE))
       ALLOCATE(elmnew(1:3,1:NFSIZE2))
       ALLOCATE(shpint(1:3,1:NFSIZE2),shpfs(1:7,1:NFSIZE2))
 
 
       pi = 3.14159265358979323846d0 ! Taken from Wikipedia; 20 digits
 !     Physical parameters -- using cgs system
+		z0 = PI*omega_zero*omega_zero/lambda
       nstep = $nstep$ ! Number of timesteps
       radx = $radx$ ! cell radius (cm)
+		disp = index * RADX*1e-2/30
 
       lcube = $lcube$ ! Length of one edge of the fluid domain cube (cm)
       mu = $mu$
@@ -288,14 +298,14 @@ C**********************************************************************
       if (klok == 0) then
 !     Initialize the solid arrays
          do i = 1,$ncap$
-            write(*,*) 'l290', cap_n_start(i), cap_n_end(i), 
-     &           cap_e_start(i),cap_e_end(i), cap_center(:,i)
-            call importmesh(rad(i),h,
-     &           xfn(1:3,cap_n_start(i):cap_n_end(i)),
-     &           elmnew(1:3,cap_e_start(i):cap_e_end(i)),
-     &           shpint(1:3,cap_e_start(i):cap_e_end(i)),
-     &           shpfs(1:7,cap_e_start(i):cap_e_end(i)), 
-     &           nnode(i), nelm(i), cap_center(:,i), meshfile(i))
+            write(*,*) 'l290', cap_n_start(i), cap_n_end(i), &
+                cap_e_start(i),cap_e_end(i), cap_center(:,i)
+            call importmesh(rad(i),h, &
+                xfn(1:3,cap_n_start(i):cap_n_end(i)), &
+                elmnew(1:3,cap_e_start(i):cap_e_end(i)), &
+                shpint(1:3,cap_e_start(i):cap_e_end(i)), &
+                shpfs(1:7,cap_e_start(i):cap_e_end(i)), &
+                nnode(i), nelm(i), cap_center(:,i), meshfile(i))
             write(*,*) 'cell l309'
          end do
 !     $npls$ is the number of planes. If there is one, it should be
@@ -306,8 +316,8 @@ C**********************************************************************
          write(*,*) 'cell l316'
 !     Get an initial measurement of the center of the capsule
          do i=1,$ncap$
-            call cellcenter(klok,xfn(1:3,cap_n_start(i):cap_n_end(i)), 
-     &           nnode(i), i, xcenter(i), ycenter(i), zcenter(i))
+            call cellcenter(klok,xfn(1:3,cap_n_start(i):cap_n_end(i)), &
+                nnode(i), i, xcenter(i), ycenter(i), zcenter(i))
             write(*,*) 'cell l319'
 !     Use these values to measure velocity. It's a crappy measure, it's
 !     a backward difference.
@@ -348,20 +358,36 @@ C**********************************************************************
          call makefilename('solidforce', 0,'.txt',strfname)
          call saveallsolid(frc,strfname)
          do i = 1,$ncap$
-            call shape(h64,klok, i, xfn(1:3, cap_n_start(i):
-     &           cap_n_end(i)),
-     &           nnode(i), elmnew(1:3, cap_e_start(i):cap_e_end(i)),
-     &           nelm(i))
-            call calculateDF(klok, i, xfn(1:3, cap_n_start(i):
-     &           cap_n_end(i)), nnode(i))
-            call profile(i, xfn(1:3,cap_n_start(i):cap_n_end(i)),
-     &           klok)
+            call shape(h64,klok, i, xfn(1:3, cap_n_start(i): &
+                cap_n_end(i)), &
+                nnode(i), elmnew(1:3, cap_e_start(i):cap_e_end(i)), &
+                nelm(i))
+            call calculateDF(klok, i, xfn(1:3, cap_n_start(i): &
+                cap_n_end(i)), nnode(i))
+            call profile(i, xfn(1:3,cap_n_start(i):cap_n_end(i)), &
+                klok)
          end do
          t=0.d0
+			
+CALL findRays (XFN , elmnew ,zcenter(1), numberOfrays )
+!print *, numberOfrays
+ALLOCATE (rays(1:9,1:numberOfRays))
+CALL initializeRays(rays, numberOfRays)
+
+!my_cap_center(1) = 0.5000d0*LCUBE/H
+!my_cap_center(2) = 0.5000d0*LCUBE/H
+!my_cap_center(3) = 0.5000d0*LCUBE/H
+
+call capsuleForce(XFN , Foptical, shpfs , elmnew , rays , FOSTAR, zcenter(1), &
+	   RADX, H,cap_center(:,1),z0,disp,numberOfrays)	
+
+!print *, zcenter(1),cap_center(:,1)
+			
+			
       else
          write(*,*) 'cell l367 Restarting'
-         call restart(lcube, nu, rho,td,ur,vr,wr,
-     &        xfn,xpi,firstn,number,nextn,elmnew,shpint,shpfs)
+         call restart(lcube, nu, rho,td,ur,vr,wr, &
+             xfn,xpi,firstn,number,nextn,elmnew,shpint,shpfs)
          T=klok*time
       end if
       call inhist(xfn,firstn,number,nextn)
@@ -393,8 +419,8 @@ C**********************************************************************
          message = 'cell l220'
          call dumpstatus(klok, message, 'status.txt')
          if ($npls$ > 0) then
-            call pmhist(xpi,xfn,frc,firstn,nextn,number,
-     &           10240.d0/fnpl, fp_start, fp_end, nfsize)
+            call pmhist(xpi,xfn,frc,firstn,nextn,number, &
+                10240.d0/fnpl, fp_start, fp_end, nfsize)
          end if
          message = 'cell l225'
          call dumpstatus(klok, message, 'status.txt')
@@ -402,15 +428,15 @@ C**********************************************************************
          message = 'cell l228'
          call dumpstatus(klok, message, 'status.txt')
          do i=1,$ncap$
-            call cellcenter(klok,xfn(1:3,cap_n_start(i):cap_n_end(i)), 
-     &           nnode(i), i, xcenter(i), ycenter(i), zcenter(i))
+            call cellcenter(klok,xfn(1:3,cap_n_start(i):cap_n_end(i)), &
+                nnode(i), i, xcenter(i), ycenter(i), zcenter(i))
             message = 'cell l232'
             call dumpstatus(klok, message, 'status.txt')
 !     todo Make filename change with capsule index
             call makefilename('capsulev__', i,'.txt',strfname)
             open(402,file=strfname, access='append')
-            write(402,*) klok, xcenter(i) - xcenterold(i),
-     &           ycenter(i) - ycenterold(i), zcenter(i) - zcenterold(i)
+            write(402,*) klok, xcenter(i) - xcenterold(i), &
+                ycenter(i) - ycenterold(i), zcenter(i) - zcenterold(i)
             close(402)
             xcenterold(i) = xcenter(i)
             ycenterold(i) = ycenter(i)
@@ -431,16 +457,16 @@ C**********************************************************************
          message = 'cell l243'
 
          call dumpstatus(klok, message, 'status.txt')
-         write(message, *) 'ur(3*ngx/4,ngy/2,ngz/4)', 
-     &        ur(3*ngx/4,ngy/2,ngz/4)
+         write(message, *) 'ur(3*ngx/4,ngy/2,ngz/4)', &
+             ur(3*ngx/4,ngy/2,ngz/4)
          call dumpstatus(klok, message, 'thumbprint.txt')
 
-         write(message, *) 'vr(3*ngx/4,ngy/2,ngz/4)',
-     &        vr(3*ngx/4,ngy/2,ngz/4)
+         write(message, *) 'vr(3*ngx/4,ngy/2,ngz/4)', &
+             vr(3*ngx/4,ngy/2,ngz/4)
          call dumpstatus(klok, message, 'thumbprint.txt')
 
-         write(message, *) 'wr(3*ngx/4,ngy/2,ngz/4)',
-     &        wr(3*ngx/4,ngy/2,ngz/4)
+         write(message, *) 'wr(3*ngx/4,ngy/2,ngz/4)', &
+             wr(3*ngx/4,ngy/2,ngz/4)
          call dumpstatus(klok, message, 'thumbprint.txt')
 
          if (FVS == 0) then
@@ -466,14 +492,14 @@ C**********************************************************************
 
          call wrap(ur, vr, wr)
 
-         write(message, *) 'ur(3*ngx/4,ngy/2,ngz/4)', 
-     &        ur(3*ngx/4,ngy/2,ngz/4)
+         write(message, *) 'ur(3*ngx/4,ngy/2,ngz/4)', &
+             ur(3*ngx/4,ngy/2,ngz/4)
+         call dumpstatus(klok, message, 'thumbprint.txt') 
+         write(message, *) 'vr(3*ngx/4,ngy/2,ngz/4)', &
+             vr(3*ngx/4,ngy/2,ngz/4)
          call dumpstatus(klok, message, 'thumbprint.txt')
-         write(message, *) 'vr(3*ngx/4,ngy/2,ngz/4)',
-     &        vr(3*ngx/4,ngy/2,ngz/4)
-         call dumpstatus(klok, message, 'thumbprint.txt')
-         write(message, *) 'wr(3*ngx/4,ngy/2,ngz/4)',
-     &        wr(3*ngx/4,ngy/2,ngz/4)
+         write(message, *) 'wr(3*ngx/4,ngy/2,ngz/4)', &
+             wr(3*ngx/4,ngy/2,ngz/4)
          call dumpstatus(klok, message, 'thumbprint.txt')
 
          message = 'cell l255'
@@ -491,18 +517,18 @@ C**********************************************************************
 
 !     End of the loop, do post-processing stuff
          do i=1,$ncap$
-            call shape(h64,klok, i, xfn(1:3, cap_n_start(i):
-     &           cap_n_end(i)),
-     &           nnode(i), elmnew(1:3, cap_e_start(i):cap_e_end(i)),
-     &           nelm(i))
+            call shape(h64,klok, i, xfn(1:3, cap_n_start(i): &
+                cap_n_end(i)), &
+                nnode(i), elmnew(1:3, cap_e_start(i):cap_e_end(i)), &
+                nelm(i))
             message = 'cell l262'
             call dumpstatus(klok, message, 'status.txt')
-            call calculateDF(klok, i, xfn(1:3, cap_n_start(i):
-     &           cap_n_end(i)), nnode(i))
+            call calculateDF(klok, i, xfn(1:3, cap_n_start(i): &
+                cap_n_end(i)), nnode(i))
             
             if ((klok/$smalldumpint$)*$smalldumpint$==klok) then
-               call profile(i, xfn(1:3,cap_n_start(i):cap_n_end(i)),
-     &              klok)
+               call profile(i, xfn(1:3,cap_n_start(i):cap_n_end(i)), &
+                   klok)
             end if
          end do
 
@@ -510,8 +536,8 @@ C**********************************************************************
          message = 'cell l266'
 
          call dumpstatus(klok, message, 'status.txt')
-         call wrstart(lcube, nu, rho,td,klok,ur,vr,wr,
-     &        xfn,xpi,firstn,number,nextn,elmnew,shpint,shpfs)
+         call wrstart(lcube, nu, rho,td,klok,ur,vr,wr, &
+             xfn,xpi,firstn,number,nextn,elmnew,shpint,shpfs)
          message = 'cell l270'
 
          call dumpstatus(klok, message, 'status.txt')
@@ -552,9 +578,9 @@ C**********************************************************************
       DEALLOCATE (UR,VR,WR,FIRSTN,NUMBER,NEXTN,XFN,FRC)
       DEALLOCATE(QRFACT,elmnew,shpint,shpfs)
       deallocate(fineness, nnode, nelm)
-      deallocate(cap_n_start, cap_n_end, cap_e_start,
-     &     cap_e_end)
-      deallocate(rad, xcenter, ycenter, zcenter,
-     &     xcenterold, ycenterold, zcenterold)
+      deallocate(cap_n_start, cap_n_end, cap_e_start, &
+          cap_e_end)
+      deallocate(rad, xcenter, ycenter, zcenter, &
+          xcenterold, ycenterold, zcenterold)
       END PROGRAM cell
 !**********************************************************************

@@ -36,11 +36,11 @@ N_values = 1
 for i in n_values:
   N_values = N_values*i
 
-files = ['cell', 'fluid', 'force', 'memb', 'rewr', 'visual', 'fvs']
-file_in_suffix = '.raw.f'
-file_out_suffix = '.run.f'
+files = ['cell', 'fluid', 'force', 'memb', 'rewr', 'visual', 'fvs','math','rayTracer']
+file_in_suffix = '.raw.f90'
+file_out_suffix = '.run.f90'
 
-visualfiles = ['profilemovie']
+visual_files = ['profilemovie']
 visual_file_in_suffix = '.raw.m'
 visual_file_out_suffix = '_run.m'
 
@@ -96,7 +96,7 @@ for i in range(N_values):
   os.system(fortran_command)
   os.chdir(wd)
   print 'qsubbing'
-  os.system('qsub qsub_pople.run')
+  os.system('./cell' + cd)
   print 'qsubbed'
   os.chdir(os.path.join('..', '..'))
   j = 0
