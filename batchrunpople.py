@@ -96,7 +96,7 @@ for i in range(N_values):
   os.system(fortran_command)
   os.chdir(wd)
   print 'qsubbing'
-  os.system('./cell' + cd)
+  os.system('qsub qsub_pople.run')
   print 'qsubbed'
   os.chdir(os.path.join('..', '..'))
   j = 0
