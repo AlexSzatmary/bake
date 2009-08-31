@@ -41,3 +41,12 @@ drift;$lngx$;5
 ;$radx$;3.338d-4
 ;$mu$;1.20d-2
 ;$nstep$;10
+;$nm$;1.33d0
+;$np$;1.37d0
+;$omega_zero$;1.5d-6
+;$epsilono$;8.85418781762d-12
+;$lambda$;833e-9
+;$index$;0 
+;$opticalPower$;0.14d0
+;$lightSpeed$;299792458d0
+;$numberOfMaxReflections$;2
