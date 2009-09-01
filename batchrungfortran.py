@@ -36,12 +36,13 @@ N_values = 1
 for i in n_values:
   N_values = N_values*i
 
-files = ['cell', 'fluid', 'force', 'memb', 'rewr', 'visual', 'fvs']
-file_in_suffix = '.raw.f'
-file_out_suffix = '.run.f'
+files = ['cell', 'fluid', 'force', 'memb', 'rewr', 'visual', 'fvs', 
+      'rayTracer', 'math']
+file_in_suffix = '.raw.f90'
+file_out_suffix = '.run.f90'
 
 visual_files = ['profilemovie']
-visual_file_in_suffix = '.raw.m'
+visual_file_in_suffix = '_raw.m'
 visual_file_out_suffix = '_run.m'
 
 list_i = []
