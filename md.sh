@@ -3,3 +3,7 @@
 ./megadiff.py drift5
 ./megadiff.py mix5
 ./megadiff.py poiseuille5
+./megadiff.py 2cap
+./megadiff.py collision5cap
+diff batch/2cap/TaylorDF__00002.txt check/2cap/TaylorDF__00002.txt
+diff batch/collision5cap5/TaylorDF__00005.txt check/collision5cap5/TaylorDF__00005.txt

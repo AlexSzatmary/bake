@@ -19,7 +19,7 @@ for line in hin.readlines():
   elements = line.split(';')
   elements[-1] = elements[-1].replace('\n','')
   for i in range(len(elements)):
-    elements[i] = elements[i].replace('\\n','\n     & ')
+    elements[i] = elements[i].replace('\\n','&\n')
   short_tokens.append(elements[0])
   tokens.append(elements[1])
   list_values.append(elements[2:])
