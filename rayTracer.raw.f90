@@ -1,8 +1,8 @@
-SUBROUTINE rayIntensity(ray , x , y , z , N , nm, omega_zero, epsilono ,z0, RADX, disp,opticalPower) 
+SUBROUTINE rayIntensity(ray , x , z , N , nm, omega_zero, epsilono ,z0, RADX, disp,opticalPower) 
 
   IMPLICIT NONE
   double precision nm, omega_zero, epsilono ,z0, RADX, disp
-  double precision ray(1:9) , z ,x , y ,  N(1:3), iRay(1:3)
+  double precision ray(1:9) , z , x, N(1:3), iRay(1:3)
 
   double precision intensity  , opticalPower
 
@@ -38,7 +38,7 @@ SUBROUTINE fresnelEquations(cos_theta, transmittance, n1 , n2 )
   double precision cos_theta , cos_theta_out, sin_theta
   double precision n1 
   double precision n2  
-  double precision Rperp , Rpara , Reflectance , incidentAngle , refractedAngle
+  double precision Rperp , Rpara , Reflectance
   double precision transmittance 
 
   cos_theta = abs(cos_theta) ! Making sure WE ARE USING THE SMALLEST ANGEL BETWEEN 0 and PI/2
@@ -67,7 +67,7 @@ SUBROUTINE fresnelEquations(cos_theta, transmittance, n1 , n2 )
 END SUBROUTINE fresnelEquations
 
 !**********************************************************************
-SUBROUTINE rayStress(ray, Selement, x,y,z, N , n1 , n2, lightSpeed) 
+SUBROUTINE rayStress(ray, Selement, x,y, N , n1 , n2, lightSpeed) 
 
   IMPLICIT NONE
   double precision ray(1:9) , N(1:3)
@@ -76,7 +76,7 @@ SUBROUTINE rayStress(ray, Selement, x,y,z, N , n1 , n2, lightSpeed)
   double precision iRay(1:3), tRay(1:3),rRay(1:3)
   !
   double precision   intensity
-  double precision  iStress, rStress, tStress , z ,x , y
+  double precision  iStress, rStress, tStress , x , y
   double precision Fparallel ,Fperpendicular,F
   double precision  cos_theta , cos_theta_out , sin_theta, THETA
 
@@ -225,12 +225,12 @@ SUBROUTINE rayTrace(XFN , Selements, elmnew , rays, numberOfRays, &
            z = (nearestPoint(3) - my_cap_center(3))*H*1d-2 !
 
            if (iReflection.eq.1) then
-              call rayIntensity(rays(1:9,iRays) , x,y,z , nearestNormal , nm, omega_zero, epsilono ,z0, RADX, disp,opticalPower) 
+              call rayIntensity(rays(1:9,iRays) , x,z , nearestNormal , nm, omega_zero, epsilono ,z0, RADX, disp,opticalPower) 
            end if
            if ( mod(iReflection,2).eq.1) then
-              call rayStress(rays(1:9,iRays), stress,x,y,z, nearestNormal,nm,np,lightSpeed) !n one and n two has to swap
+              call rayStress(rays(1:9,iRays), stress,x,y, nearestNormal,nm,np,lightSpeed) !n one and n two has to swap
            else 
-              call rayStress(rays(1:9,iRays), stress,x,y,z, nearestNormal,np,nm,lightSpeed) !n one and n two has to swap
+              call rayStress(rays(1:9,iRays), stress,x,y, nearestNormal,np,nm,lightSpeed) !n one and n two has to swap
            end if
            Selements(1:4,nearestElement) = stress 
         end if

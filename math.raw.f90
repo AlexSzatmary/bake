@@ -3,8 +3,7 @@ SUBROUTINE findNormal(A, B, C, N )
   IMPLICIT NONE
 
   double precision A(1:3), B(1:3) , C(1:3), N(1:3)
-  double precision AC(1:3) , AB(1:3),BC(1:3), dot2,dot1,dot3
-  double precision    testi, testj, testk, dotprod
+  double precision AC(1:3) , AB(1:3),BC(1:3)
 
   AC  = C - A ; 
   BC  = C - B
