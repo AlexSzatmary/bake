@@ -172,11 +172,11 @@ SUBROUTINE rayTrace(XFN , Selements, elmnew , rays, numberOfRays, &
 
   double precision nm, np , stress(1:4)
   double precision  XFN(1:3,1:nbNodes) , Selements(1:4,1:nbElements)
-  double precision A(1:3)  , B(1:3),C(1:3),FA(1:4)   , mag
-  double precision rays(1:9,1:numberOfRays), P(1:3),N1(1:3), nearestPoint(1:3), normal(1:3) , nearestNormal(1:3)
-  double precision e(1:3) , d(1:3),r(1:3), hither,  yon, t , rAngle , iAngle
+  double precision A(1:3)  , B(1:3),C(1:3), mag
+  double precision rays(1:9,1:numberOfRays), P(1:3), nearestPoint(1:3), normal(1:3) , nearestNormal(1:3)
+  double precision e(1:3) , d(1:3), hither,  yon, t
   logical result 
-  integer elmnew(1:3,1:nbElements), i  , iRays , iReflection, nearestElement , s , k
+  integer elmnew(1:3,1:nbElements), i  , iRays , iReflection, nearestElement
   double precision nearestIntersection
   double precision omega_zero, epsilono ,z0, RADX, disp,opticalPower, lightSpeed
   double precision x , y , z, my_cap_center(1:3), H
@@ -249,7 +249,7 @@ SUBROUTINE raytri_intersect(A,B,C, e, d,  hither,  yon, result, P, normal , t)
 
   double precision aa, bb, cc, dd, ee, ff, gg, hh, ii, jj, kk, ll, t, beta, gamma, denom;
   double precision eihf, gfdi, dheg, akjb, jcal, blkc;
-  double precision P(1:3), N1(1:3), normal(1:3)
+  double precision P(1:3), normal(1:3)
   double precision A(1:3) , B(1:3) , C(1:3)
   double precision e(1:3), d(1:3)
   double precision hither,  yon
@@ -337,7 +337,7 @@ SUBROUTINE findRays (XFN , elmnew  , zc , numberOfrays)
 
   double precision N(1:3,1:nbElements) , zc, PI
 
-  double precision A(1:3),B(1:3),C(1:3),center(1:3),tail(1:3) , t
+  double precision A(1:3),B(1:3),C(1:3),center(1:3)
   double precision XFN(1:3,1:nbNodes)
   integer elmnew(1:3,1:nbElements)
 
@@ -381,13 +381,12 @@ SUBROUTINE capsuleForce(XFN , Fnodes, shpfs , elmnew ,rays , FOSTAR, zc, &
   integer elmnew(1:3,1:nbElements), ii
   double precision  XFN(1:3,1:nbNodes) , Fnodes(1:3,1:nbNodes)
 
-  double precision  shpfs(1:7,1:nbElements), FX ,FY ,FZ
+  double precision  shpfs(1:7,1:nbElements)
 
   double precision Felements(1:3,1:nbElements),Selements(1:4,1:nbElements)
-  double precision x,y,z, phi,theta
-  double precisionF1i ,F1t ,F1r ,F2i,F2t ,F2r ,Fparallel ,Fperpendicular   
+  double precision z
   double precision total, Fphi, FOSTAR
-  REAL (8) FX_Back,FZ_Back, FX_FRONT,FZ_FRONT, xc,yc,zc
+  REAL (8) FX_Back,FZ_Back, FX_FRONT,FZ_FRONT, zc
   double precision rays(1:9,1:numberOfRays)
   integer i,j ,k
 
