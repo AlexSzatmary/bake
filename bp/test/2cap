@@ -1,0 +1,39 @@
+;$umean$;(/0.d0,0.d0,0.d0/)
+;$bfs1$;(/0.d0, 0.d0, 0.d0/)
+;$bfs2$;(/0.d0, 0.d0, $gamma_dot_p$/2.d0/)
+;$bfs3$;(/0.d0, $gamma_dot_p$/2.d0, 0.d0/)
+;$rad$;(/$radx$, $radx$/2.d0/)
+;$xc_cap$;(/0.5d0*(flngx+1.d0), 0.5d0*(flngx+1.d0)/)
+;$yc_cap$;(/0.5d0*(flngy+1.d0), 0.5d0*(flngy+1.d0)/)
+;$zc_cap$;(/0.5d0*(flngz-1.d0), 0.5d0*(flngz-1.d0)/)
+;$fineness$;(/5,5/)
+;$mesh$;(/'10242.sph', '10242.sph'/)
+;$nsnode$;(10242+10242+$npl$)
+;$ncap$;2
+;$npl$;($sqrtnpl$**2*$npls$)
+;$npls$;0
+;$sqrtnpl$;32
+;$nmem$;10242
+;$nselm$;40960
+;$planey$;2.5d0
+2cap;$lngx$;5
+;$FVS$;1
+;$gapratio$;0.00d0
+;$b$;4.d0
+;$bfscmd$;1
+;$mix$;0
+;$smalldumpint$;10
+;$bigdumpint$;500
+;$nu$;($mu$/$rho$)
+;$lcube$;(radx*b)
+;$rho$;1.025d0
+;$td$;($gamma_dot_p$/$gamma_dot$)
+;$gamma_dot$;($Eh$*$capillary_no$/($radx$*$mu$))
+;$dpdz$;0.d0
+;$gamma_dot_p$;($t_end$/$nstep$)
+;$t_end$;2.d0
+;$Eh$;1.d0
+;$capillary_no$;1.d-2
+;$radx$;3.338d-4
+;$mu$;1.20d-2
+;$nstep$;2000

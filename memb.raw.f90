@@ -46,10 +46,10 @@
       double precision my_cap_center(3)
       character(len=*) meshfile
 
-      open(20,file='mesh/mesh.'//meshfile,status='unknown')
-      open(21,file='mesh/shpfcta.'//meshfile,status='unknown')
-      open(22,file='mesh/shpfctb.'//meshfile,status='unknown')
-      open(23,file='mesh/shpint.'//meshfile,status='unknown')
+      open(20,file='../../mesh/mesh.'//meshfile,status='unknown')
+      open(21,file='../../mesh/shpfcta.'//meshfile,status='unknown')
+      open(22,file='../../mesh/shpfctb.'//meshfile,status='unknown')
+      open(23,file='../../mesh/shpint.'//meshfile,status='unknown')
       read(20,100)n1,n2
  100  format(7x,i5,2x,i5)
       pi = 3.14159265358979323846d0 ! Taken from Wikipedia; 20 digits

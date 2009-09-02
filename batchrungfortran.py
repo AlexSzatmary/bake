@@ -79,7 +79,7 @@ for i in range(N_values):
           houtcode.write(line)
       hin.close()
       houtcode.close()
-  os.system('cp -r mesh ' + wd)
+#  os.system('cp -r mesh ' + wd)
   os.chdir(wd)
   fortran_command = 'gfortran -Wall -g -o ' + 'cell' + cd
   for file in files:
