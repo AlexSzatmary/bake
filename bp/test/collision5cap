@@ -22,8 +22,8 @@ collision5cap;$lngx$;5
 ;$b$;6.d0
 ;$bfscmd$;1
 ;$mix$;0
-;$smalldumpint$;10
-;$bigdumpint$;500
+;$smalldumpint$;1
+;$bigdumpint$;5
 ;$nu$;($mu$/$rho$)
 ;$lcube$;(radx*b)
 ;$rho$;1.025d0

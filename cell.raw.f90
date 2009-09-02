@@ -375,7 +375,7 @@ PROGRAM cell
         ALLOCATE (rays(1:9,1:numberOfRays))
         CALL initializeRays(rays, numberOfRays)
         call capsuleForce(XFN , Foptical, shpfs , elmnew , rays , FOSTAR, zcenter(1), &
-             RADX, H,cap_center(:,1),z0,disp,numberOfrays)	
+             RADX, H,cap_center(:,1),z0,disp,numberOfrays)
      end if
 
      !print *, zcenter(1),cap_center(:,1)
