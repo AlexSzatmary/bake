@@ -41,7 +41,7 @@ file_in_suffix = '.raw.f90'
 file_out_suffix = '.run.f90'
 
 visual_files = ['profilemovie']
-visual_file_in_suffix = '.raw.m'
+visual_file_in_suffix = '_raw.m'
 visual_file_out_suffix = '_run.m'
 
 list_i = []

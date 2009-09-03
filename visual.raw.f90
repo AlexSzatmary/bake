@@ -295,7 +295,7 @@ subroutine wprofile(wr,clock)
   do j = 1, ngy
      k = ngz/2-1
      !            do k = 0, ngz-1
-     write(25,*) i,j,k, dble(wr(i,j,k)), dimag(wr(i,j,k))
+     write(25,'(3(i5x),x,e12.5,x,e12.5)') i,j,k, dble(wr(i,j,k)), dimag(wr(i,j,k))
      !            end do
   end do
   !      end do
