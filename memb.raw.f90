@@ -9,10 +9,13 @@ SUBROUTINE INHIST(XFN,FIRSTN,NUMBER,NEXTN)
   PARAMETER(NBX=NGX+2,NBY=NGY+2,NBZ=NGZ+2)
   PARAMETER(NGXM1=NGX-1,NGYM1=NGY-1,NGZM1=NGZ-1)
   PARAMETER(FLNGX=NGX,FLNGY=NGY,FLNGZ=NGZ)
-  parameter(nfsize=$nsnode$)
+
   INTEGER N,II,JJ
-  INTEGER FIRSTN(1:NGX,1:NGY),NUMBER(1:NGX,1:NGY),NEXTN(1:NFSIZE)
-  double precision :: XFN(1:3,1:NFSIZE)
+  double precision :: xfn(:,:)
+  integer firstn(:,:),number(:,:),nextn(:)       
+
+  nfsize = size(xfn, 2)
+
   DO N=1,NFSIZE
      NEXTN(N)=0
   end do

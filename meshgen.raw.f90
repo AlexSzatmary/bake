@@ -14,8 +14,6 @@ subroutine sph(fineness, xfnew, ilmnew)
   allocate(ilmold(1:3,1:nfsize4), ilm(1:3))
   allocate(ivert(1:6,1:nfsize3))
 
-  print *, 'meshgenl17', size(xfnew,1), size(xfnew,2), size(ilmnew,1),&
-       size(ilmnew, 2)
   xfold = 0.d0
   xfnew = 0.d0
   ilmold = 0
@@ -313,7 +311,6 @@ subroutine sph(fineness, xfnew, ilmnew)
 
 
   open(20,file='sphere.sph',status='unknown')
-  print *, 'meshgenl316', ncount1, ncount2
   write(20,300)ncount1,ncount2/2
 300 format(7x,i5,2x,i5)
 

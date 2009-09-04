@@ -29,6 +29,11 @@ PROGRAM cell
 
   ! This interface block is needed to pass dynamically allocated arrays
   interface
+     subroutine inhist(xfn, firstn, number, nextn)
+       double precision :: xfn(:,:)
+       integer firstn(:,:),number(:,:),nextn(:)       
+     end subroutine inhist
+     
      subroutine importmesh(RAD,H,XFN, elmnew,shpint,shpfs, &
           my_nnode, my_nelm, my_cap_center, meshfile)
        implicit none
