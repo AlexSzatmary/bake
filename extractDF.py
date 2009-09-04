@@ -32,10 +32,6 @@ N_values = 1
 for i in n_values:
   N_values = N_values*i
 
-files = ['cell', 'fluid', 'force', 'memb', 'rewr', 'visual']
-file_in_suffix = '.raw.f'
-file_out_suffix = '.run.f'
-
 list_i = []
 values = []
 for i in range(m):
