@@ -168,7 +168,7 @@
       PARAMETER(NGXB4=NGX/4,NGYB4=NGY/4,NGZB4=NGZ/4)
       PARAMETER(FLNGX=NGX,FLNGY=NGY,FLNGZ=NGZ)
 
-      integer, parameter :: npl=$npl$
+      integer, parameter :: npl=$sqrtnpl$**2*$npls$
       double precision :: XPI(:,:)
       double precision :: XFN(:,:),FRC(:,:)
       integer firstn(:,:),number(:,:)

@@ -7,13 +7,9 @@
 ;$yc_cap$;(/0.69d0*(flngy+1.d0), 0.69d0*(flngy+1.d0), \n0.31d0*(flngy+1.d0), 0.31d0*(flngy+1.d0), \n0.5d0*(flngy+1.d0)/)
 ;$zc_cap$;(/0.31d0*(flngz-1.d0), 0.31d0*(flngz-1.d0), \n0.69d0*(flngz-1.d0), 0.69d0*(flngz-1.d0), \n0.5d0*(flngz-1.d0)/)
 ;$fineness$;(/5, 3, 6, 4, 0/)
-;$nsnode$;(5*10242+$npl$)
 ;$ncap$;5
-;$npl$;($sqrtnpl$**2*$npls$)
 ;$npls$;0
 ;$sqrtnpl$;32
-;$nmem$;10242
-;$nselm$;40960
 ;$planey$;2.5d0
 collision5cap;$lngx$;5
 ;$FVS$;1

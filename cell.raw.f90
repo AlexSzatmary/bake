@@ -34,18 +34,6 @@ PROGRAM cell
        integer firstn(:,:),number(:,:),nextn(:)       
      end subroutine inhist
      
-     subroutine importmesh(RAD,H,XFN, elmnew,shpint,shpfs, &
-          my_nnode, my_nelm, my_cap_center, meshfile)
-       implicit none
-       double precision lcube, h, pi, rad
-       double precision :: XFN(:,:)
-       INTEGER elmnew(:,:)
-       double precision :: shpint(:,:),shpfs(:,:)
-       integer my_nnode, my_nelm
-       double precision my_cap_center(:)
-       character(len=*) meshfile
-     end subroutine importmesh
-
      subroutine generatecapsule(RAD,H,XFN, elmnew,shpint,shpfs, &
      my_cap_center, my_fineness)
        implicit none
@@ -184,7 +172,7 @@ PROGRAM cell
   PARAMETER(NBX=NGX+2,NBY=NGY+2,NBZ=NGZ+2)
   PARAMETER(NGXM1=NGX-1,NGYM1=NGY-1,NGZM1=NGZ-1)
   PARAMETER(FLNGX=NGX,FLNGY=NGY,FLNGZ=NGZ)
-  integer, parameter :: npl=$npl$
+  integer, parameter :: npl=$sqrtnpl$**2*$npls$
   double precision fnpl
   INTEGER KLOK,KLOK1,KLOKEND,NSTEP
   double precision :: T,H,h64,TD,VSC,TIME,RHO,PI,RADX,FOSTAR
@@ -249,8 +237,6 @@ PROGRAM cell
   double precision :: cap_center(3,$ncap$)
 
   integer fp_start, fp_end
-  character*(*), parameter :: &
-       meshfile($ncap$)=$mesh$
 
   !**********************************************************************
   !     Optical variables declaration
@@ -271,7 +257,7 @@ PROGRAM cell
        cap_e_end(ncap))
   allocate(fineness(ncap), nnode(ncap), nelm(ncap))
 
-  fnpl = $npl$
+  fnpl = npl
   message = '               '
 
   fineness = $fineness$
@@ -281,7 +267,7 @@ PROGRAM cell
   call make_cap_start_and_end(nnode, cap_n_start, cap_n_end, &
        nelm, cap_e_start, cap_e_end)
 
-  nfsize=cap_n_end($ncap$)+$npl$
+  nfsize=cap_n_end($ncap$)+npl
   nfsize2=cap_e_end($ncap$)
 
   fp_start=cap_n_end($ncap$)+1
@@ -367,17 +353,6 @@ PROGRAM cell
      do i = 1,$ncap$
         write(*,*) 'l290', cap_n_start(i), cap_n_end(i), &
              cap_e_start(i),cap_e_end(i), cap_center(:,i)
-!             call importmesh(rad(i),h, &
-!                  xfn(1:3,cap_n_start(i):cap_n_end(i)), &
-!                  elmnew(1:3,cap_e_start(i):cap_e_end(i)), &
-!                  shpint(1:3,cap_e_start(i):cap_e_end(i)), &
-!                  shpfs(1:7,cap_e_start(i):cap_e_end(i)), &
-!                  nnode(i), nelm(i), cap_center(:,i), meshfile(i))
-!!$        xfn(1,1) = 37
-!!$        elmnew(1,1) = 101
-!!$        shpint(1,1) = 203
-!!$        shpfs(1,1) = 305
-!!$        shpfs(7, 20480) = 9
         call generatecapsule(rad(i),h, &
              xfn(1:3,cap_n_start(i):cap_n_end(i)), &
              elmnew(1:3,cap_e_start(i):cap_e_end(i)), &

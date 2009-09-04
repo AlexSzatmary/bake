@@ -8,17 +8,8 @@
 ;$yc_cap$;(/0.5d0*(flngy+1.d0)/)
 ;$zc_cap$;(/0.5d0*(flngz-1.d0)/)
 ;$fineness$;(/5/)
-;$mesh$;(/'$m_end$.sph'/)
-;$fp_end$;($fp_start$-1+$npl$)
-;$fp_start$;($m_end$+1)
-;$m_start$;1
-;$m_end$;$nmem$
-;$nsnode$;($nmem$+$npl$)
-;$npl$;($sqrtnpl$**2*$npls$)
 ;$npls$;0
 ;$sqrtnpl$;32
-;$nmem$;10242
-;$nselm$;20480
 ;$planey$;2.5d0
 mix;$lngx$;5
 ;$FVS$;1
