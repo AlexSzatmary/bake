@@ -44,7 +44,7 @@ subroutine importmesh(RAD,H,XFN, elmnew,shpint,shpfs, &
   INTEGER elmnew(:,:)
   double precision :: shpint(:,:), shpfs(:,:) 
   integer my_nnode, my_nelm
-  double precision :: my_cap_center(3) 
+  double precision :: my_cap_center(:)
   character(len=*) meshfile
 
   open(20,file='../../mesh/mesh.'//meshfile,status='unknown')
@@ -101,6 +101,69 @@ subroutine importmesh(RAD,H,XFN, elmnew,shpint,shpfs, &
 
   return
 end subroutine importmesh
+!************************************************************
+subroutine generatecapsule(RAD,H,XFN, elmnew,shpint,shpfs, &
+     my_cap_center, my_fineness)
+  IMPLICIT NONE
+  interface 
+     subroutine sph(fineness, xfnew, ilmnew)
+       integer fineness
+       double precision :: xfnew(:,:)
+       integer :: ilmnew(:,:)
+     end subroutine sph
+
+     subroutine sf(xfn, elmnew, shpint, shpfs)
+       double precision :: xfn(:,:), rad, h
+       integer elmnew(:,:)
+       double precision :: shpint(:,:), shpfs(:,:)
+     end subroutine sf
+  end interface
+
+  integer, parameter :: lxng=$lngx$,lyng=lxng,lzng=lxng
+  integer, parameter :: ngx=2**lxng,ngy=2**lyng,ngz=2**lzng
+  double precision, parameter :: flngx=ngx,flngy=ngy,flngz=ngz
+  INTEGER i 
+  double precision H,pi,theta,x,y,rad
+  double precision :: XFN(:,:)
+  INTEGER elmnew(:,:)
+  double precision :: shpint(:,:), shpfs(:,:) 
+  double precision :: my_cap_center(:)
+  integer my_fineness
+
+  pi = 3.14159265358979323846d0 ! Taken from Wikipedia; 20 digits
+  theta =  pi/4.0d0
+  !     The sphere comes in as the unit sphere.
+  call sph(my_fineness, xfn, elmnew)
+  call sf(xfn, elmnew, shpfs, shpint)
+
+  do i = 1, size(xfn,2)
+     x = XFN(1,i)*dcos(theta) - XFN(2,i)*dsin(theta)
+     y = XFN(1,i)*dsin(theta) + XFN(2,i)*dcos(theta)
+     !     Move the sphere to the center of the flow field, give it radius rad.
+
+     XFN(1,i) =RAD*x/H + my_cap_center(1)
+     XFN(2,i) =RAD*y/H + my_cap_center(2)
+     XFN(3,i) =RAD*XFN(3,i)/H + my_cap_center(3)
+  enddo
+
+  !     This scales the sphere's (non-dimensional) finite element parameters
+  !     to real units.
+  do i= 1, size(elmnew,2)
+     shpfs(1,i)=shpfs(1,i)/rad
+     shpfs(2,i)=shpfs(2,i)/rad
+     shpfs(3,i)=shpfs(3,i)/rad
+     shpfs(4,i)=shpfs(4,i)/rad
+     shpfs(5,i)=shpfs(5,i)/rad
+     shpfs(6,i)=shpfs(6,i)/rad
+     shpfs(7,i)=shpfs(7,i)*rad*rad
+     !     The following 3 lines added 5-2-07 due to changes in scaling in
+     !     membnx.
+     shpint(1,i) = shpint(1,i)*rad
+     shpint(2,i) = shpint(2,i)*rad
+     shpint(3,i) = shpint(3,i)*rad
+  enddo
+  return
+end subroutine generatecapsule
 !************************************************************
 subroutine MEMBNX(XFN,elmnew,shpint,shpfs,FRC, H,FOSTAR)
   IMPLICIT NONE
@@ -453,22 +516,8 @@ end subroutine elmfrc
 !**********************************************************************
 subroutine capsuletable(fineness, nnode, nelm)
   integer fineness, nnode, nelm
-  if (fineness == 4) then
-     nnode = 2562
-     nelm = 2560
-  end if
-  if (fineness == 5) then
-     nnode = 10242
-     nelm = 20480
-  end if
-  if (fineness == 6) then
-     nnode = 40962
-     nelm = 81920
-  end if
-  if (fineness == 7) then
-     nnode = 163842
-     nelm = 327680
-  end if
+  nnode = 10*4**fineness+2
+  nelm = 20*4**fineness
 end subroutine capsuletable
 !**********************************************************************
 subroutine make_cap_start_and_end(nnode, cap_n_start, cap_n_end, &

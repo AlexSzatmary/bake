@@ -444,8 +444,6 @@ subroutine cellcenter(klok, xfn, my_nnode, cap_i, xcenter, &
   ycenter = ycenter/dble(my_nnode)
   zcenter = zcenter/dble(my_nnode)
 
-  !todo Make filename change with capsule index
-
   call makefilename('capsulex__', cap_i,'.txt',strfname)
   open(401, file=strfname, access='append')
   write(401,*) klok, xcenter,ycenter,zcenter

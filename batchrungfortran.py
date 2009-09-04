@@ -37,7 +37,7 @@ for i in n_values:
   N_values = N_values*i
 
 files = ['cell', 'fluid', 'force', 'memb', 'rewr', 'visual', 'fvs', 
-      'rayTracer', 'math']
+      'rayTracer', 'math', 'meshgen']
 file_in_suffix = '.raw.f90'
 file_out_suffix = '.run.f90'
 

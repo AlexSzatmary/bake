@@ -27,6 +27,7 @@
 PROGRAM cell
   IMPLICIT NONE
 
+  ! This interface block is needed to pass dynamically allocated arrays
   interface
      subroutine importmesh(RAD,H,XFN, elmnew,shpint,shpfs, &
           my_nnode, my_nelm, my_cap_center, meshfile)
@@ -36,16 +37,26 @@ PROGRAM cell
        INTEGER elmnew(:,:)
        double precision :: shpint(:,:),shpfs(:,:)
        integer my_nnode, my_nelm
-       double precision my_cap_center(3)
+       double precision my_cap_center(:)
        character(len=*) meshfile
      end subroutine importmesh
 
-     subroutine cellcenter(klok, xfn, my_nnode, cap_i, xcenter, &
-          ycenter, zcenter)
+     subroutine generatecapsule(RAD,H,XFN, elmnew,shpint,shpfs, &
+     my_cap_center, my_fineness)
        implicit none
-       integer klok, my_nnode, cap_i
+       double precision :: rad, h
+       double precision :: xfn(:,:), shpint(:,:), shpfs(:,:)
+       integer :: elmnew(:,:)
+       double precision :: my_cap_center(:)
+       integer :: my_fineness
+     end subroutine generatecapsule
+
+     subroutine cellcenter(klok, xfn, my_nnode, cap_i, xcenter, &
+          ycenter, zcenter) 
+       implicit none 
+       integer klok, my_nnode, cap_i 
        double precision :: xfn(:,:)
-       double precision :: xcenter, ycenter, zcenter
+       double precision :: xcenter, ycenter, zcenter 
      end subroutine cellcenter
 
      subroutine inplane(xpi, xfn)
@@ -109,8 +120,16 @@ PROGRAM cell
   !     Start variable declaration
   !**********************************************************************
 
+  ! lx_ing is the log_2(ngx_i)
+  ! ngx_i is the number of fluid grid nodes in the i-direction
+  ! nfsize is the number of solid nodes
+  ! nfsize2 is the number of elements
   integer lxng,lyng,lzng,ngx,ngy,ngz,nfsize,nfsize2
+  ! ngx_im1 is the number of grid nodes in the i-direction, minus one.
+  ! This is only really useful for the z-direction.
+  ! nbx_i is ngx_i+2, which is only really useful in the x and y directions.
   INTEGER NGXM1,NGYM1,NGZM1,NBX,NBY,NBZ
+  ! These are just the ngx_i in double precision
   double precision :: FLNGX,FLNGY,FLNGZ
   PARAMETER(LXNG=$lngx$,LYNG=LXNG,LZNG=LXNG)
   PARAMETER(NGX=2**LXNG,NGY=2**LYNG,NGZ=2**LZNG)
@@ -300,13 +319,24 @@ PROGRAM cell
      do i = 1,$ncap$
         write(*,*) 'l290', cap_n_start(i), cap_n_end(i), &
              cap_e_start(i),cap_e_end(i), cap_center(:,i)
-        call importmesh(rad(i),h, &
+!             call importmesh(rad(i),h, &
+!                  xfn(1:3,cap_n_start(i):cap_n_end(i)), &
+!                  elmnew(1:3,cap_e_start(i):cap_e_end(i)), &
+!                  shpint(1:3,cap_e_start(i):cap_e_end(i)), &
+!                  shpfs(1:7,cap_e_start(i):cap_e_end(i)), &
+!                  nnode(i), nelm(i), cap_center(:,i), meshfile(i))
+!!$        xfn(1,1) = 37
+!!$        elmnew(1,1) = 101
+!!$        shpint(1,1) = 203
+!!$        shpfs(1,1) = 305
+!!$        shpfs(7, 20480) = 9
+        call generatecapsule(rad(i),h, &
              xfn(1:3,cap_n_start(i):cap_n_end(i)), &
              elmnew(1:3,cap_e_start(i):cap_e_end(i)), &
              shpint(1:3,cap_e_start(i):cap_e_end(i)), &
              shpfs(1:7,cap_e_start(i):cap_e_end(i)), &
-             nnode(i), nelm(i), cap_center(:,i), meshfile(i))
-        write(*,*) 'cell l309'
+             cap_center(:,i), fineness(i))
+        write(*,*) 'cell l309', xfn(1,1), rad(i), h
      end do
      !     $npls$ is the number of planes. If there is one, it should be
      !     initialized.
@@ -348,10 +378,8 @@ PROGRAM cell
         call fvssub(ur, vr, wr, -bfs, -umean)
         call poiseuille(wr, pr, $dpdz$, vsc)
      end if
-     write(*,*) 'cell l352'
 
      call wprofile(wr, 0)
-     write(*,*) 'cell l355'
      call uvwpdump(ur, vr, wr, pr, 0)
      call makefilename('solidnodes', 0,'.txt',strfname)
      call saveallsolid(XFN,strfname)
@@ -371,16 +399,11 @@ PROGRAM cell
 
      if ($optical$ /= 0) then
         CALL findRays (XFN , elmnew ,zcenter(1), numberOfrays )
-        !print *, numberOfrays
         ALLOCATE (rays(1:9,1:numberOfRays))
         CALL initializeRays(rays, numberOfRays)
         call capsuleForce(XFN , Foptical, shpfs , elmnew , rays , FOSTAR, zcenter(1), &
              RADX, H,cap_center(:,1),z0,disp,numberOfrays)
      end if
-
-     !print *, zcenter(1),cap_center(:,1)
-
-
   else
      write(*,*) 'cell l367 Restarting'
      call restart(lcube, nu, rho,td,ur,vr,wr, &
@@ -580,4 +603,4 @@ PROGRAM cell
      deallocate(rad, xcenter, ycenter, zcenter, &
           xcenterold, ycenterold, zcenterold)
    END PROGRAM cell
-!**********************************************************************
+       !**********************************************************************
