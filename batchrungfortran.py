@@ -36,8 +36,8 @@ N_values = 1
 for i in n_values:
   N_values = N_values*i
 
-files = ['cell', 'fluid', 'force', 'memb', 'rewr', 'visual', 'fvs', 
-      'rayTracer', 'math', 'meshgen']
+files = ['cell', 'fluid', 'force', 'memb', 'rewr', 'visual', 'fvs',
+         'math', 'rayTracer', 'meshgen']
 file_in_suffix = '.raw.f90'
 file_out_suffix = '.run.f90'
 
@@ -79,7 +79,6 @@ for i in range(N_values):
           houtcode.write(line)
       hin.close()
       houtcode.close()
-#  os.system('cp -r mesh ' + wd)
   os.chdir(wd)
   fortran_command = 'gfortran -Wall -g -o ' + 'cell' + cd
   for file in files:

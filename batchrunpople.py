@@ -19,7 +19,7 @@ for line in hin.readlines():
   elements = line.split(';')
   elements[-1] = elements[-1].replace('\n','')
   for i in range(len(elements)):
-    elements[i] = elements[i].replace('\\n','\n     & ')
+    elements[i] = elements[i].replace('\\n','&\n')
   short_tokens.append(elements[0])
   tokens.append(elements[1])
   list_values.append(elements[2:])
@@ -36,12 +36,13 @@ N_values = 1
 for i in n_values:
   N_values = N_values*i
 
-files = ['cell', 'fluid', 'force', 'memb', 'rewr', 'visual', 'fvs','math','rayTracer']
+files = ['cell', 'fluid', 'force', 'memb', 'rewr', 'visual', 'fvs',
+         'math', 'rayTracer', 'meshgen']
 file_in_suffix = '.raw.f90'
 file_out_suffix = '.run.f90'
 
 visual_files = ['profilemovie']
-visual_file_in_suffix = '.raw.m'
+visual_file_in_suffix = '_raw.m'
 visual_file_out_suffix = '_run.m'
 
 list_i = []
@@ -87,7 +88,6 @@ for i in range(N_values):
       houtcode.write(line)
   hin.close()
   houtcode.close()
-  os.system('cp -r mesh ' + wd)
   print 'compiling'
   fortran_command = 'ifort -o ' + os.path.join(wd, 'cell' + cd)
   for file in files:
