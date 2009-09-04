@@ -261,16 +261,16 @@ PROGRAM cell
   message = '               '
 
   fineness = $fineness$
-  do i=1,$ncap$
+  do i=1,ncap
      call capsuletable(fineness(i),nnode(i),nelm(i))
   end do
   call make_cap_start_and_end(nnode, cap_n_start, cap_n_end, &
        nelm, cap_e_start, cap_e_end)
 
-  nfsize=cap_n_end($ncap$)+npl
-  nfsize2=cap_e_end($ncap$)
+  nfsize=cap_n_end(ncap)+npl
+  nfsize2=cap_e_end(ncap)
 
-  fp_start=cap_n_end($ncap$)+1
+  fp_start=cap_n_end(ncap)+1
   fp_end=nfsize
 
   ALLOCATE(UR(0:NBX,0:NBY,0:NGZM1),VR(0:NBX,0:NBY,0:NGZM1))
@@ -350,7 +350,7 @@ PROGRAM cell
 
   if (klok == 0) then
      !     Initialize the solid arrays
-     do i = 1,$ncap$
+     do i = 1,ncap
         write(*,*) 'l290', cap_n_start(i), cap_n_end(i), &
              cap_e_start(i),cap_e_end(i), cap_center(:,i)
         call generatecapsule(rad(i),h, &
@@ -366,7 +366,7 @@ PROGRAM cell
         call inplane(xpi, xfn(1:3,fp_start:fp_end))
      end if
      !     Get an initial measurement of the center of the capsule
-     do i=1,$ncap$
+     do i=1,ncap
         call cellcenter(klok,xfn(1:3,cap_n_start(i):cap_n_end(i)), &
              nnode(i), i, xcenter(i), ycenter(i), zcenter(i))
         !     Use these values to measure velocity. It's a crappy measure, it's
@@ -406,7 +406,7 @@ PROGRAM cell
      call saveallsolid(XFN,strfname)
      call makefilename('solidforce', 0,'.txt',strfname)
      call saveallsolid(frc,strfname)
-     do i = 1,$ncap$
+     do i = 1,ncap
         call shape(h64,klok, i, xfn(1:3, cap_n_start(i): &
              cap_n_end(i)), &
              nnode(i), elmnew(1:3, cap_e_start(i):cap_e_end(i)), &
@@ -445,7 +445,7 @@ PROGRAM cell
      message = 'cell l216'
      call dumpstatus(klok, message, 'status.txt')
      T = T+TD
-     do i=1,$ncap$
+     do i=1,ncap
         CALL MEMBNX(XFN(:,cap_n_start(i):cap_n_end(i)), &
              elmnew(:,cap_e_start(i):cap_e_end(i)), & 
              shpint(:,cap_e_start(i):cap_e_end(i)), &
@@ -470,7 +470,7 @@ PROGRAM cell
      call meanforce(klok, frc)
      message = 'cell l228'
      call dumpstatus(klok, message, 'status.txt')
-     do i=1,$ncap$
+     do i=1,ncap
         call cellcenter(klok,xfn(1:3,cap_n_start(i):cap_n_end(i)), &
              nnode(i), i, xcenter(i), ycenter(i), zcenter(i))
         message = 'cell l232'
@@ -559,7 +559,7 @@ PROGRAM cell
      call dumpstatus(klok, message, 'thumbprint.txt')
 
      !     End of the loop, do post-processing stuff
-     do i=1,$ncap$
+     do i=1,ncap
         call shape(h64,klok, i, xfn(1:3, cap_n_start(i): &
              cap_n_end(i)), &
              nnode(i), elmnew(1:3, cap_e_start(i):cap_e_end(i)), &

@@ -67,7 +67,7 @@ subroutine generatecapsule(RAD,H,XFN, elmnew,shpint,shpfs, &
   theta =  pi/4.0d0
   !     The sphere comes in as the unit sphere.
   call sph(my_fineness, xfn, elmnew)
-  call sf(xfn, elmnew, shpfs, shpint)
+  call sf(xfn, elmnew, shpint, shpfs)
 
   do i = 1, size(xfn,2)
      x = XFN(1,i)*dcos(theta) - XFN(2,i)*dsin(theta)
@@ -95,6 +95,7 @@ subroutine generatecapsule(RAD,H,XFN, elmnew,shpint,shpfs, &
      shpint(2,i) = shpint(2,i)*rad
      shpint(3,i) = shpint(3,i)*rad
   enddo
+
   return
 end subroutine generatecapsule
 !************************************************************
