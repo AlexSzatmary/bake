@@ -6,12 +6,12 @@
 ;$xc_cap$;(/0.5d0*(flngx+1.d0), 0.5d0*(flngx+1.d0), \n0.5d0*(flngx+1.d0), 0.5d0*(flngx+1.d0), \n0.5d0*(flngx+1.d0)/)
 ;$yc_cap$;(/0.69d0*(flngy+1.d0), 0.69d0*(flngy+1.d0), \n0.31d0*(flngy+1.d0), 0.31d0*(flngy+1.d0), \n0.5d0*(flngy+1.d0)/)
 ;$zc_cap$;(/0.31d0*(flngz-1.d0), 0.31d0*(flngz-1.d0), \n0.69d0*(flngz-1.d0), 0.69d0*(flngz-1.d0), \n0.5d0*(flngz-1.d0)/)
-;$fineness$;(/5, 3, 6, 4, 0/)
+;$fineness$;(/5, 3, 6, 4, 2/)
 ;$ncap$;5
 ;$npls$;0
 ;$sqrtnpl$;32
 ;$planey$;2.5d0
-collision5cap;$lngx$;5
+manymesh;$lngx$;5
 ;$FVS$;1
 ;$gapratio$;0.00d0
 ;$b$;6.d0
