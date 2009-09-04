@@ -1,7 +1,7 @@
 SUBROUTINE RESTART(LCUBE,NU,RHO,TD,UR,VR,WR, &
-     XFN,xpi,FIRSTN,NUMBER,NEXTN,elmnew,shpint,shpfs)
+     XFN,xpi,FIRSTN,NUMBER,NEXTN,elmnew,shpint,shpfs, xcenterold, ycenterold, zcenterold)
   IMPLICIT NONE
-  INTEGER LXNG,LYNG,LZNG,NGX,NGY,NGZ,NFSIZE,NFSIZE2
+  INTEGER LXNG,LYNG,LZNG,NGX,NGY,NGZ
   INTEGER NGXM1,NGYM1,NGZM1,NBX,NBY,NBZ
   double precision :: FLNGX,FLNGY,FLNGZ
   parameter(lxng=$lngx$,lyng=lxng,lzng=lxng)
@@ -9,17 +9,16 @@ SUBROUTINE RESTART(LCUBE,NU,RHO,TD,UR,VR,WR, &
   PARAMETER(NBX=NGX+2,NBY=NGY+2,NBZ=NGZ+2)
   PARAMETER(NGXM1=NGX-1,NGYM1=NGY-1,NGZM1=NGZ-1)
   PARAMETER(FLNGX=NGX,FLNGY=NGY,FLNGZ=NGZ)
-  parameter(nfsize=$nsnode$,nfsize2=$nselm$)
-  double precision :: LCUBE,NU,TD,RHO
-  double COMPLEX :: UR(0:NBX,0:NBY,0:NGZM1)
-  double complex :: VR(0:NBX,0:NBY,0:NGZM1)
-  double COMPLEX :: WR(0:NBX,0:NBY,0:NGZM1)
-  INTEGER FIRSTN(1:NGX,1:NGY),NUMBER(1:NGX,1:NGY),NEXTN(1:NFSIZE)
-  double precision :: XFN(1:3,1:NFSIZE)
-  integer, parameter :: npl=$npl$
-  double precision :: xpi(1:3,1:npl)
-  INTEGER elmnew(1:3,1:NFSIZE2)
-  double precision :: shpint(1:3,1:NFSIZE2),shpfs(1:7,1:NFSIZE2)
+  double precision :: lcube,nu,td,rho
+  double complex :: ur(0:,0:,0:)
+  double complex :: vr(0:,0:,0:)
+  double complex :: wr(0:,0:,0:)
+  integer firstn(:,:),number(:,:),nextn(:)
+  double precision :: xfn(:,:)
+  double precision :: xpi(:,:)
+  integer elmnew(:,:)
+  double precision :: shpint(:,:),shpfs(:,:)
+  double precision :: xcenterold(:), ycenterold(:), zcenterold(:)
   READ(101)LCUBE,NU,RHO,TD
   REWIND(101)
   READ(102) UR
@@ -44,12 +43,14 @@ SUBROUTINE RESTART(LCUBE,NU,RHO,TD,UR,VR,WR, &
   REWIND(108)
   read(112) xpi
   rewind(112)
+  read(113) xcenterold, ycenterold, zcenterold
+  rewind(113)
 END SUBROUTINE RESTART
 !**********************************************************************
 SUBROUTINE WRSTART(LCUBE,NU,RHO,TD,KLOK,UR,VR,WR, &
-     XFN,xpi,FIRSTN,NUMBER,NEXTN,elmnew,shpint,shpfs)
+     XFN,xpi,FIRSTN,NUMBER,NEXTN,elmnew,shpint,shpfs, xcenterold, ycenterold, zcenterold)
   IMPLICIT NONE
-  INTEGER LXNG,LYNG,LZNG,NGX,NGY,NGZ,NFSIZE,NFSIZE2
+  INTEGER LXNG,LYNG,LZNG,NGX,NGY,NGZ
   INTEGER NGXM1,NGYM1,NGZM1,NBX,NBY,NBZ
   double precision :: FLNGX,FLNGY,FLNGZ
   parameter(lxng=$lngx$,lyng=lxng,lzng=lxng)
@@ -57,18 +58,17 @@ SUBROUTINE WRSTART(LCUBE,NU,RHO,TD,KLOK,UR,VR,WR, &
   PARAMETER(NBX=NGX+2,NBY=NGY+2,NBZ=NGZ+2)
   PARAMETER(NGXM1=NGX-1,NGYM1=NGY-1,NGZM1=NGZ-1)
   PARAMETER(FLNGX=NGX,FLNGY=NGY,FLNGZ=NGZ)
-  parameter(nfsize=$nsnode$,nfsize2=$nselm$)
   double precision :: LCUBE,NU,TD,RHO
   INTEGER KLOK
-  double COMPLEX :: UR(0:NBX,0:NBY,0:NGZM1)
-  double complex :: VR(0:NBX,0:NBY,0:NGZM1)
-  double COMPLEX :: WR(0:NBX,0:NBY,0:NGZM1)
-  INTEGER FIRSTN(1:NGX,1:NGY),NUMBER(1:NGX,1:NGY),NEXTN(1:NFSIZE)
-  integer, parameter :: npl=$npl$
-  double precision :: xpi(1:3,1:npl)
-  double precision :: XFN(1:3,1:NFSIZE)
-  INTEGER elmnew(1:3,1:NFSIZE2)
-  double precision :: shpint(1:3,1:NFSIZE2),shpfs(1:7,1:NFSIZE2)
+  double COMPLEX :: UR(0:,0:,0:)
+  double complex :: VR(0:,0:,0:)
+  double COMPLEX :: WR(0:,0:,0:)
+  integer firstn(:,:),number(:,:),nextn(:)
+  double precision :: xpi(:,:)
+  double precision :: xfn(:,:)
+  integer elmnew(:,:)
+  double precision :: shpint(:,:),shpfs(:,:)
+  double precision :: xcenterold(:), ycenterold(:), zcenterold(:)
   open(100, position='rewind', form='unformatted')
   write(100) klok
   rewind(100)
@@ -97,6 +97,8 @@ SUBROUTINE WRSTART(LCUBE,NU,RHO,TD,KLOK,UR,VR,WR, &
   REWIND(111)
   write(112) xpi
   rewind(112)
+  write(113) xcenterold, ycenterold, zcenterold
+  rewind(113)
 END SUBROUTINE WRSTART
 !**********************************************************************
 

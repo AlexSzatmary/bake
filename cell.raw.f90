@@ -119,6 +119,49 @@ PROGRAM cell
             shpfs(:,:), frc(:,:), h, fostar
        integer :: elmnew(:,:)
      end subroutine membnx
+
+     subroutine restart(lcube,nu,rho,td,ur,vr,wr, &
+          xfn,xpi,firstn,number,nextn,elmnew,shpint,shpfs, &
+          xcenterold, ycenterold, zcenterold)
+       implicit none
+       double precision :: lcube,nu,td,rho
+       double COMPLEX :: UR(:,:,:)
+       double complex :: VR(:,:,:)
+       double COMPLEX :: WR(:,:,:)
+       double precision :: xfn(:,:)
+       double precision :: xpi(:,:)
+       integer firstn(:,:),number(:,:),nextn(:)
+       integer elmnew(:,:)
+       double precision :: shpint(:,:),shpfs(:,:)
+       double precision :: xcenterold(:), ycenterold(:), zcenterold(:)
+     end subroutine restart
+
+     subroutine wrstart(lcube,nu,rho,td,klok,ur,vr,wr, &
+          xfn,xpi,firstn,number,nextn,elmnew,shpint,shpfs, &
+          xcenterold, ycenterold, zcenterold)
+       implicit none
+       double precision :: lcube,nu,td,rho
+       integer klok
+       double COMPLEX :: UR(:,:,:)
+       double complex :: VR(:,:,:)
+       double COMPLEX :: WR(:,:,:)
+       double precision :: xfn(:,:)
+       double precision :: xpi(:,:)
+       integer firstn(:,:),number(:,:),nextn(:)
+       integer elmnew(:,:)
+       double precision :: shpint(:,:),shpfs(:,:)       
+       double precision :: xcenterold(:), ycenterold(:), zcenterold(:)
+     end subroutine wrstart
+
+     subroutine saveallsolid(xfn, strfname)
+       character(len=*) strfname
+       double precision :: xfn(:,:)
+     end subroutine saveallsolid
+
+     subroutine meanforce(clock, frc)
+       integer clock
+       double precision :: frc(:,:)
+     end subroutine meanforce
   end interface
 
   !**********************************************************************
@@ -341,19 +384,16 @@ PROGRAM cell
              shpint(1:3,cap_e_start(i):cap_e_end(i)), &
              shpfs(1:7,cap_e_start(i):cap_e_end(i)), &
              cap_center(:,i), fineness(i))
-        write(*,*) 'cell l309', xfn(1,1), rad(i), h
      end do
      !     $npls$ is the number of planes. If there is one, it should be
      !     initialized.
      if ($npls$ > 0) then
         call inplane(xpi, xfn(1:3,fp_start:fp_end))
      end if
-     write(*,*) 'cell l316'
      !     Get an initial measurement of the center of the capsule
      do i=1,$ncap$
         call cellcenter(klok,xfn(1:3,cap_n_start(i):cap_n_end(i)), &
              nnode(i), i, xcenter(i), ycenter(i), zcenter(i))
-        write(*,*) 'cell l319'
         !     Use these values to measure velocity. It's a crappy measure, it's
         !     a backward difference.
         xcenterold(i) = xcenter(i)
@@ -362,6 +402,7 @@ PROGRAM cell
      end do
 
      !  Initialize the activation variables --
+     open(206, access='append')
      write(206,*) nstep  ,' = nstep'
      write(206,*) lcube  ,' cm = lcube'
      write(206,*) nu     ,' cm**2/sec = nu'
@@ -376,7 +417,7 @@ PROGRAM cell
      write(206,*) length,' =length'
      write(206,*) time  ,' =time'
      write(206,*) vsc   ,' =vsc=kinematic viscosity, program units'
-
+     close(206)
      !     Initialize velocity
      !     Throughout, u is in program units (normalized by h/td)
      if (fvs /= 0) then
@@ -412,10 +453,12 @@ PROGRAM cell
   else
      write(*,*) 'cell l367 Restarting'
      call restart(lcube, nu, rho,td,ur,vr,wr, &
-          xfn,xpi,firstn,number,nextn,elmnew,shpint,shpfs)
+          xfn,xpi,firstn,number,nextn,elmnew,shpint,shpfs, xcenterold, ycenterold, zcenterold)
      T=klok*time
   end if
+
   call inhist(xfn,firstn,number,nextn)
+  
   !     Initialize the fluid solver
   call influidu(vsc,qrfact, dsq,dx,dy,dz)
 
@@ -557,12 +600,14 @@ PROGRAM cell
         end if
      end do
 
+     open(206, access='append')
      WRITE(206,*)' KLOK: ',KLOK,  ' ; TIME: ',T
+     close(206)
      message = 'cell l266'
 
      call dumpstatus(klok, message, 'status.txt')
      call wrstart(lcube, nu, rho,td,klok,ur,vr,wr, &
-          xfn,xpi,firstn,number,nextn,elmnew,shpint,shpfs)
+          xfn,xpi,firstn,number,nextn,elmnew,shpint,shpfs, xcenterold, ycenterold, zcenterold)
      message = 'cell l270'
 
      call dumpstatus(klok, message, 'status.txt')

@@ -227,12 +227,11 @@ subroutine saveallsolid(xfn,strfname)
   !     Format: x, y, z
 
   implicit none
-  character*19 strfname
-  integer, parameter :: nfsize=$nsnode$
-  double precision :: xfn(1:3,1:nfsize)
+  character(len=*) strfname
+  double precision :: xfn(:,:)
   integer i
   open(25,file=strfname,status='unknown')
-  do i = 1,nfsize
+  do i = 1,size(xfn,2)
      write(25,*) xfn(1,i),xfn(2,i),xfn(3,i)
   end do
   close(25)
@@ -402,15 +401,15 @@ end subroutine wlindump
 !**********************************************************
 subroutine meanforce(clock, frc)
   implicit none
-  integer, parameter :: nfsize=$nsnode$
   !     !! Watch out; this gives mean force including the plane.
+  !! Also, this isn't a mean, it's a total!
   integer i, clock
-  double precision :: frc(3,nfsize)
+  double precision :: frc(:,:)
   double precision :: forcex, forcey, forcez
   forcex = 0.d0
   forcey = 0.d0
   forcez = 0.d0
-  do i=1,nfsize
+  do i=1,size(frc,2)
      forcex=forcex + frc(1,i)
      forcey=forcey + frc(2,i)
      forcez=forcez + frc(3,i)

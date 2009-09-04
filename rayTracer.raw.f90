@@ -168,7 +168,7 @@ SUBROUTINE rayTrace(XFN , Selements, elmnew , rays, numberOfRays, &
   IMPLICIT none
 
   integer nbNodes, nbElements, numberOfRays, nbReflections
-  parameter(nbNodes=$nsnode$,nbElements=$nselm$)
+  parameter(nbNodes=-0,nbElements=-0)
 
   double precision nm, np , stress(1:4)
   double precision  XFN(1:3,1:nbNodes) , Selements(1:4,1:nbElements)
@@ -333,7 +333,7 @@ SUBROUTINE findRays (XFN , elmnew  , zc , numberOfrays)
   IMPLICIT NONE
   integer iElement, numberOfrays, nbElements, nbNodes
 
-  parameter(nbNodes=$nsnode$,nbElements=$nselm$)
+  parameter(nbNodes=-0,nbElements=-0)
 
   double precision N(1:3,1:nbElements) , zc, PI
 
@@ -374,7 +374,7 @@ SUBROUTINE capsuleForce(XFN , Fnodes, shpfs , elmnew ,rays , FOSTAR, zc, &
   integer nbNodes, nbElements, numberOfrays
   double precision  nm, np, omega_zero, epsilono ,z0, RADX, H, disp,my_cap_center(1:3), opticalPower,lightSpeed
   integer nbReflections
-  parameter(nbNodes=$nsnode$,nbElements=$nselm$)
+  parameter(nbNodes=-0,nbElements=-0)
   parameter(opticalPower=$opticalPower$,lightSpeed=$lightSpeed$)
   parameter(nm=$nm$,np=$np$,nbReflections=$numberOfMaxReflections$,omega_zero=$omega_zero$, epsilono=$epsilono$)
 
