@@ -464,6 +464,7 @@ PROGRAM cell
      if ($npls$ > 0) then
         call pmhist(xpi,xfn,frc,firstn,nextn,number, &
              10240.d0/fnpl, fp_start, fp_end, nfsize)
+        call inhist(xfn, firstn, number, nextn)
      end if
      message = 'cell l225'
      call dumpstatus(klok, message, 'status.txt')

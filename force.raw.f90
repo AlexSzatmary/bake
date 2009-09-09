@@ -181,32 +181,6 @@
          frc(2,I)=-CONST*(xfn(2,I)-XPI(2,I-fp_start+1))
          frc(3,I)=-CONST*(xfn(3,I)-XPI(3,I-fp_start+1))
       end do
-
-!     Everything that follows in this sub might not need doing.
-!     This part will be reassessed when performance profiling is taken.
-!     Zero out all nextn?
-      DO N=1,nfsize
-         NEXTN(N)=0
-      end do
-
-!     Zero out all firstn, nextn?
-      DO JJ=1,NGY
-         DO II=1,NGX
-            FIRSTN(II,JJ)=0
-            NUMBER(II,JJ)=0
-         end do
-      end do
-
-!     Completely re-do firstn, nextn, number?
-! SORT THE XFN DATA BY X-COORDINATE AND Y-COORDINATE USING LINKED LISTS
-      DO N=1,nfsize
-         JJ=MOD(INT(xfn(2,N)+FLNGY)-1+NGY,NGY) + 1
-         II=MOD(INT(xfn(1,N)+FLNGX)-1+NGX,NGX) + 1
-         NEXTN(N)=FIRSTN(II,JJ)
-         FIRSTN(II,JJ)=N
-         NUMBER(II,JJ)=NUMBER(II,JJ)+1
-      end do
-
       RETURN
       END SUBROUTINE PMHIST
 !********************************************************************
