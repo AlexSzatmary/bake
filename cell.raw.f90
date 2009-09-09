@@ -58,16 +58,11 @@ PROGRAM cell
        integer nnodes
      end subroutine inplane
 
-     subroutine pmhist(xpi,xfn,frc,firstn,nextn,number,const, &
-          fp_start, fp_end, nfsize)
+     subroutine pmhist(xpi,xfn,frc,const)
        implicit none
        double precision :: xpi(:,:)
        double precision :: xfn(:,:),frc(:,:)
-       integer firstn(:,:),number(:,:)
-       integer nextn(:)
        double precision :: const
-       integer fp_start, fp_end
-       integer nfsize
      end subroutine pmhist
 
      subroutine pushup(ur,vr,wr,xfn,frc,firstn,number,nextn)
@@ -258,6 +253,7 @@ PROGRAM cell
   allocate(fineness(ncap), nnode(ncap), nelm(ncap))
 
   fnpl = npl
+  
   message = '               '
 
   fineness = $fineness$
@@ -462,8 +458,7 @@ PROGRAM cell
      message = 'cell l220'
      call dumpstatus(klok, message, 'status.txt')
      if ($npls$ > 0) then
-        call pmhist(xpi,xfn,frc,firstn,nextn,number, &
-             10240.d0/fnpl, fp_start, fp_end, nfsize)
+        call pmhist(xpi,xfn(:,fp_start:fp_end),frc(:,fp_start:fp_end),10240.d0/fnpl)
         call inhist(xfn, firstn, number, nextn)
      end if
      message = 'cell l225'

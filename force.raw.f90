@@ -148,16 +148,13 @@
       return
       end subroutine inplane
 !*********************************************************************
-      SUBROUTINE PMHIST(XPI,XFN,FRC,FIRSTN,NEXTN,NUMBER,CONST, &
-          fp_start, fp_end, nfsize)
+      SUBROUTINE PMHIST(XPI,XFN,FRC,CONST)
       IMPLICIT NONE
       INTEGER LXNG,LYNG,LZNG,NGX,NGY,NGZ
       INTEGER NGXM1,NGYM1,NGZM1,NBX,NBY,NBZ
       INTEGER NGXP1,NGYP1,NGZP1
       INTEGER NGXP2,NGYP2,NGZP2
       INTEGER NGXB4,NGYB4,NGZB4
-      INTEGER NFSIZE
-      integer fp_start, fp_end
       double precision :: FLNGX,FLNGY,FLNGZ
       PARAMETER(LXNG=$lngx$,LYNG=LXNG,LZNG=LXNG+1)
       PARAMETER(NGX=2**LXNG,NGY=2**LYNG,NGZ=2**LZNG)
@@ -171,15 +168,13 @@
       integer, parameter :: npl=$sqrtnpl$**2*$npls$
       double precision :: XPI(:,:)
       double precision :: XFN(:,:),FRC(:,:)
-      integer firstn(:,:),number(:,:)
-      integer nextn(:)
-      integer i,ii,jj,n
+      integer i
       double precision :: CONST
 
-      DO I=fp_start,fp_end
-         frc(1,I)=-CONST*(xfn(1,I)-XPI(1,I-fp_start+1))
-         frc(2,I)=-CONST*(xfn(2,I)-XPI(2,I-fp_start+1))
-         frc(3,I)=-CONST*(xfn(3,I)-XPI(3,I-fp_start+1))
+      DO I=1,size(xfn,2)
+         frc(1,I)=-CONST*(xfn(1,I)-XPI(1,I))
+         frc(2,I)=-CONST*(xfn(2,I)-XPI(2,I))
+         frc(3,I)=-CONST*(xfn(3,I)-XPI(3,I))
       end do
       RETURN
       END SUBROUTINE PMHIST
