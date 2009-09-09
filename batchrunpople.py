@@ -66,7 +66,7 @@ for i in range(N_values):
       houtcode = open(os.path.join(wd, file + file_out_suffix), 'w')
       for line in hin.readlines():
           for j in range(0,len(tokens)):
-              line = line.replace(tokens[j], values[j])
+            line = line.replace(tokens[j], values[j])
           houtcode.write(line)
       hin.close()
       houtcode.close()

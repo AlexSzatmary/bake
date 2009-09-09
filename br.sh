@@ -1,7 +1,7 @@
-./batchrungfortran.py bp/test/shear
-./batchrungfortran.py bp/test/extensional
-./batchrungfortran.py bp/test/drift
-./batchrungfortran.py bp/test/mix
-./batchrungfortran.py bp/test/poiseuille
-./batchrungfortran.py bp/test/2cap
-./batchrungfortran.py bp/test/collision5cap
+./batchrun.py gfortran bp/test/shear
+./batchrun.py gfortran bp/test/extensional
+./batchrun.py gfortran bp/test/drift
+./batchrun.py gfortran bp/test/mix
+./batchrun.py gfortran bp/test/poiseuille
+./batchrun.py gfortran bp/test/2cap
+./batchrun.py gfortran bp/test/collision5cap

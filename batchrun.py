@@ -8,6 +8,15 @@
 
 import os, time, os.path, sys
 
+#Figure out what system I'm running on; make a lot of select cases for this
+system = sys.argv[1]
+# Make sure it's a system that has been scripted for, otherwise bad things
+# could happen
+if (system != 'gfortran' and system != 'ifort' and system != hpc 
+    and system != 'pople'):
+  print "Invalid system specified"
+  exit(-1)
+
 #Load bp file
 hin = open(sys.argv[-1],'r')
 
@@ -90,13 +99,47 @@ for i in range(N_values):
           houtcode.write(line)
       hin.close()
       houtcode.close()
-  os.chdir(wd)
-  fortran_command = 'gfortran -Wall -g -o ' + 'cell' + cd
+  if system == 'hpc':
+    hin = open('qsub_script.raw','r')
+    houtcode = open(os.path.join(wd, 'qsub_script.run'), 'w')
+    for line in hin.readlines():
+      for j in range(0,len(tokens)):
+        line = line.replace(tokens[j], values[j])
+      line = line.replace('$cd$', cd)
+      houtcode.write(line)
+    hin.close()
+    houtcode.close()
+  if system == 'pople':
+    hin = open('qsub_pople.raw','r')
+    houtcode = open(os.path.join(wd, 'qsub_pople.run'), 'w')
+    for line in hin.readlines():
+      for j in range(0,len(tokens)):
+        line = line.replace(tokens[j], values[j])
+      line = line.replace('$cd$', cd)
+      houtcode.write(line)
+    hin.close()
+    houtcode.close()
 
+  os.chdir(wd)
+  # Insert compile command here  
+  if system == 'gfortran':
+    fortran_command = 'gfortran -Wall -g -o cell' + cd
+  elif system == 'ifort':
+    fortran_command = 'ifort -o cell' + cd
+  elif system == 'hpc':
+    fortran_command = 'mpif90 -o cell' + cd
+  elif system == 'pople':
+    fortran_command = 'ifort -o cell' + cd
   for file in code_files:
       fortran_command = fortran_command + ' ' + file + file_out_suffix
   os.system(fortran_command)
-  os.system('./cell' + cd)
+  if system == 'gfortran' or system == 'ifort':
+    os.system('./cell' + cd)
+  elif system == 'hpc':
+    os.system('qsub qsub_script.run')
+  elif system == 'pople':
+    os.system('qsub qsub_pople.run')
+
   os.chdir(os.path.join('..', '..'))
   j = 0
   while i < N_values - 1:
