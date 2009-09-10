@@ -363,14 +363,14 @@ PROGRAM cell
   !     picked to generate the same flow field that FVS would, if there were
   !     no immersed body.
   mix = $mix$
-  bfs(1,:) = $bfs1$*$td$
-  bfs(2,:) = $bfs2$*$td$
-  bfs(3,:) = $bfs3$*$td$
+  bfs(1,:) = $bfs1$*td
+  bfs(2,:) = $bfs2$*td
+  bfs(3,:) = $bfs3$*td
 
   !     This is the mean fluid velocity vector. For unbounded flows, this is
   !     typically zero, so that a capsule in the center is immobilized.
   !     In program units for velocity (unitless)
-  umean(:)= $umean$
+  umean(:)= $umean$*td/h
 
   !     This automatically restarts an aborted run.
   klok = 0
