@@ -118,7 +118,7 @@
       RETURN
       END SUBROUTINE wrap
 !*********************************************************************
-      SUBROUTINE INPLANE(XPI,xfn, my_pl_n1, my_pl_n2, my_planey)
+      subroutine inrect(xpi,xfn, my_rect_n1, my_rect_n2, my_recty)
       IMPLICIT NONE
       INTEGER LXNG,LYNG,LZNG,NGX,NGY,NGZ
       INTEGER NGXM1,NGYM1,NGZM1,NBX,NBY,NBZ
@@ -130,22 +130,22 @@
       PARAMETER(FNGX=NGX,FNGY=NGY,FNGZ=NGZ)
       integer i,j
       double precision :: xfn(:,:)
-      integer my_pl_n1, my_pl_n2
+      integer my_rect_n1, my_rect_n2
       double precision :: XPI(:,:)
-      double precision :: my_planey
-      do i=0,my_pl_n1-1
-         do j=0,my_pl_n2-1
-            xpi(1,i*my_pl_n1+j+1)=(fngx-2*fngx/dble(my_pl_n1))*i/ &
-                (dble(my_pl_n1)-1)+fngx/dble(my_pl_n1)+1.d0
-            xpi(2,i*my_pl_n1+j+1)=my_planey
-            xpi(3,i*my_pl_n1+j+1)=(fngz-2*fngz/dble(my_pl_n1))*j/ &
-                (dble(my_pl_n1)-1)+fngz/dble(my_pl_n1)
+      double precision :: my_recty
+      do i=0,my_rect_n1-1
+         do j=0,my_rect_n2-1
+            xpi(1,i*my_rect_n1+j+1)=(fngx-2*fngx/dble(my_rect_n1))*i/ &
+                (dble(my_rect_n1)-1)+fngx/dble(my_rect_n1)+1.d0
+            xpi(2,i*my_rect_n1+j+1)=my_recty
+            xpi(3,i*my_rect_n1+j+1)=(fngz-2*fngz/dble(my_rect_n1))*j/ &
+                (dble(my_rect_n1)-1)+fngz/dble(my_rect_n1)
          end do
       end do
 
       xfn = xpi
       return
-      end subroutine inplane
+      end subroutine inrect
 !*********************************************************************
       SUBROUTINE PMHIST(XPI,XFN,FRC,CONST)
       IMPLICIT NONE

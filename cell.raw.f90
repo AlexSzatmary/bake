@@ -52,13 +52,12 @@ PROGRAM cell
        double precision :: xcenter, ycenter, zcenter 
      end subroutine cellcenter
 
-     subroutine inplane(xpi, xfn, my_pl_n1, my_pl_n2, my_planey)
+     subroutine inrect(xpi, xfn, my_rect_n1, my_rect_n2, my_recty)
        implicit none
        double precision :: xpi(:,:), xfn(:,:)
-       integer nnodes
-       integer my_pl_n1, my_pl_n2
-       double precision :: my_planey
-     end subroutine inplane
+       integer my_rect_n1, my_rect_n2
+       double precision :: my_recty
+     end subroutine inrect
 
      subroutine pmhist(xpi,xfn,frc,const)
        implicit none
@@ -147,6 +146,7 @@ PROGRAM cell
        integer clock
        double precision :: frc(:,:)
      end subroutine meanforce
+
      subroutine make_index_table_start_end(n, start, end)
        integer :: n(:), start(:), end(:)
      end subroutine make_index_table_start_end
@@ -172,9 +172,9 @@ PROGRAM cell
   PARAMETER(NBX=NGX+2,NBY=NGY+2,NBZ=NGZ+2)
   PARAMETER(NGXM1=NGX-1,NGYM1=NGY-1,NGZM1=NGZ-1)
   PARAMETER(FLNGX=NGX,FLNGY=NGY,FLNGZ=NGZ)
-  integer npls
-  integer npl
-  double precision fnpl
+  integer nrects
+  integer nrect
+  double precision fnrect
   INTEGER KLOK,KLOK1,KLOKEND,NSTEP
   double precision :: T,H,h64,TD,VSC,TIME,RHO,PI,RADX,FOSTAR
   double precision, allocatable :: rad(:)
@@ -237,7 +237,9 @@ PROGRAM cell
   integer, allocatable :: fineness(:), nnode(:), nelm(:)
   double precision, allocatable :: cap_center(:,:)
 
-  integer fp_start, fp_end
+  integer, allocatable :: rect_n1(:), rect_n2(:), rect_nnode(:), &
+       rect_n_start(:), rect_n_end(:)
+  double precision, allocatable :: recty(:)
 
   !**********************************************************************
   !     Optical variables declaration
@@ -247,43 +249,63 @@ PROGRAM cell
   integer, parameter ::  numberOfMaxReflections = $numberOfMaxReflections$, index = $index$
   double precision :: disp  , z0
   integer numberOfRays
-  integer, allocatable :: pl_n1(:), pl_n2(:)
-  double precision, allocatable :: planey(:)
   !**********************************************************************
   !     End variable declaration, start real code
   !**********************************************************************
 
-  ncap=$ncap$
-  allocate(rad(ncap), xcenter(ncap), ycenter(ncap), zcenter(ncap), &
-       xcenterold(ncap), ycenterold(ncap), zcenterold(ncap))
-  allocate(cap_n_start(ncap), cap_n_end(ncap), cap_e_start(ncap), &
-       cap_e_end(ncap))
-  allocate(fineness(ncap), nnode(ncap), nelm(ncap), cap_center(3,ncap))
+  nfsize = 0
+  nfsize2 = 0
 
-  npls = $npls$
-  allocate(pl_n1(npls), pl_n2(npls), planey(npls))
-  pl_n1 = (/$pl_n1$/)
-  pl_n2 = (/$pl_n2$/)
-  planey = (/$planey$/)
-  npl=pl_n1(1)*pl_n2(1)*npls
-  fnpl = npl
+  ncap=$ncap$
+  if (ncap > 0) then
+     allocate(rad(ncap), xcenter(ncap), ycenter(ncap), zcenter(ncap), &
+          xcenterold(ncap), ycenterold(ncap), zcenterold(ncap))
+     allocate(cap_n_start(ncap), cap_n_end(ncap), cap_e_start(ncap), &
+          cap_e_end(ncap))
+     allocate(fineness(ncap), nnode(ncap), nelm(ncap), cap_center(3,ncap))
+     fineness = $fineness$
+     do i=1,ncap
+        call capsuletable(fineness(i),nnode(i),nelm(i))
+     end do
+     cap_n_start(1) = 1
+     call make_index_table_start_end(nnode, cap_n_start, cap_n_end)
+
+     cap_e_start(1) = 1
+     call make_index_table_start_end(nelm, cap_e_start, cap_e_end)
+     nfsize = nfsize + cap_n_end(ncap)
+     nfsize2 = nfsize2 + cap_e_end(ncap)
+  end if
+  print *, 'cell l278', nfsize, nfsize2
+  nrects = $npls$
+  nrect = 0
+  if (nrects > 0) then 
+     allocate(rect_nnode(nrects), rect_n1(nrects), rect_n2(nrects), &
+          recty(nrects), rect_n_start(nrects), rect_n_end(nrects))
+     rect_n1 = (/$pl_n1$/)
+     rect_n2 = (/$pl_n2$/)
+     recty = (/$planey$/)
+     do i=1,nrects
+        call rectangle_table(rect_n1(i), rect_n2(i), rect_nnode(i))
+     end do
+     rect_n_start(1)=cap_n_end(ncap)+1
+     call make_index_table_start_end(rect_nnode, rect_n_start, rect_n_end)
+
+     nrect = rect_n_end(nrects) - rect_n_start(1) + 1
+     fnrect = nrect
+     nfsize = rect_n_end(nrects)
+  end if
+
+  print *, 'cell l298', nfsize, nfsize2
+  do i = 1, ncap
+     print *, i, nnode(i), cap_n_start(i), cap_n_end(i)
+     print *, i, nelm(i), cap_e_start(i), cap_e_end(i)
+  end do
+  
+  do i = 1, nrects
+     print *, 'rectangle', i, rect_nnode(i), rect_n_start(i), rect_n_end(i)
+  end do
   message = '               '
 
-  fineness = $fineness$
-  do i=1,ncap
-     call capsuletable(fineness(i),nnode(i),nelm(i))
-  end do
-
-  cap_n_start(1) = 1
-  cap_e_start(1) = 1
-  call make_index_table_start_end(nnode, cap_n_start, cap_n_end)
-  call make_index_table_start_end(nelm, cap_e_start, cap_e_end)
-
-  nfsize=cap_n_end(ncap)+npl
-  nfsize2=cap_e_end(ncap)
-
-  fp_start=cap_n_end(ncap)+1
-  fp_end=nfsize
 
   ALLOCATE(UR(0:NBX,0:NBY,0:NGZM1),VR(0:NBX,0:NBY,0:NGZM1))
   ALLOCATE(WR(0:NBX,0:NBY,0:NGZM1))
@@ -292,7 +314,7 @@ PROGRAM cell
   ALLOCATE(NEXTN(1:NFSIZE),XFN(1:3,1:NFSIZE),FRC(1:3,1:NFSIZE),Foptical(1:3,1:NFSIZE))
   ALLOCATE(elmnew(1:3,1:NFSIZE2))
   ALLOCATE(shpint(1:3,1:NFSIZE2),shpfs(1:7,1:NFSIZE2))
-  allocate(xpi(3,npl))
+  allocate(xpi(3,nrect))
 
   pi = 3.14159265358979323846d0 ! Taken from Wikipedia; 20 digits
   !     Physical parameters -- using cgs system
@@ -372,12 +394,13 @@ PROGRAM cell
              shpfs(1:7,cap_e_start(i):cap_e_end(i)), &
              cap_center(:,i), fineness(i))
      end do
-     !     npls is the number of planes. If there is one, it should be
+     !     nrects is the number of rectangles. If there is one, it should be
      !     initialized.
-     if (npls > 0) then
-        call inplane(xpi, xfn(1:3,fp_start:fp_end), pl_n1(1), pl_n2(1), &
-        planey(1))
-     end if
+     do i= 1, nrects
+        call inrect(xpi, xfn(1:3,rect_n_start(i):rect_n_end(i)), rect_n1(i), &
+             rect_n2(i), recty(i))
+     end do
+     
      !     Get an initial measurement of the center of the capsule
      do i=1,ncap
         call cellcenter(klok,xfn(1:3,cap_n_start(i):cap_n_end(i)), &
@@ -474,10 +497,12 @@ PROGRAM cell
 
      message = 'cell l220'
      call dumpstatus(klok, message, 'status.txt')
-     if (npls > 0) then
-        call pmhist(xpi,xfn(:,fp_start:fp_end),frc(:,fp_start:fp_end),10240.d0/fnpl)
-        call inhist(xfn, firstn, number, nextn)
-     end if
+     do i=1,nrects
+        call pmhist(xpi,xfn(:,rect_n_start(i):rect_n_end(i)), &
+             frc(:,rect_n_start(i):rect_n_end(i)),10240.d0/fnrect)
+     end do
+     if (nrects > 0) call inhist(xfn, firstn, number, nextn)
+     
      message = 'cell l225'
      call dumpstatus(klok, message, 'status.txt')
      call meanforce(klok, frc)
@@ -636,9 +661,14 @@ PROGRAM cell
      deallocate(xpi)
      DEALLOCATE (UR,VR,WR,FIRSTN,NUMBER,NEXTN,XFN,FRC)
      DEALLOCATE(QRFACT,elmnew,shpint,shpfs)
-     deallocate(fineness, nnode, nelm)
-     deallocate(cap_n_start, cap_n_end, cap_e_start, &
-          cap_e_end)
+     if (nrects > 0) then
+        deallocate(rect_nnode, rect_n1, rect_n2, recty,rect_n_start, &
+             rect_n_end)
+     end if
+     if (ncap > 0) then 
+        deallocate(fineness, nnode, nelm)
+        deallocate(cap_n_start, cap_n_end, cap_e_start, cap_e_end)
+     end if
      deallocate(rad, xcenter, ycenter, zcenter, &
           xcenterold, ycenterold, zcenterold)
    END PROGRAM cell

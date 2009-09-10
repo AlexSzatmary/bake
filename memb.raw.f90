@@ -454,6 +454,11 @@ subroutine capsuletable(fineness, nnode, nelm)
   nelm = 20*4**fineness
 end subroutine capsuletable
 !**********************************************************************
+subroutine rectangle_table(my_rect_n1, my_rect_n2, my_rect_nnode)
+  integer my_rect_n1, my_rect_n2, my_rect_nnode
+  my_rect_nnode = my_rect_n1*my_rect_n2
+end subroutine rectangle_table
+!**********************************************************************
 subroutine make_index_table_start_end(n, start, end)
   implicit none
   integer i
