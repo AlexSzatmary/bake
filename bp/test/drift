@@ -11,6 +11,7 @@
 ;$npls$;1
 ;$pl_n2$;$pl_n1$
 ;$pl_n1$;32
+;$recty$;2.5d0
 ;$planey$;2.5d0
 drift;$lngx$;5
 ;$FVS$;1

@@ -283,7 +283,7 @@ PROGRAM cell
           recty(nrects), rect_n_start(nrects), rect_n_end(nrects))
      rect_n1 = (/$pl_n1$/)
      rect_n2 = (/$pl_n2$/)
-     recty = (/$planey$/)
+     recty = (/$recty$/)
      do i=1,nrects
         call rectangle_table(rect_n1(i), rect_n2(i), rect_nnode(i))
      end do
