@@ -1,7 +1,7 @@
 ;$umean$;(/0.d0,0.d0,0.d0/)
 ;$bfs1$;(/0.d0, 0.d0, 0.d0/)
 ;$bfs2$;(/0.d0, 0.d0, 0.d0/)
-;$bfs3$;(/0.d0, $gamma_dot_p$, 0.d0/)
+;$bfs3$;(/0.d0, $gamma_dot$, 0.d0/)
 ;$rad$;(/$radx$, $radx$/2.d0, $radx$, $radx$/2.d0, \n$radx$/)
 ;$xc_cap$;(/0.5d0*(flngx+1.d0), 0.5d0*(flngx+1.d0), \n0.5d0*(flngx+1.d0), 0.5d0*(flngx+1.d0), \n0.5d0*(flngx+1.d0)/)
 ;$yc_cap$;(/0.69d0*(flngy+1.d0), 0.69d0*(flngy+1.d0), \n0.31d0*(flngy+1.d0), 0.31d0*(flngy+1.d0), \n0.5d0*(flngy+1.d0)/)
