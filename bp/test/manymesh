@@ -9,7 +9,8 @@
 ;$fineness$;(/5, 3, 6, 4, 2/)
 ;$ncap$;5
 ;$npls$;0
-;$sqrtnpl$;32
+;$pl_n2$;$pl_n1$
+;$pl_n1$;32
 ;$planey$;2.5d0
 manymesh;$lngx$;5
 ;$FVS$;1

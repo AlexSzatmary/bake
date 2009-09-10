@@ -52,10 +52,12 @@ PROGRAM cell
        double precision :: xcenter, ycenter, zcenter 
      end subroutine cellcenter
 
-     subroutine inplane(xpi, xfn)
+     subroutine inplane(xpi, xfn, my_pl_n1, my_pl_n2, my_planey)
        implicit none
        double precision :: xpi(:,:), xfn(:,:)
        integer nnodes
+       integer my_pl_n1, my_pl_n2
+       double precision :: my_planey
      end subroutine inplane
 
      subroutine pmhist(xpi,xfn,frc,const)
@@ -167,7 +169,8 @@ PROGRAM cell
   PARAMETER(NBX=NGX+2,NBY=NGY+2,NBZ=NGZ+2)
   PARAMETER(NGXM1=NGX-1,NGYM1=NGY-1,NGZM1=NGZ-1)
   PARAMETER(FLNGX=NGX,FLNGY=NGY,FLNGZ=NGZ)
-  integer, parameter :: npl=$sqrtnpl$**2*$npls$
+  integer npls
+  integer npl
   double precision fnpl
   INTEGER KLOK,KLOK1,KLOKEND,NSTEP
   double precision :: T,H,h64,TD,VSC,TIME,RHO,PI,RADX,FOSTAR
@@ -210,7 +213,7 @@ PROGRAM cell
   !     These are in real dimensions.
   double precision, ALLOCATABLE :: XFN(:,:),FRC(:,:),Foptical(:,:),shpint(:,:), &
        shpfs(:,:), rays(:,:)
-  double precision xpi(1:3,1:npl)
+  double precision, allocatable :: xpi(:,:)
   !     This array associates 3 nodes with a numbered element; three corners
   !     on a triangle.
   INTEGER, ALLOCATABLE :: elmnew(:,:)
@@ -241,6 +244,8 @@ PROGRAM cell
   integer, parameter ::  numberOfMaxReflections = $numberOfMaxReflections$, index = $index$
   double precision :: disp  , z0
   integer numberOfRays
+  integer, allocatable :: pl_n1(:), pl_n2(:)
+  double precision, allocatable :: planey(:)
   !**********************************************************************
   !     End variable declaration, start real code
   !**********************************************************************
@@ -252,8 +257,13 @@ PROGRAM cell
        cap_e_end(ncap))
   allocate(fineness(ncap), nnode(ncap), nelm(ncap))
 
+  npls = $npls$
+  allocate(pl_n1(npls), pl_n2(npls), planey(npls))
+  pl_n1 = (/$pl_n1$/)
+  pl_n2 = (/$pl_n2$/)
+  planey = (/$planey$/)
+  npl=pl_n1(1)*pl_n2(1)*npls
   fnpl = npl
-  
   message = '               '
 
   fineness = $fineness$
@@ -276,7 +286,7 @@ PROGRAM cell
   ALLOCATE(NEXTN(1:NFSIZE),XFN(1:3,1:NFSIZE),FRC(1:3,1:NFSIZE),Foptical(1:3,1:NFSIZE))
   ALLOCATE(elmnew(1:3,1:NFSIZE2))
   ALLOCATE(shpint(1:3,1:NFSIZE2),shpfs(1:7,1:NFSIZE2))
-
+  allocate(xpi(3,npl))
 
   pi = 3.14159265358979323846d0 ! Taken from Wikipedia; 20 digits
   !     Physical parameters -- using cgs system
@@ -356,10 +366,11 @@ PROGRAM cell
              shpfs(1:7,cap_e_start(i):cap_e_end(i)), &
              cap_center(:,i), fineness(i))
      end do
-     !     $npls$ is the number of planes. If there is one, it should be
+     !     npls is the number of planes. If there is one, it should be
      !     initialized.
-     if ($npls$ > 0) then
-        call inplane(xpi, xfn(1:3,fp_start:fp_end))
+     if (npls > 0) then
+        call inplane(xpi, xfn(1:3,fp_start:fp_end), pl_n1(1), pl_n2(1), &
+        planey(1))
      end if
      !     Get an initial measurement of the center of the capsule
      do i=1,ncap
@@ -457,7 +468,7 @@ PROGRAM cell
 
      message = 'cell l220'
      call dumpstatus(klok, message, 'status.txt')
-     if ($npls$ > 0) then
+     if (npls > 0) then
         call pmhist(xpi,xfn(:,fp_start:fp_end),frc(:,fp_start:fp_end),10240.d0/fnpl)
         call inhist(xfn, firstn, number, nextn)
      end if
@@ -616,6 +627,7 @@ PROGRAM cell
      message = 'cell l304'
      call dumpstatus(klok, message, 'status.txt')
 
+     deallocate(xpi)
      DEALLOCATE (UR,VR,WR,FIRSTN,NUMBER,NEXTN,XFN,FRC)
      DEALLOCATE(QRFACT,elmnew,shpint,shpfs)
      deallocate(fineness, nnode, nelm)

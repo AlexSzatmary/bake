@@ -118,7 +118,7 @@
       RETURN
       END SUBROUTINE wrap
 !*********************************************************************
-      SUBROUTINE INPLANE(XPI,xfn)
+      SUBROUTINE INPLANE(XPI,xfn, my_pl_n1, my_pl_n2, my_planey)
       IMPLICIT NONE
       INTEGER LXNG,LYNG,LZNG,NGX,NGY,NGZ
       INTEGER NGXM1,NGYM1,NGZM1,NBX,NBY,NBZ
@@ -130,21 +130,20 @@
       PARAMETER(FNGX=NGX,FNGY=NGY,FNGZ=NGZ)
       integer i,j
       double precision :: xfn(:,:)
-      integer, parameter :: sqrtnpl=$sqrtnpl$
-
+      integer my_pl_n1, my_pl_n2
       double precision :: XPI(:,:)
-      do i=0,sqrtnpl-1
-         do j=0,sqrtnpl-1
-            xpi(1,i*sqrtnpl+j+1)=(fngx-2*fngx/dble(sqrtnpl))*i/ &
-                (dble(sqrtnpl)-1)+fngx/dble(sqrtnpl)+1.d0
-            xpi(2,i*sqrtnpl+j+1)=$planey$
-            xpi(3,i*sqrtnpl+j+1)=(fngz-2*fngz/dble(sqrtnpl))*j/ &
-                (dble(sqrtnpl)-1)+fngz/dble(sqrtnpl)
-            xfn(1,i*sqrtnpl+j+1)=xpi(1,i*sqrtnpl+j+1)
-            xfn(2,i*sqrtnpl+j+1)=xpi(2,i*sqrtnpl+j+1)
-            xfn(3,i*sqrtnpl+j+1)=xpi(3,i*sqrtnpl+j+1)
+      double precision :: my_planey
+      do i=0,my_pl_n1-1
+         do j=0,my_pl_n2-1
+            xpi(1,i*my_pl_n1+j+1)=(fngx-2*fngx/dble(my_pl_n1))*i/ &
+                (dble(my_pl_n1)-1)+fngx/dble(my_pl_n1)+1.d0
+            xpi(2,i*my_pl_n1+j+1)=my_planey
+            xpi(3,i*my_pl_n1+j+1)=(fngz-2*fngz/dble(my_pl_n1))*j/ &
+                (dble(my_pl_n1)-1)+fngz/dble(my_pl_n1)
          end do
       end do
+
+      xfn = xpi
       return
       end subroutine inplane
 !*********************************************************************
@@ -165,7 +164,6 @@
       PARAMETER(NGXB4=NGX/4,NGYB4=NGY/4,NGZB4=NGZ/4)
       PARAMETER(FLNGX=NGX,FLNGY=NGY,FLNGZ=NGZ)
 
-      integer, parameter :: npl=$sqrtnpl$**2*$npls$
       double precision :: XPI(:,:)
       double precision :: XFN(:,:),FRC(:,:)
       integer i
