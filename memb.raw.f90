@@ -454,22 +454,18 @@ subroutine capsuletable(fineness, nnode, nelm)
   nelm = 20*4**fineness
 end subroutine capsuletable
 !**********************************************************************
-subroutine make_cap_start_and_end(nnode, cap_n_start, cap_n_end, &
-     nelm, cap_e_start, cap_e_end)
+subroutine make_index_table_start_end(n, start, end)
   implicit none
   integer i
-  integer nnode($ncap$), cap_n_start($ncap$), cap_n_end($ncap$)
-  integer nelm($ncap$), cap_e_start($ncap$), cap_e_end($ncap$)
-  cap_n_start(1)=1
-  cap_n_end(1)=nnode(1)
-  cap_e_start(1)=1
-  cap_e_end(1)=nelm(1)
-  if ($ncap$ > 1) then
-     do i=2,$ncap$
-        cap_n_start(i) = cap_n_end(i-1)+1
-        cap_n_end(i) = cap_n_start(i) - 1 + nnode(i)
-        cap_e_start(i) = cap_e_end(i-1)+1
-        cap_e_end(i) = cap_e_start(i) - 1 + nelm(i)
+  integer n(:), start(:), end(:)
+
+  end(1)=n(1) + start(1) - 1
+
+  if (size(n) > 1) then
+     do i=2,size(n)
+        start(i) = end(i-1)+1
+        end(i) = start(i) - 1 + n(i)
      end do
   end if
-end subroutine make_cap_start_and_end
+end subroutine make_index_table_start_end
+

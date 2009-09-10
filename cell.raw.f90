@@ -147,6 +147,9 @@ PROGRAM cell
        integer clock
        double precision :: frc(:,:)
      end subroutine meanforce
+     subroutine make_index_table_start_end(n, start, end)
+       integer :: n(:), start(:), end(:)
+     end subroutine make_index_table_start_end
   end interface
 
   !**********************************************************************
@@ -232,7 +235,7 @@ PROGRAM cell
   double precision :: mix
 
   integer, allocatable :: fineness(:), nnode(:), nelm(:)
-  double precision :: cap_center(3,$ncap$)
+  double precision, allocatable :: cap_center(:,:)
 
   integer fp_start, fp_end
 
@@ -255,7 +258,7 @@ PROGRAM cell
        xcenterold(ncap), ycenterold(ncap), zcenterold(ncap))
   allocate(cap_n_start(ncap), cap_n_end(ncap), cap_e_start(ncap), &
        cap_e_end(ncap))
-  allocate(fineness(ncap), nnode(ncap), nelm(ncap))
+  allocate(fineness(ncap), nnode(ncap), nelm(ncap), cap_center(3,ncap))
 
   npls = $npls$
   allocate(pl_n1(npls), pl_n2(npls), planey(npls))
@@ -270,8 +273,11 @@ PROGRAM cell
   do i=1,ncap
      call capsuletable(fineness(i),nnode(i),nelm(i))
   end do
-  call make_cap_start_and_end(nnode, cap_n_start, cap_n_end, &
-       nelm, cap_e_start, cap_e_end)
+
+  cap_n_start(1) = 1
+  cap_e_start(1) = 1
+  call make_index_table_start_end(nnode, cap_n_start, cap_n_end)
+  call make_index_table_start_end(nelm, cap_e_start, cap_e_end)
 
   nfsize=cap_n_end(ncap)+npl
   nfsize2=cap_e_end(ncap)
