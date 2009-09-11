@@ -6,7 +6,7 @@
 # having token codes like '$lngx$' present instead of an actual value, like 6.)
 # and translates each token to a value set in this file. It does 
 
-import os, time, os.path, sys
+import os, time, os.path, sys, re
 
 #Figure out what system I'm running on; make a lot of select cases for this
 system = sys.argv[1]
@@ -66,6 +66,12 @@ for i in range(m):
   list_i.append(0)
   values.append(0)
 
+pattern = re.compile('\$.+?\$')
+
+tokendict = {}
+for i in range(m):
+    tokendict[tokens[i]] = i
+
 # This is the main loop, setting up each of the runs
 for i in range(N_values):
   cd = ''
@@ -76,6 +82,15 @@ for i in range(N_values):
       cd = cd+short_tokens[j]+list_values[j][list_i[j]]
   print values
   print cd
+
+# Do the string replace operations on the values themselves
+  for j in range(m):
+      foundtoken = re.search(pattern, values[j])
+      while foundtoken:
+          values[j] = values[j].replace(foundtoken.group(0), 
+                                        values[tokendict[foundtoken.group(0)]])
+          foundtoken = re.search(pattern, values[j])
+
   wd = os.path.join('.', 'batch', cd)
 # This guy will need to be commented or uncommented depending on whether
 # you're wanting to restart runs.
