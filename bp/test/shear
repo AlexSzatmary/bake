@@ -1,3 +1,4 @@
+# I'm just going for ten timesteps.
 ;$t_end$;1.d-2
 ;$capillary_no$;1.d-2
 ;$gamma_dot$;($Eh$*$capillary_no$/($radx$*$mu$))
@@ -29,6 +30,7 @@ shear;$lngx$;5
 ;$lcube$;(radx*b)
 ;$rho$;1.025d0
 ;$dpdz$;0.d0
+# This is the shear rate in the program units; it dictates the timestep.
 ;$gamma_dot_p$;($t_end$/$nstep$)
 ;$Eh$;1.d0
 ;$radx$;3.338d-4

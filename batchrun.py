@@ -26,15 +26,16 @@ list_values = []
 n_values = []
 m = 0
 for line in hin.readlines():
-  elements = line.split(';')
-  elements[-1] = elements[-1].replace('\n','')
-  for i in range(len(elements)):
-    elements[i] = elements[i].replace('\\n','&\n')
-  short_tokens.append(elements[0])
-  tokens.append(elements[1])
-  list_values.append(elements[2:])
-  n_values.append(len(elements)-2)
-  m = m + 1
+  if (line[0] != '#'):
+    elements = line.split(';')
+    elements[-1] = elements[-1].replace('\n','')
+    for i in range(len(elements)):
+      elements[i] = elements[i].replace('\\n','&\n')
+    short_tokens.append(elements[0])
+    tokens.append(elements[1])
+    list_values.append(elements[2:])
+    n_values.append(len(elements)-2)
+    m = m + 1
 
 print short_tokens
 print tokens
