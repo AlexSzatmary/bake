@@ -28,6 +28,7 @@ PROGRAM cell
   IMPLICIT NONE
 
   ! This interface block is needed to pass dynamically allocated arrays
+  ! Useful comments will be found near the actual subroutines.
   interface
      subroutine inhist(xfn, firstn, number, nextn)
        double precision :: xfn(:,:)
@@ -156,25 +157,27 @@ PROGRAM cell
   !     Start variable declaration
   !**********************************************************************
 
-  ! lx_ing is the log_2(ngx_i)
-  ! ngx_i is the number of fluid grid nodes in the i-direction
-  ! nfsize is the number of solid nodes
-  ! nfsize2 is the number of elements
-  integer lxng,lyng,lzng,ngx,ngy,ngz,nfsize,nfsize2
+
   ! ngx_im1 is the number of grid nodes in the i-direction, minus one.
   ! This is only really useful for the z-direction.
   ! nbx_i is ngx_i+2, which is only really useful in the x and y directions.
-  INTEGER NGXM1,NGYM1,NGZM1,NBX,NBY,NBZ
+  ! lx_ing is the log_2(ngx_i)
+  integer, parameter :: lxng=$lngx$, lyng=lxng, lzng=lxng
+  ! ngx_i is the number of fluid grid nodes in the i-direction
+  integer, parameter :: NGX=2**LXNG,NGY=2**LYNG,NGZ=2**LZNG
+  integer, parameter :: nbx=ngx+2,nby=ngy+2,nbz=ngz+2
+  integer, parameter :: ngxm1=ngx-1,ngym1=ngy-1,ngzm1=ngz-1
+
   ! These are just the ngx_i in double precision
-  double precision :: FLNGX,FLNGY,FLNGZ
-  PARAMETER(LXNG=$lngx$,LYNG=LXNG,LZNG=LXNG)
-  PARAMETER(NGX=2**LXNG,NGY=2**LYNG,NGZ=2**LZNG)
-  PARAMETER(NBX=NGX+2,NBY=NGY+2,NBZ=NGZ+2)
-  PARAMETER(NGXM1=NGX-1,NGYM1=NGY-1,NGZM1=NGZ-1)
-  PARAMETER(FLNGX=NGX,FLNGY=NGY,FLNGZ=NGZ)
+  double precision, PARAMETER :: FLNGX=NGX,FLNGY=NGY,FLNGZ=NGZ
+
+  ! nfsize is the number of solid nodes
+  ! nfsize2 is the number of elements
+  integer nfsize, nfsize2
+
   integer nrects
-  integer nrect
-  double precision fnrect
+  integer nrectnodes
+  double precision fnrectnodes
   INTEGER KLOK,KLOK1,KLOKEND,NSTEP
   double precision :: T,H,h64,TD,VSC,TIME,RHO,PI,RADX,FOSTAR
   double precision, allocatable :: rad(:)
@@ -277,7 +280,7 @@ PROGRAM cell
   end if
   print *, 'cell l278', nfsize, nfsize2
   nrects = $npls$
-  nrect = 0
+  nrectnodes = 0
   if (nrects > 0) then 
      allocate(rect_nnode(nrects), rect_n1(nrects), rect_n2(nrects), &
           recty(nrects), rect_n_start(nrects), rect_n_end(nrects))
@@ -290,8 +293,8 @@ PROGRAM cell
      rect_n_start(1)=cap_n_end(ncap)+1
      call make_index_table_start_end(rect_nnode, rect_n_start, rect_n_end)
 
-     nrect = rect_n_end(nrects) - rect_n_start(1) + 1
-     fnrect = nrect
+     nrectnodes = rect_n_end(nrects) - rect_n_start(1) + 1
+     fnrectnodes = nrectnodes
      nfsize = rect_n_end(nrects)
   end if
 
@@ -314,7 +317,7 @@ PROGRAM cell
   ALLOCATE(NEXTN(1:NFSIZE),XFN(1:3,1:NFSIZE),FRC(1:3,1:NFSIZE),Foptical(1:3,1:NFSIZE))
   ALLOCATE(elmnew(1:3,1:NFSIZE2))
   ALLOCATE(shpint(1:3,1:NFSIZE2),shpfs(1:7,1:NFSIZE2))
-  allocate(xpi(3,nrect))
+  allocate(xpi(3,nrectnodes))
 
   pi = 3.14159265358979323846d0 ! Taken from Wikipedia; 20 digits
   !     Physical parameters -- using cgs system
@@ -499,7 +502,7 @@ PROGRAM cell
      call dumpstatus(klok, message, 'status.txt')
      do i=1,nrects
         call pmhist(xpi,xfn(:,rect_n_start(i):rect_n_end(i)), &
-             frc(:,rect_n_start(i):rect_n_end(i)),10240.d0/fnrect)
+             frc(:,rect_n_start(i):rect_n_end(i)),10240.d0/fnrectnodes)
      end do
      if (nrects > 0) call inhist(xfn, firstn, number, nextn)
      
