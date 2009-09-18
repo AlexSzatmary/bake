@@ -12,8 +12,8 @@ import os, time, os.path, sys, re
 system = sys.argv[1]
 # Make sure it's a system that has been scripted for, otherwise bad things
 # could happen
-if (system != 'gfortran' and system != 'ifort' and system != hpc 
-    and system != 'pople'):
+if (system != 'gfortran' and system != 'ifort' and 
+    system != 'hpc' and system != 'pople'):
   print "Invalid system specified"
   exit(-1)
 
