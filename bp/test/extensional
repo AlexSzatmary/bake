@@ -22,7 +22,7 @@ extensional;$lngx$;5
 ;$smalldumpint$;1
 ;$bigdumpint$;5
 ;$nu$;($mu$/$rho$)
-;$lcube$;(radx*b)
+;$lcube$;($radx$*$b$)
 ;$rho$;1.025d0
 ;$td$;($gamma_dot_p$/$gamma_dot$)
 ;$gamma_dot$;($Eh$*$capillary_no$/($radx$*$mu$))

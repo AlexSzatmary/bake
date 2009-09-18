@@ -27,7 +27,7 @@ shear;$lngx$;5
 ;$smalldumpint$;1
 ;$bigdumpint$;5
 ;$nu$;($mu$/$rho$)
-;$lcube$;(radx*b)
+;$lcube$;($radx$*$b$)
 ;$rho$;1.025d0
 ;$dpdz$;0.d0
 # This is the shear rate in the program units; it dictates the timestep.

@@ -198,7 +198,7 @@ PROGRAM cell
   double COMPLEX :: DZ(0:NBX,0:NBY,0:NGZM1)
   double precision :: DSQ(0:NBX,0:NBY,0:NGZM1)
   double precision, parameter :: Eh = $Eh$
-  double precision, parameter :: capillary_no = $capillary_no$
+
   integer, parameter :: FVS = $FVS$
 
   !     cap_n_start is an array of the indices to xfn, the *n*ode indices
@@ -234,7 +234,6 @@ PROGRAM cell
   integer ios
   logical lex
 
-  double precision :: b = $b$
   double precision :: mix
 
   integer, allocatable :: fineness(:), nnode(:), nelm(:)
@@ -290,7 +289,12 @@ PROGRAM cell
      do i=1,nrects
         call rectangle_table(rect_n1(i), rect_n2(i), rect_nnode(i))
      end do
-     rect_n_start(1)=cap_n_end(ncap)+1
+     if (ncap > 0) then
+        rect_n_start(1) = cap_n_end(ncap)+1
+     else
+        rect_n_start(1) = 0   
+     end if
+
      call make_index_table_start_end(rect_nnode, rect_n_start, rect_n_end)
 
      nrectnodes = rect_n_end(nrects) - rect_n_start(1) + 1
@@ -352,10 +356,13 @@ PROGRAM cell
   !     Characteristic force; divide by this to get force in program units.
   fostar = (mass*h/td**2)
 
-  rad = $rad$
-  cap_center(1,:)=$xc_cap$
-  cap_center(2,:)=$yc_cap$
-  cap_center(3,:)=$zc_cap$
+  if (ncap > 0) then
+     rad = $rad$
+     cap_center(1,:)=$xc_cap$
+     cap_center(2,:)=$yc_cap$
+     cap_center(3,:)=$zc_cap$
+  end if
+  
 
   !     Added to implement BC homogenization
   !     These are in the program units for 1/T
@@ -671,8 +678,8 @@ PROGRAM cell
      if (ncap > 0) then 
         deallocate(fineness, nnode, nelm)
         deallocate(cap_n_start, cap_n_end, cap_e_start, cap_e_end)
+        deallocate(rad, xcenter, ycenter, zcenter, &
+             xcenterold, ycenterold, zcenterold)
      end if
-     deallocate(rad, xcenter, ycenter, zcenter, &
-          xcenterold, ycenterold, zcenterold)
    END PROGRAM cell
        !**********************************************************************
