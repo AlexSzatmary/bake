@@ -24,12 +24,13 @@ r;$gapratio$;0.00d0;0.02d0;0.04d0;0.05d0;0.06d0;0.08d0;0.10d0;0.15d0;0.20d0;0.25
 ;$td$;($gamma_dot_p$/$gamma_dot$)
 ;$gamma_dot$;($Eh$*$capillary_no$/($radx$*$mu$))
 ;$dpdz$;0.d0
-;$gamma_dot_p$;($t_end$/$nstep$)
+;$gamma_dot_p$;($t_end$/$nend$)
 ;$t_end$;2.d-2
 ;$Eh$;1.d0
 ;$capillary_no$;2.d-4
 ;$radx$;3.338d-4
 ;$mu$;1.20d-2
+;$nend$;2000
 ;$nstep$;2000
 ;$nm$;1.33d0
 ;$np$;1.37d0
