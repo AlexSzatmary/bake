@@ -484,7 +484,7 @@ PROGRAM cell
   call influidu(vsc,qrfact, dsq,dx,dy,dz)
 
   klok1 = klok + 1
-  klokend = nstep + klok/nstep*nstep
+  klokend = min(nstep + klok/nstep*nstep, $nend$)
 
   !     MAIN LOOP --
   DO 5 KLOK=KLOK1,KLOKEND
