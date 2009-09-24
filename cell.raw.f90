@@ -105,7 +105,7 @@ PROGRAM cell
        integer :: elmnew(:,:)
      end subroutine membnx
 
-     subroutine restart(lcube,nu,rho,td,ur,vr,wr, &
+     subroutine restart(lcube,nu,rho,td,ur,vr,wr,pr, &
           xfn,xpi,firstn,number,nextn,elmnew,shpint,shpfs, &
           xcenterold, ycenterold, zcenterold)
        implicit none
@@ -113,6 +113,7 @@ PROGRAM cell
        double COMPLEX :: UR(:,:,:)
        double complex :: VR(:,:,:)
        double COMPLEX :: WR(:,:,:)
+       double COMPLEX :: pr(:,:,:)
        double precision :: xfn(:,:)
        double precision :: xpi(:,:)
        integer firstn(:,:),number(:,:),nextn(:)
@@ -121,7 +122,7 @@ PROGRAM cell
        double precision :: xcenterold(:), ycenterold(:), zcenterold(:)
      end subroutine restart
 
-     subroutine wrstart(lcube,nu,rho,td,klok,ur,vr,wr, &
+     subroutine wrstart(lcube,nu,rho,td,klok,ur,vr,wr,pr, &
           xfn,xpi,firstn,number,nextn,elmnew,shpint,shpfs, &
           xcenterold, ycenterold, zcenterold)
        implicit none
@@ -130,6 +131,7 @@ PROGRAM cell
        double COMPLEX :: UR(:,:,:)
        double complex :: VR(:,:,:)
        double COMPLEX :: WR(:,:,:)
+       double COMPLEX :: pr(:,:,:)
        double precision :: xfn(:,:)
        double precision :: xpi(:,:)
        integer firstn(:,:),number(:,:),nextn(:)
@@ -392,6 +394,11 @@ PROGRAM cell
 37 continue
 38 continue
 
+  klok1 = klok + 1
+  klokend = min(nstep + klok/nstep*nstep, $nend$)
+
+  if (klok >= klokend) stop
+
   if (klok == 0) then
      !     Initialize the solid arrays
      do i = 1,ncap
@@ -424,7 +431,7 @@ PROGRAM cell
 
      !  Initialize the activation variables --
      open(206, access='append')
-     write(206,*) nstep  ,' = nstep'
+     write(206,*) $nend$  ,' = nend'
      write(206,*) lcube  ,' cm = lcube'
      write(206,*) nu     ,' cm**2/sec = nu'
      write(206,*) rho    ,' gm/cm**3 = rho'
@@ -471,20 +478,19 @@ PROGRAM cell
         call capsuleForce(XFN , Foptical, shpfs , elmnew , rays , FOSTAR, zcenter(1), &
              RADX, H,cap_center(:,1),z0,disp,numberOfrays)
      end if
+
+     call inhist(xfn,firstn,number,nextn)
   else
      write(*,*) 'cell l367 Restarting'
-     call restart(lcube, nu, rho,td,ur,vr,wr, &
+     call restart(lcube, nu, rho,td,ur,vr,wr, pr, &
           xfn,xpi,firstn,number,nextn,elmnew,shpint,shpfs, xcenterold, ycenterold, zcenterold)
      T=klok*time
   end if
 
-  call inhist(xfn,firstn,number,nextn)
   
   !     Initialize the fluid solver
   call influidu(vsc,qrfact, dsq,dx,dy,dz)
 
-  klok1 = klok + 1
-  klokend = min(nstep + klok/nstep*nstep, $nend$)
 
   !     MAIN LOOP --
   DO 5 KLOK=KLOK1,KLOKEND
@@ -498,12 +504,6 @@ PROGRAM cell
              shpfs(:,cap_e_start(i):cap_e_end(i)), &
              FRC(:,cap_n_start(i):cap_n_end(i)),h,FOSTAR)
      end do
-     write(message, *) 'frc(1,1)',frc(1,1)
-     call dumpstatus(klok, message, 'thumbprint.txt')
-     write(message, *) 'frc(3,nfsize)',frc(1,nfsize)
-     call dumpstatus(klok, message, 'thumbprint.txt')
-     write(message, *) 'frc(2,nfsize)',frc(1,nfsize/2)
-     call dumpstatus(klok, message, 'thumbprint.txt')
 
      message = 'cell l220'
      call dumpstatus(klok, message, 'status.txt')
@@ -512,6 +512,13 @@ PROGRAM cell
              frc(:,rect_n_start(i):rect_n_end(i)),10240.d0/fnrectnodes)
      end do
      if (nrects > 0) call inhist(xfn, firstn, number, nextn)
+
+     write(message, *) 'frc(1,1)',frc(1,1)
+     call dumpstatus(klok, message, 'thumbprint.txt')
+     write(message, *) 'frc(3,nfsize)',frc(1,nfsize)
+     call dumpstatus(klok, message, 'thumbprint.txt')
+     write(message, *) 'frc(2,nfsize)',frc(1,nfsize/2)
+     call dumpstatus(klok, message, 'thumbprint.txt')
      
      message = 'cell l225'
      call dumpstatus(klok, message, 'status.txt')
@@ -629,7 +636,7 @@ PROGRAM cell
      message = 'cell l266'
 
      call dumpstatus(klok, message, 'status.txt')
-     call wrstart(lcube, nu, rho,td,klok,ur,vr,wr, &
+     call wrstart(lcube, nu, rho,td,klok,ur,vr,wr, pr, &
           xfn,xpi,firstn,number,nextn,elmnew,shpint,shpfs, xcenterold, ycenterold, zcenterold)
      message = 'cell l270'
 

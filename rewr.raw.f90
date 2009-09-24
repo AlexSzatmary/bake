@@ -1,4 +1,4 @@
-SUBROUTINE RESTART(LCUBE,NU,RHO,TD,UR,VR,WR, &
+SUBROUTINE RESTART(LCUBE,NU,RHO,TD,UR,VR,WR, pr, &
      XFN,xpi,FIRSTN,NUMBER,NEXTN,elmnew,shpint,shpfs, xcenterold, ycenterold, zcenterold)
   IMPLICIT NONE
   INTEGER LXNG,LYNG,LZNG,NGX,NGY,NGZ
@@ -13,6 +13,7 @@ SUBROUTINE RESTART(LCUBE,NU,RHO,TD,UR,VR,WR, &
   double complex :: ur(0:,0:,0:)
   double complex :: vr(0:,0:,0:)
   double complex :: wr(0:,0:,0:)
+  double complex :: pr(0:,0:,0:)
   integer firstn(:,:),number(:,:),nextn(:)
   double precision :: xfn(:,:)
   double precision :: xpi(:,:)
@@ -45,9 +46,11 @@ SUBROUTINE RESTART(LCUBE,NU,RHO,TD,UR,VR,WR, &
   rewind(112)
   read(113) xcenterold, ycenterold, zcenterold
   rewind(113)
+  read(114) pr
+  rewind(114)
 END SUBROUTINE RESTART
 !**********************************************************************
-SUBROUTINE WRSTART(LCUBE,NU,RHO,TD,KLOK,UR,VR,WR, &
+SUBROUTINE WRSTART(LCUBE,NU,RHO,TD,KLOK,UR,VR,WR, pr, &
      XFN,xpi,FIRSTN,NUMBER,NEXTN,elmnew,shpint,shpfs, xcenterold, ycenterold, zcenterold)
   IMPLICIT NONE
   INTEGER LXNG,LYNG,LZNG,NGX,NGY,NGZ
@@ -63,6 +66,7 @@ SUBROUTINE WRSTART(LCUBE,NU,RHO,TD,KLOK,UR,VR,WR, &
   double COMPLEX :: UR(0:,0:,0:)
   double complex :: VR(0:,0:,0:)
   double COMPLEX :: WR(0:,0:,0:)
+  double complex :: pr(0:,0:,0:)
   integer firstn(:,:),number(:,:),nextn(:)
   double precision :: xpi(:,:)
   double precision :: xfn(:,:)
@@ -99,6 +103,8 @@ SUBROUTINE WRSTART(LCUBE,NU,RHO,TD,KLOK,UR,VR,WR, &
   rewind(112)
   write(113) xcenterold, ycenterold, zcenterold
   rewind(113)
+  write(114) pr
+  rewind(114)
 END SUBROUTINE WRSTART
 !**********************************************************************
 

@@ -17,6 +17,11 @@ if (system != 'gfortran' and system != 'ifort' and
   print "Invalid system specified"
   exit(-1)
 
+if '-r' in sys.argv:
+  rerun = 1
+else:
+  rerun = 0
+
 #Load bp file
 hin = open(sys.argv[-1],'r')
 
@@ -95,7 +100,8 @@ for i in range(N_values):
   wd = os.path.join('.', 'batch', cd)
 # This guy will need to be commented or uncommented depending on whether
 # you're wanting to restart runs.
-  os.mkdir(wd)
+  if rerun == 0:
+    os.mkdir(wd)
 # String replace the tokens for the values
   for file in code_files:
       hin = open(file + file_in_suffix,'r')
