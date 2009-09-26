@@ -212,7 +212,7 @@ subroutine calculateDF(clock, cap_i, xfn, my_nnode)
 
   call makefilename('TaylorDF__', cap_i,'.txt',strfname)
   open(204, file=strfname, access='append')
-  write(204,*) clock, DF
+  write(204,'(i6,3x,es24.17)') clock, DF
   close(204)
 
   return
@@ -232,7 +232,7 @@ subroutine saveallsolid(xfn,strfname)
   integer i
   open(25,file=strfname,status='unknown')
   do i = 1,size(xfn,2)
-     write(25,*) xfn(1,i),xfn(2,i),xfn(3,i)
+     write(25,'(es24.17,3x,es24.17,3x,es24.17)') xfn(1,i),xfn(2,i),xfn(3,i)
   end do
   close(25)
 end subroutine saveallsolid
@@ -294,7 +294,7 @@ subroutine wprofile(wr,clock)
   do j = 1, ngy
      k = ngz/2-1
      !            do k = 0, ngz-1
-     write(25,'(3(i5x),x,e12.5,x,e12.5)') i,j,k, dble(wr(i,j,k)), dimag(wr(i,j,k))
+     write(25,'(3(i5x),x,e24.17,x,e24.17)') i,j,k, dble(wr(i,j,k)), dimag(wr(i,j,k))
      !            end do
   end do
   !      end do
@@ -331,7 +331,8 @@ subroutine wdump(wr,clock)
   do i =1,ngx
      do j = 1,ngy
         do k = 0,ngz-1
-           write(25,*) i,j,k, dreal(wr(i,j,k)), dimag(wr(i,j,k))
+           write(25,'(3(i4),2(es24.17))') i,j,k, dreal(wr(i,j,k)), &
+                dimag(wr(i,j,k))
         end do
      end do
   end do
@@ -357,7 +358,8 @@ subroutine uvwpdump(ur, vr, wr, pr, clock)
   do i =1,ngx
      do j = 1,ngy
         do k = 0,ngz-1
-           write(25,*) i,j,k, dreal(ur(i,j,k)), dreal(vr(i,j,k)), &
+           write(25,'(3(i4),x,4(es24.17))') i,j,k, dreal(ur(i,j,k)), &
+                dreal(vr(i,j,k)), &
                 dreal(wr(i,j,k)), dreal(pr(i,j,k))
         end do
      end do
