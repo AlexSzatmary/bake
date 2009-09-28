@@ -12,7 +12,7 @@ while runs != '':
     runsssh = os.popen(
         'ssh szatmary@pople.psc.edu qstat|grep szatmary')
     runs = runsssh.read()
-    print runs
+#    print runs
     runsssh.close()
 
 os.system("growlnotify -n Runmonitor -s -m 'Pople runs done'")

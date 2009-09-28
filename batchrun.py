@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# batchrungfortran.py
+# batchrun.py
 # Alex Szatmary
 # September 8, 2009
 # This script takes a raw Fortran file (By raw, I mean not ready to compile,
@@ -8,26 +8,75 @@
 
 import os, time, os.path, sys, re
 
+i = 0
 
-if sys.argv[2] == '-r' or sys.argv[2] == '-rr':
-  if sys.argv[2] == '-r':
-    task = 'run'
-  elif sys.argv[2] == '-rr':
-    task = 'rerun'
-  system = sys.argv[3]
+while i < len(sys.argv):
+  try:
+    if '.py' in sys.argv[i]:
+      pass
+    elif sys.argv[i] == '-r' or sys.argv[i] == '-rr':
+      if 'task' in dir():
+        raise Exception('Multiple tasks requested')
+      if sys.argv[i] == '-r':
+        task = 'run'
+      elif sys.argv[i] == '-rr':
+        task = 'rerun'
+      i += 1
+      system = sys.argv[i]
 # Figure out what system I'm running on; make a lot of select cases for this
 # Make sure it's a system that has been scripted for, otherwise bad things
 # could happen
-  if (system != 'gfortran' and system != 'ifort' and 
-      system != 'hpc' and system != 'pople'):
-    print "Invalid system specified"
-    exit(-1)
-elif sys.argv[2] == '-e':
-  task = 'extract'
-  extractfile = sys.argv[3]
+      if (system != 'gfortran' and system != 'ifort' and 
+          system != 'hpc' and system != 'pople'):
+        raise Exception('Invalid system specified')
+    elif sys.argv[i] == '-e':
+      if 'task' in dir():
+        raise Exception('Multiple tasks requested')
+      task = 'extract'
+      i += 1
+      extractfile = sys.argv[i]
+# Perform operation on a Slice of the runs      
+    elif sys.argv[i] == '-s':
+      if 'slice_start' in dir() or 'slice_end' in dir():
+        raise Exception('Multiple slices specified')
+      i += 1
+      if '-' in sys.argv[i]:
+        (slice_start, slice_end) = sys.argv[i].split('-')
+      else:
+        slice_start = 0
+        slice_end = int(sys.argv[i])
+      if slice_start == '':
+        slice_start = 0
+      if slice_end == '':
+        slice_end = 0
+      slice_start = int(slice_start)
+      slice_end = int(slice_end)
+    elif sys.argv[i] == '-l':
+      if 'task' in dir():
+        raise Exception('Multiple tasks requested')
+      task = 'list'
+    else:
+      if 'myfile' in dir():
+        raise Exception('Batch parameter file already specified')
+      myfile = sys.argv[i]
+    i += 1
+  except Exception, data:
+    if data[0] == 'Invalid system specified':
+      print data[0]
+      exit(-1)
+    elif data[0] == 'Multiple tasks requested':
+      print data[0]
+      exit(-2)
+    elif data[0] == 'Batch parameter file already specified':
+      print data[0]
+      exit(-3)
+    else:
+      print 'I don\'t know what exception I\'m dealing with.'
+      raise
+      exit(-100)
 
 #Load bp file
-hin = open(sys.argv[1],'r')
+hin = open(myfile,'r')
 
 short_tokens = []
 tokens = []
@@ -43,6 +92,7 @@ for line in hin.readlines():
     list_values.append(elements[2:])
     n_values.append(len(elements)-2)
     m = m + 1
+hin.close()
 
 print short_tokens
 print tokens
@@ -50,10 +100,15 @@ print list_values
 print n_values
 print m
 
+
 #Count how many runs I'm going to start
 N_values = 1
 for i in n_values:
   N_values = N_values*i
+print 'Number of runs in file ', N_values
+
+if task == 'list':
+  exit(0)
 
 #Define which files need tweaking
 code_files = ['cell', 'fluid', 'force', 'memb', 'rewr', 'visual', 'fvs',
@@ -80,10 +135,29 @@ tokendict = {}
 for i in range(m):
     tokendict[tokens[i]] = i
 
+if 'slice_start' not in dir():
+  slice_start = 0
+
+if 'slice_end' not in dir() or slice_end == 0:
+  slice_end = N_values
+
+
 if task == 'extract':
   hout = open('extract' + extractfile, 'w')
+
+for i in range(0, slice_start):
+  j = 0
+  while i < slice_end - 1:
+    list_i[j] = list_i[j] + 1
+    if list_i[j] == n_values[j]:
+      list_i[j] = 0
+      j = j + 1
+    else:
+      break
+
+
 # This is the main loop, setting up each of the runs
-for i in range(N_values):
+for i in range(slice_start, slice_end):
   cd = ''
 # Pick the values to be used in this run
   for j in range(m):
@@ -175,7 +249,7 @@ for i in range(N_values):
       hin.close()
     
   j = 0
-  while i < N_values - 1:
+  while i < slice_end - 1:
     list_i[j] = list_i[j] + 1
     if list_i[j] == n_values[j]:
       list_i[j] = 0
