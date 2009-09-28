@@ -430,7 +430,7 @@ PROGRAM cell
      end do
 
      !  Initialize the activation variables --
-     open(206, access='append')
+     open(206,file='checkinit.txt',access='append')
      write(206,*) $nend$  ,' = nend'
      write(206,*) lcube  ,' cm = lcube'
      write(206,*) nu     ,' cm**2/sec = nu'
@@ -533,7 +533,7 @@ PROGRAM cell
         !     todo Make filename change with capsule index
         call makefilename('capsulev__', i,'.txt',strfname)
         open(402,file=strfname, access='append')
-        write(402,*) klok, xcenter(i) - xcenterold(i), &
+        write(402,'(i6,3(x,es24.17))') klok, xcenter(i) - xcenterold(i), &
              ycenter(i) - ycenterold(i), zcenter(i) - zcenterold(i)
         close(402)
         xcenterold(i) = xcenter(i)
@@ -544,7 +544,7 @@ PROGRAM cell
      call meanfluidvelocity(ur, meanu)
      call meanfluidvelocity(vr, meanv)
      call meanfluidvelocity(wr, meanw)
-     open(403, access='append')
+     open(403, file='meanfluidv.txt',  access='append')
      write(403,*) klok, dreal(meanu), dreal(meanv), dreal(meanw)
      close(403)
 
@@ -630,7 +630,7 @@ PROGRAM cell
         end if
      end do
 
-     open(206, access='append')
+     open(206, file='checkinit.txt', access='append')
      WRITE(206,*)' KLOK: ',KLOK,  ' ; TIME: ',T
      close(206)
      message = 'cell l266'

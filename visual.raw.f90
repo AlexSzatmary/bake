@@ -1,5 +1,5 @@
 !**********************************************************************
-! Makes a kind of crappy profile out of the capsule by looking
+! Makes a profile out of the capsule by looking
 ! to see which nodes are within one fluid node of the assumed
 ! centerline.
 !m This subroutine is obsolescent. Instead, a subroutine
@@ -23,8 +23,7 @@ subroutine profile(cap_i, xfn, clock)
   DO i=1, nnode
      IF((XFN(1,i) >fngx/2.d0-1.d0).AND.(XFN(1,i) &
           <fngx/2.d0+1.d0)) THEN
-        write(25,300) XFN(2,i),XFN(3,i)
-300     format(e12.5,3x,e12.5)
+        write(25,'(es24.17xes24.17)') XFN(2,i),XFN(3,i)
      ENDIF
   ENDDO
   close(25)
@@ -142,7 +141,7 @@ subroutine dzy(zy,icount,klok, cap_i)
   double precision :: rmax, rmin, pi, r, r2, theta, ddzy
   integer icount, klok
   integer k, cap_i
-  character*14 strfname
+  character*15 strfname
 
   !     !m Change these numbers so that they're a lot bigger
   rmax = -100.d0
@@ -161,16 +160,16 @@ subroutine dzy(zy,icount,klok, cap_i)
 
   ddzy = (rmax - rmin)/(rmax+rmin)
 
-  write(strfname,'(A6,I4,A4)') 'theta_', cap_i, '.txt'
+  write(strfname,'(A7,I4,A4)') 'theta__', cap_i, '.txt'
   call padzeros(strfname)
   open(202, file=strfname, access='append')
-  write(202,*)klok,theta
+  write(202,'(i6,es24.17)')klok,theta
   close(202)
 
-  write(strfname,'(A6,I4,A4)') 'crapdf', cap_i, '.txt'
+  write(strfname,'(A7,I4,A4)') 'planedf', cap_i, '.txt'
   call padzeros(strfname)
   open(203, file=strfname, access='append')
-  write(203,*)klok, ddzy
+  write(203,'(i6,es24.17)')klok, ddzy
   close(203)
   return
 end subroutine Dzy
@@ -232,7 +231,7 @@ subroutine saveallsolid(xfn,strfname)
   integer i
   open(25,file=strfname,status='unknown')
   do i = 1,size(xfn,2)
-     write(25,'(es24.17,3x,es24.17,3x,es24.17)') xfn(1,i),xfn(2,i),xfn(3,i)
+     write(25,'(es24.17,2(x,es24.17))') xfn(1,i),xfn(2,i),xfn(3,i)
   end do
   close(25)
 end subroutine saveallsolid
@@ -395,7 +394,7 @@ subroutine wlindump(wlin,clock)
 
   open(25,file=wlindumpname,status='unknown')
   do i =-15,16*(ngz+2)
-     write(25,*) i, wlin(i)
+     write(25,'(i6,es24.17)') i, wlin(i)
   end do
   close(25)
 
@@ -416,9 +415,12 @@ subroutine meanforce(clock, frc)
      forcey=forcey + frc(2,i)
      forcez=forcez + frc(3,i)
   end do
+  forcex = forcex/size(frc,2)
+  forcey = forcex/size(frc,2)
+  forcez = forcex/size(frc,2)
 
-  open(451, access='append')
-  write(451,*) clock, forcex, forcey, forcez
+  open(451, file='meanforce.txt', access='append')
+  write(451,'(i6,3(xes24.17))') clock, forcex, forcey, forcez
   close(451)
 end subroutine meanforce
 !**********************************************************
@@ -447,7 +449,7 @@ subroutine cellcenter(klok, xfn, my_nnode, cap_i, xcenter, &
 
   call makefilename('capsulex__', cap_i,'.txt',strfname)
   open(401, file=strfname, access='append')
-  write(401,*) klok, xcenter,ycenter,zcenter
+  write(401,'(i6,3(x,es24.17))') klok, xcenter,ycenter,zcenter
   close(401)
   return
 end subroutine cellcenter

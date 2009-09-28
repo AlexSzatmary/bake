@@ -22,7 +22,7 @@ import os, time, os.path, sys
 wd = sys.argv[-1]
 
 files = ['TaylorDF__00001.txt', 'capsulev__00001.txt', 
-      'capsulex__00001.txt', 'fort.206', 'fort.403', 'fort.451',
+      'capsulex__00001.txt', 'checkinit.txt', 'meanfluidv.txt', 'meanforce.txt',
       'cappro0001_000000.txt', 'solidforce00000.txt', 
       'solidforce00005.txt',
       'solidforce00010.txt', 'solidnodes00000.txt', 
