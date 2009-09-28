@@ -1,4 +1,5 @@
 #!/usr/bin/python
-import os
-for i in range(88443, 88469):
+import os, sys
+
+for i in range(int(sys.argv[1]), int(sys.argv[2])):
     os.system('qdel ' + str(i))
