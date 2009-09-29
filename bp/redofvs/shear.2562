@@ -11,6 +11,9 @@
 ;$npls$;0
 ;$sqrtnpl$;32
 ;$planey$;2.5d0
+;$recty$;$planey$
+;$pl_n1$;$sqrtnpl$
+;$pl_n2$;$sqrtnpl$
 shear2562;$lngx$;5
 f;$FVS$;0;1
 ;$gapratio$;0.00d0
@@ -19,7 +22,7 @@ f;$FVS$;0;1
 ;$smalldumpint$;10
 ;$bigdumpint$;500
 ;$nu$;($mu$/$rho$)
-;$lcube$;(radx*b)
+;$lcube$;($radx$*$b$)
 ;$rho$;1.025d0
 ;$td$;($gamma_dot_p$/$gamma_dot$)
 ;$gamma_dot$;($Eh$*$capillary_no$/($radx$*$mu$))

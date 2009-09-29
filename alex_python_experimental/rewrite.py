@@ -7,8 +7,6 @@ import os
 for root, dirs, files in os.walk('./bp/'):
     if '.svn' in dirs:
 	dirs.remove('.svn')
-    if 'test' in dirs:
-        dirs.remove('test')
     for fname in files:
 	if '~' in fname:
 	    files.remove(fname)
@@ -19,8 +17,7 @@ for root, dirs, files in os.walk('./bp/'):
         hin.close()
         hout = open(os.path.join(root, fname), 'w')
         for line in lines:
+            if '(radx*b)' in line:
+                line = line.replace('(radx*b)', '($radx$*$b$)')
             hout.write(line)
-            if ';$nstep$;' in line:
-                line = line.replace(';$nstep$;', ';$nstep$;')
-                hout.write(line)
         hout.close()

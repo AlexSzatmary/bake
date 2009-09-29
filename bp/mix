@@ -11,6 +11,9 @@
 ;$npls$;0
 ;$sqrtnpl$;32
 ;$planey$;2.5d0
+;$recty$;$planey$
+;$pl_n1$;$sqrtnpl$
+;$pl_n2$;$sqrtnpl$
 mix;$lngx$;5
 ;$FVS$;1
 ;$gapratio$;0.00d0
@@ -20,7 +23,7 @@ mix;$lngx$;5
 ;$smalldumpint$;1
 ;$bigdumpint$;5
 ;$nu$;($mu$/$rho$)
-;$lcube$;(radx*b)
+;$lcube$;($radx$*$b$)
 ;$rho$;1.025d0
 ;$td$;($gamma_dot_p$/$gamma_dot$)
 ;$gamma_dot$;($Eh$*$capillary_no$/($radx$*$mu$))
