@@ -397,7 +397,10 @@ PROGRAM cell
   klok1 = klok + 1
   klokend = min(nstep + klok/nstep*nstep, $nend$)
 
-  if (klok >= klokend) stop
+  if (klok >= klokend) then
+     print *, 'Maximum number of runs done; not restarting. Terminating job.'
+     stop
+  end if
 
   if (klok == 0) then
      !     Initialize the solid arrays
@@ -493,7 +496,7 @@ PROGRAM cell
 
 
   !     MAIN LOOP --
-  DO 5 KLOK=KLOK1,KLOKEND
+  DO KLOK=KLOK1,KLOKEND
      message = 'cell l216'
      call dumpstatus(klok, message, 'status.txt')
      T = T+TD
@@ -633,9 +636,10 @@ PROGRAM cell
      open(206, file='checkinit.txt', access='append')
      WRITE(206,*)' KLOK: ',KLOK,  ' ; TIME: ',T
      close(206)
-     message = 'cell l266'
 
+     message = 'cell l266'
      call dumpstatus(klok, message, 'status.txt')
+
      call wrstart(lcube, nu, rho,td,klok,ur,vr,wr, pr, &
           xfn,xpi,firstn,number,nextn,elmnew,shpint,shpfs, xcenterold, ycenterold, zcenterold)
      message = 'cell l270'
@@ -670,7 +674,38 @@ PROGRAM cell
      end if
      message = 'cell l299'
      call dumpstatus(klok, message, 'status.txt')
-5    CONTINUE
+
+     if (minval(xfn(1,:)) < 0.5d0) then
+        message = 'Nodes exited box in -x direction, terminating job.'
+        call dumpstatus(klok, message, 'status.txt')
+        stop
+     end if
+     if (maxval(xfn(1,:)) > flngx + 0.5d0) then
+        message = 'Nodes exited box in +x direction, terminating job.'
+        call dumpstatus(klok, message, 'status.txt')
+        stop
+     end if
+     if (minval(xfn(2,:)) < 0.5d0) then
+        message = 'Nodes exited box in -y direction, terminating job.'
+        call dumpstatus(klok, message, 'status.txt')
+        stop
+     end if
+     if (maxval(xfn(2,:)) > flngy + 0.5d0) then
+        message = 'Nodes exited box in +y direction, terminating job.'
+        call dumpstatus(klok, message, 'status.txt')
+        stop
+     end if
+     if (minval(xfn(3,:)) < -0.5d0) then
+        message = 'Nodes exited box in -z direction, terminating job.'
+        call dumpstatus(klok, message, 'status.txt')
+        stop
+     end if
+     if (maxval(xfn(3,:)) > flngz - 0.5d0) then
+        message = 'Nodes exited box in +z direction, terminating job.'
+        call dumpstatus(klok, message, 'status.txt')
+        stop
+     end if
+  end do
 
      message = 'cell l304'
      call dumpstatus(klok, message, 'status.txt')
