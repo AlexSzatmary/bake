@@ -34,7 +34,17 @@ while i < len(sys.argv):
         raise Exception('Multiple tasks requested')
       task = 'extract'
       i += 1
+      if '-sn' == sys.argv[i]:
+        shortname = 1
+        i += 1
+      else:
+        shortname = 0
       extractfile = sys.argv[i]
+      if shortname == 1:
+        if extractfile == 'DF':
+          extractfile = 'TaylorDF__00001.txt'
+        else:
+          raise Exception('Invalid shortname')
 # Perform operation on a Slice of the runs      
     elif sys.argv[i] == '-s':
       if 'slice_start' in dir() or 'slice_end' in dir():
@@ -70,6 +80,9 @@ while i < len(sys.argv):
     elif data[0] == 'Batch parameter file already specified':
       print data[0]
       exit(-3)
+    elif data[0] == 'Invalid shortname':
+      print data[0]
+      exit(-4)
     else:
       print 'I don\'t know what exception I\'m dealing with.'
       raise
