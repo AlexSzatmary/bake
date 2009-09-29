@@ -36,7 +36,7 @@ SUBROUTINE INHIST(XFN,FIRSTN,NUMBER,NEXTN)
 END SUBROUTINE INHIST
 !************************************************************
 subroutine generatecapsule(RAD,H,XFN, elmnew,shpint,shpfs, &
-     my_cap_center, my_fineness)
+     my_cap_center, my_fineness, cap_i)
   IMPLICIT NONE
   interface 
      subroutine sph(fineness, xfnew, ilmnew)
@@ -61,7 +61,8 @@ subroutine generatecapsule(RAD,H,XFN, elmnew,shpint,shpfs, &
   INTEGER elmnew(:,:)
   double precision :: shpint(:,:), shpfs(:,:) 
   double precision :: my_cap_center(:)
-  integer my_fineness
+  integer my_fineness, cap_i
+  character(len=12) strfname
 
   pi = 3.14159265358979323846d0 ! Taken from Wikipedia; 20 digits
   theta =  pi/4.0d0
@@ -95,6 +96,14 @@ subroutine generatecapsule(RAD,H,XFN, elmnew,shpint,shpfs, &
      shpint(2,i) = shpint(2,i)*rad
      shpint(3,i) = shpint(3,i)*rad
   enddo
+
+  write(strfname,'(a4,i4,a4)') 'elm_', cap_i, '.txt'
+  call padzeros(strfname)
+  open(400, file=strfname)
+  do i = 1, size(elmnew,2)
+     write(400, '(3(i7))') elmnew(i, 1), elmnew(i, 2), elmnew(i, 3)
+  end do
+  close(400)
 
   return
 end subroutine generatecapsule

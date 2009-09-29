@@ -310,20 +310,20 @@ subroutine sph(fineness, xfnew, ilmnew)
   end do
 
 
-  open(20,file='sphere.sph',status='unknown')
-  write(20,300)ncount1,ncount2/2
-300 format(7x,i5,2x,i5)
+!   open(20,file='sphere.sph',status='unknown')
+!   write(20,300)ncount1,ncount2/2
+! 300 format(7x,i5,2x,i5)
 
-  do i=1,ncount1
-     write(20,320)xfnew(1,i),xfnew(2,i),xfnew(3,i)
-  end do
-320 format(13x,e20.13,e20.13,e20.13)
+!   do i=1,ncount1
+!      write(20,320)xfnew(1,i),xfnew(2,i),xfnew(3,i)
+!   end do
+! 320 format(13x,e20.13,e20.13,e20.13)
 
-  do i=1,ncount2
-     write(20,340)ilmnew(1,i),ilmnew(2,i),ilmnew(3,i)
-  end do
-340 format(3(i8))
-  close(20)
+!   do i=1,ncount2
+!      write(20,340)ilmnew(1,i),ilmnew(2,i),ilmnew(3,i)
+!   end do
+! 340 format(3(i8))
+!   close(20)
   !     d=0.d0
 
   deallocate (xfold,ilmold,ilm,ivert)
@@ -481,11 +481,11 @@ subroutine sf(xfn, elmnew, shpint, shpfs)
      shpint(2,i) = xk1
      shpint(3,i) = xk2
 
-     write(21,104) a1,a2,a3,d1
-     write(22,105) b1,b2,b3
-     write(23,105) xj1,xk1,xk2
-104  format(1pe15.8,3x,1pe15.8,3x,1pe15.8,3x,1pe15.8)
-105  format(1pe15.8,3x,1pe15.8,3x,1pe15.8)
+!      write(21,104) a1,a2,a3,d1
+!      write(22,105) b1,b2,b3
+!      write(23,105) xj1,xk1,xk2
+! 104  format(1pe15.8,3x,1pe15.8,3x,1pe15.8,3x,1pe15.8)
+! 105  format(1pe15.8,3x,1pe15.8,3x,1pe15.8)
   enddo
   close(21)
   close(22)

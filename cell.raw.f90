@@ -36,13 +36,13 @@ PROGRAM cell
      end subroutine inhist
      
      subroutine generatecapsule(RAD,H,XFN, elmnew,shpint,shpfs, &
-     my_cap_center, my_fineness)
+     my_cap_center, my_fineness, cap_i)
        implicit none
        double precision :: rad, h
        double precision :: xfn(:,:), shpint(:,:), shpfs(:,:)
        integer :: elmnew(:,:)
        double precision :: my_cap_center(:)
-       integer :: my_fineness
+       integer :: my_fineness, cap_i
      end subroutine generatecapsule
 
      subroutine cellcenter(klok, xfn, my_nnode, cap_i, xcenter, &
@@ -409,7 +409,7 @@ PROGRAM cell
              elmnew(1:3,cap_e_start(i):cap_e_end(i)), &
              shpint(1:3,cap_e_start(i):cap_e_end(i)), &
              shpfs(1:7,cap_e_start(i):cap_e_end(i)), &
-             cap_center(:,i), fineness(i))
+             cap_center(:,i), fineness(i), i)
      end do
      !     nrects is the number of rectangles. If there is one, it should be
      !     initialized.
