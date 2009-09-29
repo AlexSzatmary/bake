@@ -177,8 +177,9 @@ for i in range(slice_start, slice_end):
     values[j] = list_values[j][list_i[j]]
     if short_tokens[j] != '':
       cd = cd+short_tokens[j]+list_values[j][list_i[j]]
-  print values
-  print cd
+  if task == 'run' or task == 'rerun':
+    print values
+    print cd
 
 # Do the string replace operations on the values themselves
   for j in range(m):
@@ -260,7 +261,8 @@ for i in range(slice_start, slice_end):
       hin = open(os.path.join(wd, extractfile),'r')
       hout.write(wd + ',' + hin.readlines()[-1])
       hin.close()
-    
+
+
   j = 0
   while i < slice_end - 1:
     list_i[j] = list_i[j] + 1
@@ -269,3 +271,9 @@ for i in range(slice_start, slice_end):
       j = j + 1
     else:
       break
+
+if task == 'extract':
+  hout.close()
+  hin = open('extract' + extractfile, 'r')
+  print hin.read()
+  hin.close()
