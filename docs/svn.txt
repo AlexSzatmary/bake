@@ -39,6 +39,5 @@ were last checked out/updated.
 
 diff
 Use:
-svn diff
-
-
+svn diff [files]
+Shows the modifications you made to the code since the last checkout/update.
