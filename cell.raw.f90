@@ -253,6 +253,8 @@ PROGRAM cell
   integer, parameter ::  numberOfMaxReflections = $numberOfMaxReflections$, index = $index$
   double precision :: disp  , z0
   integer numberOfRays
+!  integer sysclockstart, sysclockend, rate
+
   !**********************************************************************
   !     End variable declaration, start real code
   !**********************************************************************
@@ -582,12 +584,16 @@ PROGRAM cell
         call poiseuille(wr, pr, -$dpdz$, vsc)
      end if
 
+!     call system_clock(sysclockstart)
      CALL FLUIDUP(KLOK,UR,VR,WR, pr, QRFACT, DSQ, DX, DY, DZ)
      if (fvs /= 0) then
         call fvssub(ur, vr, wr, -bfs, -umean)
         call poiseuille(wr, pr, $dpdz$, vsc)
      end if
-
+!     call system_clock(sysclockend, rate)
+!     print *, 'clock', klok, 'fluidup time', &
+!          float(sysclockend - sysclockstart)/rate
+!     print *, 'start', sysclockstart, 'end', sysclockend
      message = 'cell l252'
      call dumpstatus(klok, message, 'status.txt')
 

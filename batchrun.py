@@ -26,8 +26,8 @@ while i < len(sys.argv):
 # Figure out what system I'm running on; make a lot of select cases for this
 # Make sure it's a system that has been scripted for, otherwise bad things
 # could happen
-      if (system != 'gfortran' and system != 'ifort' and 
-          system != 'hpc' and system != 'pople'):
+      if (system != 'gfortran' and system != 'gfortranopenmp' and 
+          system != 'ifort' and system != 'hpc' and system != 'pople'):
         raise Exception('Invalid system specified')
     elif sys.argv[i] == '-e':
       if 'task' in dir():
@@ -238,6 +238,8 @@ for i in range(slice_start, slice_end):
     # Insert compile command here  
     if system == 'gfortran':
       fortran_command = 'gfortran -Wall -g -o cell' + cd
+    elif system == 'gfortranopenmp':
+      fortran_command = 'gfortran -Wall -fopenmp -g -o cell' + cd
     elif system == 'ifort':
       fortran_command = 'ifort -o cell' + cd
     elif system == 'hpc':
@@ -247,7 +249,7 @@ for i in range(slice_start, slice_end):
     for file in code_files:
         fortran_command = fortran_command + ' ' + file + file_out_suffix
     os.system(fortran_command)
-    if system == 'gfortran' or system == 'ifort':
+    if system == 'gfortran' or system == 'gfortranopenmp' or system == 'ifort':
       os.system('./cell' + cd)
     elif system == 'hpc':
       os.system('qsub qsub_script.run')
