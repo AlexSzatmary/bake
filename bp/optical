@@ -27,7 +27,6 @@ poiseuille;$lngx$;5
 ;$FVS$;1
 ;$gapratio$;0.00d0
 ;$b$;4.d0
-;$bfscmd$;2
 ;$mix$;0
 ;$smalldumpint$;10
 ;$bigdumpint$;50

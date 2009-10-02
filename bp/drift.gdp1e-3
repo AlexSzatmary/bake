@@ -27,7 +27,6 @@ drift;$lngx$;5
 f;$FVS$;0;1
 ;$gapratio$;1.00d0
 ;$b$;10
-;$bfscmd$;1
 ;$mix$;0
 ;$smalldumpint$;1
 ;$bigdumpint$;5
