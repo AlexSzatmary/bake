@@ -10,14 +10,25 @@ for root, dirs, files in os.walk('./bp/'):
     for fname in files:
 	if '~' in fname:
 	    files.remove(fname)
+    if 'parameters.txt' in files:
+        files.remove('parameters.txt')
     print root, dirs, files
     for fname in files:
         hin = open(os.path.join(root, fname))
         lines = hin.readlines()
         hin.close()
         hout = open(os.path.join(root, fname), 'w')
+        linesout = []
+        label = ''
         for line in lines:
-            if line == ';$rho$;1.025d0\n':
-                hout.write('# Density of plasma (g/(cm^3)), Neofytou 2004\n')
+            if line[0] != '#':
+                l = line.split(';')
+                if l[0] != '':
+                    label += l[0]+l[1]
+                linesout.append(';'.join(l[1:]))
+            else:
+                linesout.append(line)
+        hout.write('$label$;'+label+'\n')
+        for line in linesout:
             hout.write(line)
         hout.close()

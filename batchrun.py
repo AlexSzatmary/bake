@@ -91,7 +91,6 @@ while i < len(sys.argv):
 #Load bp file
 hin = open(myfile,'r')
 
-short_tokens = []
 tokens = []
 list_values = []
 n_values = []
@@ -100,14 +99,12 @@ for line in hin.readlines():
   if (line[0] != '#'):
     line = line.replace('\n','').replace('\\n','&\n')
     elements = line.split(';')
-    short_tokens.append(elements[0])
-    tokens.append(elements[1])
-    list_values.append(elements[2:])
-    n_values.append(len(elements)-2)
+    tokens.append(elements[0])
+    list_values.append(elements[1:])
+    n_values.append(len(elements)-1)
     m = m + 1
 hin.close()
 
-print short_tokens
 print tokens
 print list_values
 print n_values
@@ -171,17 +168,11 @@ for i in range(0, slice_start):
 
 # This is the main loop, setting up each of the runs
 for i in range(slice_start, slice_end):
-  cd = ''
+# Do the string replace operations on the values themselves
 # Pick the values to be used in this run
   for j in range(m):
     values[j] = list_values[j][list_i[j]]
-    if short_tokens[j] != '':
-      cd = cd+short_tokens[j]+list_values[j][list_i[j]]
-  if task == 'run' or task == 'rerun':
-    print values
-    print cd
 
-# Do the string replace operations on the values themselves
   for j in range(m):
       foundtoken = re.search(pattern, values[j])
       while foundtoken:
@@ -189,6 +180,8 @@ for i in range(slice_start, slice_end):
                                         values[tokendict[foundtoken.group(0)]])
           foundtoken = re.search(pattern, values[j])
 
+  cd = values[tokendict['$label$']]
+  print cd
   wd = os.path.join('.', 'batch', cd)
 
   if task == 'run' or task == 'rerun':
