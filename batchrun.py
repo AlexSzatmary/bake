@@ -6,7 +6,7 @@
 # having token codes like '$lngx$' present instead of an actual value, like 6.)
 # and translates each token to a value set in this file. It does 
 
-import os, time, os.path, sys, re
+import os, time, os.path, sys, re, listruns
 
 i = 0
 
@@ -173,12 +173,7 @@ for i in range(slice_start, slice_end):
   for j in range(m):
     values[j] = list_values[j][list_i[j]]
 
-  for j in range(m):
-      foundtoken = re.search(pattern, values[j])
-      while foundtoken:
-          values[j] = values[j].replace(foundtoken.group(0), 
-                                        values[tokendict[foundtoken.group(0)]])
-          foundtoken = re.search(pattern, values[j])
+  listruns.TokenValueSubValue(values, tokendict, pattern)
 
   cd = values[tokendict['$label$']]
   print cd
