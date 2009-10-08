@@ -9,7 +9,7 @@ def TokenValueSubValue(values, tokendict, pattern):
       values[j] = values[j].replace(foundtoken.group(0), 
                                     values[tokendict[foundtoken.group(0)]])
       foundtoken = re.search(pattern, values[j])
-    return None
+  return None
 
 def ItRunValues(list_values, tokens, n_values, N_values, m, pattern, tokendict,
                 slice_start=0, slice_end=0):
@@ -26,27 +26,24 @@ def ItRunValues(list_values, tokens, n_values, N_values, m, pattern, tokendict,
     yield values
 
 def ItList_i(n_values, slice_start, slice_end):
-    list_i = [0 for i in xrange(len(n_values))]
-    for i in range(0, slice_start):
-      j = 0
-      while i < slice_end - 1:
-	list_i[j] = list_i[j] + 1
-	if list_i[j] == n_values[j]:
-	  list_i[j] = 0
-	  j = j + 1
-	else:
-	  break
+  myItList_iNoSlice = ItList_iNoSlice(n_values)
+  for i in xrange(0, slice_start):
+    myItList_iNoSlice.next()
+  for i in xrange(slice_start, slice_end):
+    yield myItList_iNoSlice.next()
 
-    for i in range(slice_start, slice_end):
+def ItList_iNoSlice(n_values):
+    list_i = [0 for i in xrange(len(n_values))]
+    while True:
       j = 0
-      while i < slice_end - 1:
+      while True:
 	list_i[j] = list_i[j] + 1
 	if list_i[j] == n_values[j]:
 	  list_i[j] = 0
 	  j = j + 1
 	else:
 	  break
-      yield list_i
+        yield list_i
 
 def LoadBPFile(myfile):
 # Load bp file

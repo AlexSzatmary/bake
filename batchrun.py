@@ -6,87 +6,84 @@
 # having token codes like '$lngx$' present instead of an actual value, like 6.)
 # and translates each token to a value set in this file. It does 
 
-import os, time, os.path, sys, re, listruns
+import os, time, os.path, sys, re, listruns, optparse
 
-i = 0
+optparser = optparse.OptionParser()
+#optparser.enable_interspersed_args()
+optparser.add_option('--plot', '-p', action='store_true')
+optparser.add_option('--run', '-r')
+optparser.add_option('--rerun', '-R')
+optparser.add_option('--extract', '-e')
+optparser.add_option('--slice', '-s')
+optparser.add_option('--list', '-l', action='store_true')
+options, arguments = optparser.parse_args()
 
-while i < len(sys.argv):
-  try:
-    if '.py' in sys.argv[i]:
-      pass
-    elif sys.argv[i] == '-r' or sys.argv[i] == '-rr':
-      if 'task' in dir():
-        raise Exception('Multiple tasks requested')
-      if sys.argv[i] == '-r':
-        task = 'run'
-      elif sys.argv[i] == '-rr':
-        task = 'rerun'
-      i += 1
-      system = sys.argv[i]
-# Figure out what system I'm running on; make a lot of select cases for this
-# Make sure it's a system that has been scripted for, otherwise bad things
-# could happen
-      if (system != 'gfortran' and system != 'gfortranopenmp' and 
-          system != 'ifort' and system != 'hpc' and system != 'pople'):
-        raise Exception('Invalid system specified')
-    elif sys.argv[i] == '-e':
-      if 'task' in dir():
-        raise Exception('Multiple tasks requested')
-      task = 'extract'
-      i += 1
-      if '-sn' == sys.argv[i]:
-        shortname = 1
-        i += 1
-      else:
-        shortname = 0
-      extractfile = sys.argv[i]
-      if shortname == 1:
-        if extractfile == 'DF':
-          extractfile = 'TaylorDF__00001.txt'
-        else:
-          raise Exception('Invalid shortname')
-# Perform operation on a Slice of the runs      
-    elif sys.argv[i] == '-s':
-      if 'slice_start' in dir() or 'slice_end' in dir():
-        raise Exception('Multiple slices specified')
-      i += 1
-      if '-' in sys.argv[i]:
-        (slice_start, slice_end) = sys.argv[i].split('-')
-      else:
-        slice_start = 0
-        slice_end = int(sys.argv[i])
-      if slice_start == '':
-        slice_start = 0
-      if slice_end == '':
-        slice_end = 0
-      slice_start = int(slice_start)
-      slice_end = int(slice_end)
-    elif sys.argv[i] == '-l':
-      if 'task' in dir():
-        raise Exception('Multiple tasks requested')
-      task = 'list'
+print options
+print arguments
+
+try:
+  if options.extract:
+    if 'task' in dir():
+      raise Exception('Multiple tasks requested')
+    task = 'extract'
+    extractfile = options.extract
+    if extractfile == 'DF':
+      extractfile = 'TaylorDF__00001.txt'
+
+  if options.run or options.rerun:
+    if 'task' in dir() or (options.run and options.rerun):
+      raise Exception('Multiple tasks requested')
+    if options.run:
+      task = 'run'
+      system = options.run
+    elif options.rerun:
+      task = 'rerun'
+      system = options.rerun
+    # Figure out what system I'm running on; make a lot of select cases for this
+    # Make sure it's a system that has been scripted for, otherwise bad things
+    # could happen
+    if (system != 'gfortran' and system != 'gfortranopenmp' and 
+        system != 'ifort' and system != 'hpc' and system != 'pople'):
+      raise Exception('Invalid system specified')
+
+  # Perform operation on a Slice of the runs      
+  if options.slice:
+    if '-' in options.slice:
+      (slice_start, slice_end) = options.slice.split('-')
     else:
-      if 'myfile' in dir():
-        raise Exception('Batch parameter file already specified')
-      myfile = sys.argv[i]
-    i += 1
-  except Exception, data:
-    if data[0] == 'Invalid system specified':
-      print data[0]
-      exit(-1)
-    elif data[0] == 'Multiple tasks requested':
-      print data[0]
-      exit(-2)
-    elif data[0] == 'Batch parameter file already specified':
-      print data[0]
-      exit(-3)
-    elif data[0] == 'Invalid shortname':
-      print data[0]
-      exit(-4)
-    else:
-      print 'I don\'t know what exception I\'m dealing with.'
-      raise
-      exit(-100)
+      slice_start = 0
+      slice_end = int(options.slice)
+    if slice_start == '':
+      slice_start = 0
+    if slice_end == '':
+      slice_end = 0
+    slice_start = int(slice_start)
+    slice_end = int(slice_end)
+
+  if options.list:
+    if 'task' in dir():
+      raise Exception('Multiple tasks requested')
+    task = 'list'
+
+  myfile = arguments[0]
+  print task
+except Exception, data:
+  if data[0] == 'Invalid system specified':
+    print data[0]
+    exit(-1)
+  elif data[0] == 'Multiple tasks requested':
+    print data[0]
+    exit(-2)
+  elif data[0] == 'Batch parameter file already specified':
+    print data[0]
+    exit(-3)
+  elif data[0] == 'Invalid shortname':
+    print data[0]
+    exit(-4)
+  else:
+    print 'I don\'t know what exception I\'m dealing with.'
+    raise
+    exit(-100)
 
 
 ###############################################################################
