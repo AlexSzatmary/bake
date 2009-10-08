@@ -6,10 +6,68 @@ def TokenValueSubValue(values, tokendict, pattern):
   for j in range(len(values)):
     foundtoken = re.search(pattern, values[j])
     while foundtoken:
-      print foundtoken.group(0)
-      print tokendict[foundtoken.group(0)]
-      print values[tokendict[foundtoken.group(0)]]
       values[j] = values[j].replace(foundtoken.group(0), 
                                     values[tokendict[foundtoken.group(0)]])
       foundtoken = re.search(pattern, values[j])
     return None
+
+def ItRunValues(list_values, tokens, n_values, N_values, m, pattern, tokendict,
+                slice_start=0, slice_end=0):
+  if slice_end == 0:
+    slice_end = N_values
+    #listi and values need to be initialized
+  values = [0 for i in xrange(len(tokens))]
+  for list_i in ItList_i(n_values, slice_start, slice_end):
+    # Pick the values to be used in this run
+    for j in range(m):
+      values[j] = list_values[j][list_i[j]]
+    # Do the string replace operations on the values themselves
+    TokenValueSubValue(values, tokendict, pattern)
+    yield values
+
+def ItList_i(n_values, slice_start, slice_end):
+    list_i = [0 for i in xrange(len(n_values))]
+    for i in range(0, slice_start):
+      j = 0
+      while i < slice_end - 1:
+	list_i[j] = list_i[j] + 1
+	if list_i[j] == n_values[j]:
+	  list_i[j] = 0
+	  j = j + 1
+	else:
+	  break
+
+    for i in range(slice_start, slice_end):
+      j = 0
+      while i < slice_end - 1:
+	list_i[j] = list_i[j] + 1
+	if list_i[j] == n_values[j]:
+	  list_i[j] = 0
+	  j = j + 1
+	else:
+	  break
+      yield list_i
+
+def LoadBPFile(myfile):
+# Load bp file
+    hin = open(myfile,'r')
+
+    tokens = []
+    list_values = []
+    n_values = []
+#m is the number of parameters (not the number of values for the parameters)
+    m = 0
+    for line in hin.readlines():
+      if (line[0] != '#'):
+	line = line.replace('\n','').replace('\\n','&\n')
+	elements = line.split(';')
+	tokens.append(elements[0])
+	list_values.append(elements[1:])
+	n_values.append(len(elements)-1)
+	m = m + 1
+    hin.close()
+# Count how many runs I'm going to start
+    N_values = 1
+    for i in n_values:
+      N_values = N_values*i
+    return (tokens, list_values, n_values, N_values, m)

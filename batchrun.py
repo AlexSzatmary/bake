@@ -88,34 +88,24 @@ while i < len(sys.argv):
       raise
       exit(-100)
 
-#Load bp file
-hin = open(myfile,'r')
 
-tokens = []
-list_values = []
-n_values = []
-m = 0
-for line in hin.readlines():
-  if (line[0] != '#'):
-    line = line.replace('\n','').replace('\\n','&\n')
-    elements = line.split(';')
-    tokens.append(elements[0])
-    list_values.append(elements[1:])
-    n_values.append(len(elements)-1)
-    m = m + 1
-hin.close()
+###############################################################################
+# End processing of command line parameters
+###############################################################################
+
+(tokens, list_values, n_values, N_values, m) = listruns.LoadBPFile(myfile)
 
 print tokens
 print list_values
 print n_values
 print m
-
-
-#Count how many runs I'm going to start
-N_values = 1
-for i in n_values:
-  N_values = N_values*i
 print 'Number of runs in file ', N_values
+
+if 'slice_start' not in dir():
+  slice_start = 0
+
+if 'slice_end' not in dir() or slice_end == 0:
+  slice_end = N_values
 
 if task == 'list':
   exit(0)
@@ -131,52 +121,21 @@ visual_files = ['profilemovie']
 visual_file_in_suffix = '_raw.m'
 visual_file_out_suffix = '_run.m'
 
-#m is the number of parameters (not the number of values for the parameters)
-#listi and values need to be initialized
-list_i = []
-values = []
-for i in range(m):
-  list_i.append(0)
-  values.append(0)
-
 pattern = re.compile('\$.+?\$')
 
 tokendict = {}
 for i in range(m):
     tokendict[tokens[i]] = i
 
-if 'slice_start' not in dir():
-  slice_start = 0
-
-if 'slice_end' not in dir() or slice_end == 0:
-  slice_end = N_values
-
 
 if task == 'extract':
   hout = open('extract' + extractfile, 'w')
 
-for i in range(0, slice_start):
-  j = 0
-  while i < slice_end - 1:
-    list_i[j] = list_i[j] + 1
-    if list_i[j] == n_values[j]:
-      list_i[j] = 0
-      j = j + 1
-    else:
-      break
-
-
 # This is the main loop, setting up each of the runs
-for i in range(slice_start, slice_end):
+for values in listruns.ItRunValues(list_values, tokens, n_values, N_values, m, 
+                              pattern, tokendict, slice_start, slice_end):
 # Do the string replace operations on the values themselves
-# Pick the values to be used in this run
-  for j in range(m):
-    values[j] = list_values[j][list_i[j]]
-
-  listruns.TokenValueSubValue(values, tokendict, pattern)
-
   cd = values[tokendict['$label$']]
-  print cd
   wd = os.path.join('.', 'batch', cd)
 
   if task == 'run' or task == 'rerun':
@@ -251,16 +210,6 @@ for i in range(slice_start, slice_end):
       hin = open(os.path.join(wd, extractfile),'r')
       hout.write(wd + ',' + hin.readlines()[-1])
       hin.close()
-
-
-  j = 0
-  while i < slice_end - 1:
-    list_i[j] = list_i[j] + 1
-    if list_i[j] == n_values[j]:
-      list_i[j] = 0
-      j = j + 1
-    else:
-      break
 
 if task == 'extract':
   hout.close()
