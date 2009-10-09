@@ -34,6 +34,7 @@ def ItList_i(n_values, slice_start, slice_end):
 
 def ItList_iNoSlice(n_values):
     list_i = [0 for i in xrange(len(n_values))]
+    yield list_i
     while True:
       j = 0
       while True:
@@ -43,7 +44,7 @@ def ItList_iNoSlice(n_values):
 	  j = j + 1
 	else:
 	  break
-        yield list_i
+      yield list_i
 
 def LoadBPFile(myfile):
 # Load bp file
