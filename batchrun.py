@@ -9,8 +9,7 @@
 import os, time, os.path, sys, re, listruns, optparse
 
 optparser = optparse.OptionParser()
-#optparser.enable_interspersed_args()
-optparser.add_option('--plot', '-p', action='store_true')
+optparser.add_option('--plot', '-p')
 optparser.add_option('--run', '-r')
 optparser.add_option('--rerun', '-R')
 optparser.add_option('--extract', '-e')
@@ -64,6 +63,14 @@ try:
     if 'task' in dir():
       raise Exception('Multiple tasks requested')
     task = 'list'
+
+  if options.plot:
+    if 'task' in dir():
+      raise Exception('Multiple tasks requested')
+    task = 'plot'
+    extractfile = options.plot
+    if extractfile == 'DF':
+      extractfile = 'TaylorDF__00001.txt'
 
   myfile = arguments[0]
   print task
@@ -125,7 +132,7 @@ for i in range(m):
     tokendict[tokens[i]] = i
 
 
-if task == 'extract':
+if task == 'extract' or task == 'plot':
   hout = open('extract' + extractfile, 'w')
 
 # This is the main loop, setting up each of the runs
@@ -207,8 +214,18 @@ for values in listruns.ItRunValues(list_values, tokens, n_values, N_values, m,
       hin = open(os.path.join(wd, extractfile),'r')
       hout.write(wd + ',' + hin.readlines()[-1])
       hin.close()
+  elif task == 'plot':
+    print wd, extractfile
+    print os.path.join(wd, extractfile)
+    if os.path.exists(os.path.join(wd, extractfile)):
+      hin = open(os.path.join(wd, extractfile),'r')
+      line = '$mix$ ' + '$capillary_no$' + hin.readlines()[-1]
+      for j in range(0,len(tokens)):
+        line = line.replace(tokens[j], values[j])
+      hout.write(wd + ' ' + line)
+      hin.close()
 
-if task == 'extract':
+if task == 'extract' or task == 'plot':
   hout.close()
   hin = open('extract' + extractfile, 'r')
   print hin.read()
