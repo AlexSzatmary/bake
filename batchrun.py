@@ -215,13 +215,12 @@ for values in listruns.ItRunValues(list_values, tokens, n_values, N_values, m,
       hout.write(wd + ',' + hin.readlines()[-1])
       hin.close()
   elif task == 'plot':
-    print wd, extractfile
     print os.path.join(wd, extractfile)
     if os.path.exists(os.path.join(wd, extractfile)):
       hin = open(os.path.join(wd, extractfile),'r')
-      line = '$mix$ ' + '$capillary_no$' + hin.readlines()[-1]
-      for j in range(0,len(tokens)):
-        line = line.replace(tokens[j], values[j])
+      mix = values[tokendict['$mix$']]
+      capillary_no = values[tokendict['$capillary_no$']]
+      line = mix + ' ' + capillary_no + hin.readlines()[-1]
       hout.write(wd + ' ' + line)
       hin.close()
 
