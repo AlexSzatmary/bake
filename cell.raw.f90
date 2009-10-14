@@ -477,11 +477,12 @@ PROGRAM cell
      t=0.d0
 
      if ($optical$ /= 0) then
-        CALL findRays (XFN , elmnew ,zcenter(1), numberOfrays )
+!        CALL findRays (XFN , elmnew ,zcenter(1), numberOfrays )
         ALLOCATE (rays(1:9,1:numberOfRays))
-        CALL initializeRays(rays, numberOfRays)
-        call capsuleForce(XFN , Foptical, shpfs , elmnew , rays , FOSTAR, zcenter(1), &
-             RADX, H,cap_center(:,1),z0,disp,numberOfrays)
+!        CALL initializeRays(rays, numberOfRays)
+!        call capsuleForce(XFN , Foptical, shpfs , elmnew , rays , FOSTAR, &
+        !        zcenter(1), &
+        !             RADX, H,cap_center(:,1),z0,disp,numberOfrays)
      end if
 
      call inhist(xfn,firstn,number,nextn)

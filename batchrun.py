@@ -15,6 +15,8 @@ optparser.add_option('--rerun', '-R')
 optparser.add_option('--extract', '-e')
 optparser.add_option('--slice', '-s')
 optparser.add_option('--list', '-l', action='store_true')
+#optparser.add_option('--overwrite', '-o', action='append',
+#		     help="Overwrite a line in a batch parameter file")
 options, arguments = optparser.parse_args()
 
 print options
@@ -97,7 +99,8 @@ except Exception, data:
 # End processing of command line parameters
 ###############################################################################
 
-(tokens, list_values, n_values, N_values, m) = listruns.LoadBPFile(myfile)
+(tokens, list_values, n_values, N_values, tokendict, m) = \
+    listruns.LoadBPFile(myfile)
 
 print tokens
 print list_values
@@ -111,12 +114,10 @@ if 'slice_start' not in dir():
 if 'slice_end' not in dir() or slice_end == 0:
   slice_end = N_values
 
-if task == 'list':
-  exit(0)
 
 #Define which files need tweaking
 code_files = ['cell', 'fluid', 'force', 'memb', 'rewr', 'visual', 'fvs',
-         'math', 'rayTracer', 'meshgen']
+         'math', 'meshgen']
 file_in_suffix = '.raw.f90'
 file_out_suffix = '.run.f90'
 
@@ -127,9 +128,9 @@ visual_file_out_suffix = '_run.m'
 
 pattern = re.compile('\$.+?\$')
 
-tokendict = {}
-for i in range(m):
-    tokendict[tokens[i]] = i
+# tokendict = {}
+# for i in range(m):
+#     tokendict[tokens[i]] = i
 
 
 if task == 'extract' or task == 'plot':
@@ -223,6 +224,8 @@ for values in listruns.ItRunValues(list_values, tokens, n_values, N_values, m,
       line = mix + ' ' + capillary_no + hin.readlines()[-1]
       hout.write(wd + ' ' + line)
       hin.close()
+  elif task == 'list':
+    print cd
 
 if task == 'extract' or task == 'plot':
   hout.close()
