@@ -23,7 +23,7 @@ subroutine profile(cap_i, xfn, clock)
   DO i=1, nnode
      IF((XFN(1,i) >fngx/2.d0-1.d0).AND.(XFN(1,i) &
           <fngx/2.d0+1.d0)) THEN
-        write(25,'(es24.17xes24.17)') XFN(2,i),XFN(3,i)
+        write(25,'(es24.17,x,es24.17)') XFN(2,i),XFN(3,i)
      ENDIF
   ENDDO
   close(25)
