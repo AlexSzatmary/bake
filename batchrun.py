@@ -15,8 +15,8 @@ optparser.add_option('--rerun', '-R')
 optparser.add_option('--extract', '-e')
 optparser.add_option('--slice', '-s')
 optparser.add_option('--list', '-l', action='store_true')
-#optparser.add_option('--overwrite', '-o', action='append',
-#		     help="Overwrite a line in a batch parameter file")
+optparser.add_option('--overwrite', '-o', action='append',
+		     help="Overwrite a line in a batch parameter file")
 options, arguments = optparser.parse_args()
 
 print options
@@ -99,8 +99,18 @@ except Exception, data:
 # End processing of command line parameters
 ###############################################################################
 
+if options.overwrite:
+  lines = options.overwrite
+else:
+  lines = []
+
+print lines
+hin = open(myfile,'r')
+lines += hin.readlines()
+hin.close()
+
 (tokens, list_values, n_values, N_values, tokendict, m) = \
-    listruns.LoadBPFile(myfile)
+    listruns.parseBPlines(lines)
 
 print tokens
 print list_values

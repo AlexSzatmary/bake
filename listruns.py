@@ -46,26 +46,26 @@ def ItList_iNoSlice(n_values):
 	  break
       yield list_i
 
-def LoadBPFile(myfile):
-# Load bp file
-    hin = open(myfile,'r')
-
+def parseBPlines(lines):
+    # Load bp file
     tokens = []
     list_values = []
     n_values = []
     tokendict = {}
-#m is the number of parameters (not the number of values for the parameters)
+    #m is the number of parameters (not the number of values for the 
+    #parameters)
     m = 0
-    for line in hin.readlines():
+    for line in lines:
       if (line[0] != '#'):
 	line = line.replace('\n','').replace('\\n','&\n')
 	elements = line.split(';')
-	tokens.append(elements[0])
-	list_values.append(elements[1:])
-	n_values.append(len(elements)-1)
-        tokendict[tokens[-1]] = m
-	m = m + 1
-    hin.close()
+        if elements[0] not in tokens:
+          tokens.append(elements[0])
+          list_values.append(elements[1:])
+          n_values.append(len(elements)-1)
+          tokendict[tokens[-1]] = m
+          m = m + 1
+
 # Count how many runs I'm going to start
     N_values = 1
     for i in n_values:
