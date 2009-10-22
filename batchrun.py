@@ -44,7 +44,8 @@ try:
     # Make sure it's a system that has been scripted for, otherwise bad things
     # could happen
     if (system != 'gfortran' and system != 'gfortranopenmp' and 
-        system != 'ifort' and system != 'hpc' and system != 'pople'):
+        system != 'ifort' and system != 'hpc' and system != 'pople'
+        and system != 'sun'):
       raise Exception('Invalid system specified')
 
   # Perform operation on a Slice of the runs      
@@ -202,6 +203,8 @@ for values in listruns.ItRunValues(list_values, tokens, n_values, N_values, m,
       fortran_command = 'gfortran -Wall -g -o cell' + cd
     elif system == 'gfortranopenmp':
       fortran_command = 'gfortran -Wall -fopenmp -g -o cell' + cd
+    elif system == 'sun':
+      fortran_command = 'f95 -o cell' + cd
     elif system == 'ifort':
       fortran_command = 'ifort -o cell' + cd
     elif system == 'hpc':
@@ -211,7 +214,8 @@ for values in listruns.ItRunValues(list_values, tokens, n_values, N_values, m,
     for file in code_files:
         fortran_command = fortran_command + ' ' + file + file_out_suffix
     os.system(fortran_command)
-    if system == 'gfortran' or system == 'gfortranopenmp' or system == 'ifort':
+    if system == 'gfortran' or system == 'gfortranopenmp' or system == 'ifort'\
+           or system == 'sun':
       os.system('./cell' + cd)
     elif system == 'hpc':
       os.system('qsub qsub_script.run')
