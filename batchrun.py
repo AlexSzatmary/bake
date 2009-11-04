@@ -232,7 +232,7 @@ for values in listruns.ItRunValues(list_values, tokens, n_values, N_values, m,
     print os.path.join(wd, extractfile)
     if os.path.exists(os.path.join(wd, extractfile)):
       hin = open(os.path.join(wd, extractfile),'r')
-      hout.write(wd + ',' + hin.readlines()[-1])
+      hout.write(wd + ' ' + hin.readlines()[-1])
       hin.close()
   elif task == 'plot':
     print os.path.join(wd, extractfile)
