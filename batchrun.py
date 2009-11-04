@@ -17,6 +17,7 @@ optparser.add_option('--slice', '-s')
 optparser.add_option('--list', '-l', action='store_true')
 optparser.add_option('--overwrite', '-o', action='append',
 		     help="Overwrite a line in a batch parameter file")
+optparser.add_option('--foreach', '-E')
 options, arguments = optparser.parse_args()
 
 print options
@@ -75,6 +76,10 @@ try:
     if extractfile == 'DF':
       extractfile = 'TaylorDF__00001.txt'
 
+  if options.foreach:
+    if 'task' in dir():
+      raise Exception('Multiple tasks requested')
+    task = 'foreach'
   myfile = arguments[0]
   print task
 except Exception, data:
@@ -240,6 +245,10 @@ for values in listruns.ItRunValues(list_values, tokens, n_values, N_values, m,
       hin.close()
   elif task == 'list':
     print cd
+  elif task == 'foreach':
+    os.chdir(wd)
+    os.system(options.foreach)
+    os.chdir(os.path.join('..', '..'))
 
 if task == 'extract' or task == 'plot':
   hout.close()
