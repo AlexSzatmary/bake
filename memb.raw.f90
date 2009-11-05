@@ -97,6 +97,15 @@ subroutine generatecapsule(RAD,H,XFN, elmnew,shpint,shpfs, &
      shpint(3,i) = shpint(3,i)*rad
   enddo
 
+
+  write(strfname,'(a4,i4,a4)') 'capx', cap_i, '.txt'
+  call padzeros(strfname)
+  open(400,file=strfname,status='unknown')
+  do i=1,size(xfn,2)
+     write(400,'(13x,e20.13,e20.13,e20.13)')xfn(1,i),xfn(2,i),xfn(3,i)
+  end do
+  close(400)
+
   write(strfname,'(a4,i4,a4)') 'elm_', cap_i, '.txt'
   call padzeros(strfname)
   open(400, file=strfname)
@@ -104,6 +113,27 @@ subroutine generatecapsule(RAD,H,XFN, elmnew,shpint,shpfs, &
      write(400, '(3(i7))') elmnew(i, 1), elmnew(i, 2), elmnew(i, 3)
   end do
   close(400)
+
+  write(strfname,'(a4,i4,a4)') 'shpa', cap_i, '.txt'
+  call padzeros(strfname)
+  open(400,file=strfname,status='unknown')
+  write(strfname,'(a4,i4,a4)') 'shpb', cap_i, '.txt'
+  call padzeros(strfname)
+  open(401,file=strfname,status='unknown')
+  write(strfname,'(a4,i4,a4)') 'shpi', cap_i, '.txt'
+  call padzeros(strfname)
+  open(402,file=strfname,status='unknown')
+  do i = 1, size(shpfs, 2)
+     write(400,'(1pe15.8,3x,1pe15.8,3x,1pe15.8,3x,1pe15.8)') shpfs(1,i), &
+          shpfs(2,i), shpfs(3,i), shpfs(7,i)
+     write(401,'(1pe15.8,3x,1pe15.8,3x,1pe15.8)') shpfs(4,i), shpfs(5,i), &
+          shpfs(6,i)
+     write(402,'(1pe15.8,3x,1pe15.8,3x,1pe15.8)') shpint(1,i), shpint(2,i), &
+          shpint(3,i)
+  end do
+  close(400)
+  close(401)
+  close(402)
 
   return
 end subroutine generatecapsule
