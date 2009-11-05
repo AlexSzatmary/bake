@@ -1,7 +1,6 @@
-$label$;shear$lngx$
-# I'm just going for ten timesteps.
+$label$;shear$capillary_no$
 $t_end$;1.d-2
-$capillary_no$;1.d-2
+$capillary_no$;2.d-1;1.d-1;5.d-2;2.5d-2;1.25d-2
 $gamma_dot$;($Eh$*$capillary_no$/($radx$*$mu$))
 $td$;($gamma_dot_p$/$gamma_dot$)
 $umean$;(/0.d0,0.d0,0.d0/)
@@ -36,7 +35,7 @@ $gamma_dot_p$;($t_end$/$nend$)
 $Eh$;1.d0
 $radx$;3.338d-4
 # Viscosity of plasma (poise), Eggleton & Popel 1998
-$mu$;1.20d-2
+$mu$;6.d-3
 $nend$;10
 $nstep$;10
 $nm$;1.33d0
