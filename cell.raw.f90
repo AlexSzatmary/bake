@@ -151,8 +151,15 @@ PROGRAM cell
      end subroutine meanforce
 
      subroutine make_index_table_start_end(n, start, end)
+       implicit none
        integer :: n(:), start(:), end(:)
      end subroutine make_index_table_start_end
+
+     subroutine minmaxxfn(clock, xfn, cap_i)
+       implicit none
+       double precision :: xfn(:,:)
+       integer :: cap_i, clock
+     end subroutine minmaxxfn
   end interface
 
   !**********************************************************************
@@ -681,6 +688,10 @@ PROGRAM cell
      end if
      message = 'cell l299'
      call dumpstatus(klok, message, 'status.txt')
+
+     do i = 1, ncap
+        call minmaxxfn(klok, xfn(:,cap_n_start(i):cap_n_end(i)), i)
+     end do
 
      if (minval(xfn(1,:)) < 0.5d0) then
         message = 'Nodes exited box in -x direction, terminating job.'

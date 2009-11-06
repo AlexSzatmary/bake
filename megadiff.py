@@ -22,17 +22,19 @@ import os, time, os.path, sys
 wd = sys.argv[-1]
 
 files = ['TaylorDF__00001.txt', 'capsulev__00001.txt', 
-      'capsulex__00001.txt', 'checkinit.txt', 'meanfluidv.txt', 'meanforce.txt',
-      'cappro0001_000000.txt', 'solidforce00000.txt', 
-      'solidforce00005.txt',
-      'solidforce00010.txt', 'solidnodes00000.txt', 
-      'solidnodes00005.txt', 'solidnodes00010.txt', 'status.txt', 
-      'uvwpdump__00000.txt', 'uvwpdump__00005.txt',
-      'uvwpdump__00010.txt', 'wprofile__00000.txt', 
-      'wprofile__00001.txt', 'wprofile__00002.txt', 
-      'wprofile__00003.txt', 'wprofile__00004.txt',
-      'wprofile__00005.txt', 'wprofile__00006.txt',
-      'wprofile__00007.txt', 'wprofile__00008.txt',
-      'wprofile__00009.txt', 'wprofile__00010.txt', 'thumbprint.txt']
+         'capsulex__00001.txt', 'checkinit.txt', 'meanfluidv.txt', 'meanforce.txt',
+         'cappro0001_000000.txt', 'solidforce00000.txt', 
+         'solidforce00005.txt',
+         'solidforce00010.txt', 'solidnodes00000.txt', 
+         'solidnodes00005.txt', 'solidnodes00010.txt', 'status.txt', 
+         'uvwpdump__00000.txt', 'uvwpdump__00005.txt',
+         'uvwpdump__00010.txt', 'wprofile__00000.txt', 
+         'wprofile__00001.txt', 'wprofile__00002.txt', 
+         'wprofile__00003.txt', 'wprofile__00004.txt',
+         'wprofile__00005.txt', 'wprofile__00006.txt',
+         'wprofile__00007.txt', 'wprofile__00008.txt',
+         'wprofile__00009.txt', 'wprofile__00010.txt',
+         'minmaxx___00001.txt', 'minmaxy___00001.txt', 'minmaxz___00001.txt',
+         'thumbprint.txt']
 for file in files:
     os.system('diff batch/'+wd+'/'+file+' check/'+wd+'/'+file)

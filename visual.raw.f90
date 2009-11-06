@@ -491,3 +491,30 @@ subroutine padzeros(str)
   end do
 end subroutine padzeros
 !**********************************************************************
+subroutine minmaxxfn(clock, xfn, cap_i)
+  implicit none
+  double precision :: xfn(:,:)
+  integer :: cap_i
+  character*19 strfname
+  integer clock
+
+  call makefilename('minmaxx___', cap_i,'.txt',strfname)
+  open(400, file=strfname, access='append')
+  write(400,'(i6,x,es24.17,x,es24.17)') clock, minval(xfn(1,:)),&
+       maxval(xfn(1,:))
+  close(400)
+  
+  call makefilename('minmaxy___', cap_i,'.txt',strfname)
+  open(400, file=strfname, access='append')
+  write(400,'(i6,x,es24.17,x,es24.17)') clock, minval(xfn(2,:)),&
+       maxval(xfn(2,:))
+  close(400)
+  
+  call makefilename('minmaxz___', cap_i,'.txt',strfname)
+  open(400, file=strfname, access='append')
+  write(400,'(i6,x,es24.17,x,es24.17)') clock, minval(xfn(3,:)),&
+       maxval(xfn(3,:))
+  close(400)
+  
+end subroutine minmaxxfn
+!**********************************************************************
