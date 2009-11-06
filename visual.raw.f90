@@ -357,7 +357,7 @@ subroutine uvwpdump(ur, vr, wr, pr, clock)
   do i =1,ngx
      do j = 1,ngy
         do k = 0,ngz-1
-           write(25,'(3(i4),x,4(es24.17))') i,j,k, dreal(ur(i,j,k)), &
+           write(25,'(3(i4),4(x,es24.17))') i,j,k, dreal(ur(i,j,k)), &
                 dreal(vr(i,j,k)), &
                 dreal(wr(i,j,k)), dreal(pr(i,j,k))
         end do
