@@ -1,8 +1,8 @@
 $label$;planar-biaxi-nd$lngx$m$mix$g$capillary_no$
 $umean$;(/0.d0,0.d0,0.d0/)
-$bfs1$;(/0.d0, $y$, $z$/)
-$bfs2$;(/$y$, 0.d0, $y$/)
-$bfs3$;(/$z$, $y$, 0.d0/)
+$bfs1$;(/0.d0,\n $y$,\n $z$/)*$gamma_dot$
+$bfs2$;(/$y$,\n 0.d0,\n $y$/)*$gamma_dot$
+$bfs3$;(/$z$,\n $y$,\n 0.d0/)*$gamma_dot$
 $x$;($mix$/sqrt(2.d0-$mix$))
 $y$;(2.d0/($x$+sqrt(8.d0+$x$**2)))
 $z$;(-$x$*$y$)
