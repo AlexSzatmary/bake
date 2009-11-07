@@ -138,17 +138,17 @@ subroutine generatecapsule(RAD,H,XFN, elmnew,shpint,shpfs, &
   return
 end subroutine generatecapsule
 !************************************************************
-subroutine MEMBNX(XFN,elmnew,shpint,shpfs,FRC, H,FOSTAR)
+subroutine MEMBNX(XFN,elmnew,shpint,shpfs,FRC, H,FOSTAR, lambda1, lambda2)
   IMPLICIT NONE
   INTERFACE ELM
      subroutine elmfrc(shpfs,ielm,u2,u3,v3,fx1,fy1,fx2,fy2, &
-          fx3,fy3,fz1,fz2,fz3)
+          fx3,fy3,fz1,fz2,fz3, jl1, jl2)
        IMPLICIT NONE
        INTEGER,  INTENT (IN) :: ielm
        double precision,DIMENSION(:,:), INTENT (IN) :: shpfs
        double precision, INTENT (IN) :: u2,u3,v3
        double precision, INTENT (OUT) :: fx1,fx2,fx3,fy1,fy2,fy3,fz1, &
-            fz2,fz3
+            fz2,fz3, jl1, jl2
      END subroutine elmfrc
   END INTERFACE
 
@@ -162,6 +162,7 @@ subroutine MEMBNX(XFN,elmnew,shpint,shpfs,FRC, H,FOSTAR)
   double precision :: fx12,fx22,fx32
   double precision :: fy12,fy22,fy32
   double precision :: fz12,fz22,fz32
+  double precision :: jl1, jl2
   double precision :: FORCEX1,FORCEY1,FORCEZ1
   double precision :: FORCEX2,FORCEY2,FORCEZ2
   integer j1,j2,j3
@@ -169,6 +170,7 @@ subroutine MEMBNX(XFN,elmnew,shpint,shpfs,FRC, H,FOSTAR)
 
 
   double precision :: XFN(:,:),FRC(:,:)
+  double precision :: lambda1(:), lambda2(:)
   INTEGER elmnew(:,:)
   double precision :: shpint(:,:),shpfs(:,:)
 
@@ -255,7 +257,7 @@ subroutine MEMBNX(XFN,elmnew,shpint,shpfs,FRC, H,FOSTAR)
      xkl2 = xkl2 - shpint(3,i)
 
      call elmfrc(shpfs,i,xjl1,xkl1,xkl2,fx1,fy1,fx2,fy2, &
-          fx3,fy3,fz1,fz2,fz3)
+          fx3,fy3,fz1,fz2,fz3, jl1, jl2)
      !     Rotate forces from the 2-d plane to the actual orientation of the
      !     element; scale force from cgs to program units.
      fx12 =(R11*fx1 + R21*fy1 + R31*fz1)/FOSTAR
@@ -277,12 +279,14 @@ subroutine MEMBNX(XFN,elmnew,shpint,shpfs,FRC, H,FOSTAR)
      FRC(1,j3) = (FRC(1,j3) - fx32)
      FRC(2,j3) = (FRC(2,j3) - fy32)
      FRC(3,j3) = (FRC(3,j3) - fz32)
+     lambda1(i) = jl1
+     lambda2(i) = jl2
   end do
   return
 end subroutine MEMBNX
 !**********************************************************************
 subroutine elmfrc(shpfs,ielm,u2,u3,v3,fx1,fy1,fx2,fy2, &
-     fx3,fy3,fz1,fz2,fz3)
+     fx3,fy3,fz1,fz2,fz3, jl1, jl2)
   IMPLICIT NONE
   INTEGER,  INTENT (IN) :: ielm
   double precision, DIMENSION(:,:), INTENT (IN) :: shpfs

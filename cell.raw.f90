@@ -98,10 +98,12 @@ PROGRAM cell
        double precision :: xfn(:,:)
      end subroutine profile
 
-     subroutine membnx(xfn, elmnew, shpint, shpfs, FRC,h,FOSTAR)
+     subroutine membnx(xfn, elmnew, shpint, shpfs, FRC,h,FOSTAR, &
+       lambda1, lambda2)
        implicit none
        double precision :: xfn(:,:), shpint(:,:),&
             shpfs(:,:), frc(:,:), h, fostar
+       double precision :: lambda1(:), lambda2(:)
        integer :: elmnew(:,:)
      end subroutine membnx
 
@@ -234,6 +236,7 @@ PROGRAM cell
   !     These are in real dimensions.
   double precision, ALLOCATABLE :: XFN(:,:),FRC(:,:),Foptical(:,:),shpint(:,:), &
        shpfs(:,:), rays(:,:)
+  double precision, allocatable :: lambda1(:), lambda2(:)
   double precision, allocatable :: xpi(:,:)
   !     This array associates 3 nodes with a numbered element; three corners
   !     on a triangle.
@@ -338,6 +341,7 @@ PROGRAM cell
   ALLOCATE(NEXTN(1:NFSIZE),XFN(1:3,1:NFSIZE),FRC(1:3,1:NFSIZE),Foptical(1:3,1:NFSIZE))
   ALLOCATE(elmnew(1:3,1:NFSIZE2))
   ALLOCATE(shpint(1:3,1:NFSIZE2),shpfs(1:7,1:NFSIZE2))
+  allocate(lambda1(nfsize2),lambda2(nfsize2))
   allocate(xpi(3,nrectnodes))
 
   pi = 3.14159265358979323846d0 ! Taken from Wikipedia; 20 digits
@@ -521,7 +525,9 @@ PROGRAM cell
              elmnew(:,cap_e_start(i):cap_e_end(i)), & 
              shpint(:,cap_e_start(i):cap_e_end(i)), &
              shpfs(:,cap_e_start(i):cap_e_end(i)), &
-             FRC(:,cap_n_start(i):cap_n_end(i)),h,FOSTAR)
+             FRC(:,cap_n_start(i):cap_n_end(i)),h,FOSTAR,&
+             lambda1(cap_e_start(i):cap_e_end(i)), &
+             lambda2(cap_e_start(i):cap_e_end(i)))
      end do
 
      message = 'cell l220'
@@ -734,6 +740,7 @@ PROGRAM cell
      call dumpstatus(klok, message, 'status.txt')
 
      deallocate(xpi)
+     deallocate(lambda1,lambda2)
      DEALLOCATE (UR,VR,WR,FIRSTN,NUMBER,NEXTN,XFN,FRC)
      DEALLOCATE(QRFACT,elmnew,shpint,shpfs)
      if (nrects > 0) then
