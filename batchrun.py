@@ -46,7 +46,7 @@ try:
     # could happen
     if (system != 'gfortran' and system != 'gfortranopenmp' and 
         system != 'ifort' and system != 'hpc' and system != 'pople'
-        and system != 'sun'):
+        and system != 'sun' and system != 'popledebug'):
       raise Exception('Invalid system specified')
 
   # Perform operation on a Slice of the runs      
@@ -202,6 +202,17 @@ for values in listruns.ItRunValues(list_values, tokens, n_values, N_values, m,
       hin.close()
       houtcode.close()
 
+    if system == 'popledebug':
+      hin = open('qsub_pople_debug.raw','r')
+      houtcode = open(os.path.join(wd, 'qsub_pople_debug.run'), 'w')
+      for line in hin.readlines():
+        for j in range(0,len(tokens)):
+          line = line.replace(tokens[j], values[j])
+        line = line.replace('$cd$', cd)
+        houtcode.write(line)
+      hin.close()
+      houtcode.close()
+
     os.chdir(wd)
     # Insert compile command here  
     if system == 'gfortran':
@@ -214,7 +225,7 @@ for values in listruns.ItRunValues(list_values, tokens, n_values, N_values, m,
       fortran_command = 'ifort -o cell' + cd
     elif system == 'hpc':
       fortran_command = 'mpif90 -o cell' + cd
-    elif system == 'pople':
+    elif system == 'pople' or system == 'popledebug':
       fortran_command = 'ifort -o cell' + cd
     for file in code_files:
         fortran_command = fortran_command + ' ' + file + file_out_suffix
@@ -226,6 +237,8 @@ for values in listruns.ItRunValues(list_values, tokens, n_values, N_values, m,
       os.system('qsub qsub_script.run')
     elif system == 'pople':
       os.system('qsub qsub_pople.run')
+    elif system == 'popledebug':
+      os.system('qsub qsub_pople_debug.run')
     os.chdir(os.path.join('..', '..'))
 
   elif task == 'extract':
