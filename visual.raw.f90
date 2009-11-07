@@ -518,3 +518,71 @@ subroutine minmaxxfn(clock, xfn, cap_i)
   
 end subroutine minmaxxfn
 !**********************************************************************
+SUBROUTINE volume_area(KLOK,XFN,elmnew, cap_i)
+  IMPLICIT NONE
+  INTEGER NFSIZE,NFSIZE2
+  INTEGER i,KLOK, cap_i
+  integer j1,j2,j3
+  double precision :: x1,y1,z1,x2,y2,z2,x3,y3,z3,xc1,yc1,zc1
+  double precision :: a1,a2,a3,b1,b2,b3,c1,c2,c3,vol,area
+  double precision :: XFN(:,:)
+  INTEGER ELMNEW(:,:)
+  character*19 strfname
+
+  nfsize = size(xfn, 2)
+  nfsize2 = size(elmnew, 2)
+
+  area=0.d0
+  vol=0.d0
+  xc1 = 0.0d0
+  yc1 = 0.0d0
+  zc1 = 0.0d0
+  do i = 1, size(xfn,2)
+     xc1 = xc1 + XFN(1,i)
+     yc1 = yc1 + XFN(2,i)
+     zc1 = zc1 + XFN(3,i)
+  end do
+  xc1 = xc1/dble(nfsize)
+  yc1 = yc1/dble(nfsize)
+  zc1 = zc1/dble(nfsize)
+
+!!$OMP  PARALLEL DO &
+!!$OMP& SHARED(XFN,ELMNEW,xc1,yc1,zc1,vol,vol2,area) &
+!!$OMP& PRIVATE(a1,a2,a3,b1,b2,b3,c1,c2,c3,i,j1,j2,j3, &
+!!$OMP& X1,X2,X3,Y1,Y2,Y3,Z1,Z2,Z3)
+  do i = 1, nfsize2
+     j1 = ELMNEW(1,i)
+     j2 = ELMNEW(2,i)
+     j3 = ELMNEW(3,i)
+     X1 = XFN(1,j1)
+     Y1 = XFN(2,j1)
+     Z1 = XFN(3,j1)
+     X2 = XFN(1,j2)
+     Y2 = XFN(2,j2)
+     Z2 = XFN(3,j2)
+     X3 = XFN(1,j3)
+     Y3 = XFN(2,j3)
+     Z3 = XFN(3,j3)
+     a1 = X2 - X1
+     a1 = X2 - X1
+     a2 = Y2 - Y1
+     a3 = Z2 - Z1
+     b1 = X3 - X1
+     b2 = Y3 - Y1
+     b3 = Z3 - Z1
+     c1 = a2*b3-b2*a3
+     c2 = b1*a3-a1*b3
+     c3 = a1*b2-b1*a2
+     vol=vol+(1.d0/6.d0)*dABS(c1*(XC1-X1)+c2*(YC1-Y1)+c3*(ZC1-Z1))
+     area=area+0.5d0*dabs(dsqrt(c1**2+c2**2+c3**2))
+  end do
+!!$OMP END PARALLEL DO
+
+  call makefilename('volumearea', cap_i,'.txt',strfname)
+  open(400, file=strfname, access='append')
+  write(400,'(i6,x,es24.17,x,es24.17)') klok, vol, area
+  close(400)
+
+  RETURN
+END SUBROUTINE VOLUME_AREA
+!**********************************************************************

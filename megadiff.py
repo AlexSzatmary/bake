@@ -35,6 +35,7 @@ files = ['TaylorDF__00001.txt', 'capsulev__00001.txt',
          'wprofile__00007.txt', 'wprofile__00008.txt',
          'wprofile__00009.txt', 'wprofile__00010.txt',
          'minmaxx___00001.txt', 'minmaxy___00001.txt', 'minmaxz___00001.txt',
+         'volumearea00001.txt',
          'thumbprint.txt']
 for file in files:
     os.system('diff batch/'+wd+'/'+file+' check/'+wd+'/'+file)

@@ -160,6 +160,12 @@ PROGRAM cell
        double precision :: xfn(:,:)
        integer :: cap_i, clock
      end subroutine minmaxxfn
+
+     subroutine volume_area(klok,xfn,elmnew, cap_i)
+       integer klok, cap_i
+       double precision :: xfn(:,:)
+       integer elmnew(:,:)
+     end subroutine volume_area
   end interface
 
   !**********************************************************************
@@ -640,6 +646,9 @@ PROGRAM cell
         call dumpstatus(klok, message, 'status.txt')
         call calculateDF(klok, i, xfn(1:3, cap_n_start(i): &
              cap_n_end(i)), nnode(i))
+        call minmaxxfn(klok, xfn(:,cap_n_start(i):cap_n_end(i)), i)
+        call volume_area(klok, xfn(:,cap_n_start(i):cap_n_end(i)), &
+             elmnew(:, cap_e_start(i):cap_e_end(i)), i)
 
         if ((klok/$smalldumpint$)*$smalldumpint$==klok) then
            call profile(i, xfn(1:3,cap_n_start(i):cap_n_end(i)), &
@@ -688,10 +697,6 @@ PROGRAM cell
      end if
      message = 'cell l299'
      call dumpstatus(klok, message, 'status.txt')
-
-     do i = 1, ncap
-        call minmaxxfn(klok, xfn(:,cap_n_start(i):cap_n_end(i)), i)
-     end do
 
      if (minval(xfn(1,:)) < 0.5d0) then
         message = 'Nodes exited box in -x direction, terminating job.'
