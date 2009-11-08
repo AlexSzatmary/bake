@@ -33,14 +33,14 @@ $td$;($gamma_dot_p$/$gamma_dot$)
 $gamma_dot$;($Eh$*$capillary_no$/($radx$*$mu$))
 $dpdz$;0.d0
 $gamma_dot_p$;($t_end$/$nend$)
-$t_end$;2.d0
+$t_end$;2.d0*($capillary_no$/1.d-2)
 $Eh$;1.d0
 $capillary_no$;1.d-4;2.d-4;5.d-4;1.d-3;2.d-3;5.d-3;1.d-2;2.d-2;5.d-2;1.d-1;2.d-1;5.d-1
 $radx$;3.338d-4
 # Viscosity of plasma (poise), Eggleton & Popel 1998
 $mu$;1.20d-2
 $nend$;2000
-$nstep$;2000
+$nstep$;$nend$
 $nm$;1.33d0
 $np$;1.37d0
 $omega_zero$;1.5d-6
