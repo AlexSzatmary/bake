@@ -583,6 +583,25 @@ SUBROUTINE volume_area(KLOK,XFN,elmnew, cap_i)
   write(400,'(i6,x,es24.17,x,es24.17)') klok, vol, area
   close(400)
 
-  RETURN
-END SUBROUTINE VOLUME_AREA
+  return
+end subroutine volume_area
+!**********************************************************************
+subroutine dumplambdas(lambda1, lambda2, strfname)
+  !     saveallsolid
+  !     Alex Szatmary
+  !     8-24-06
+  !     Records the coordinates of each solid node
+  !     !? Is this the actual output format?
+  !     Format: x, y, z
+
+  implicit none
+  character(len=*) strfname
+  double precision :: lambda1(:), lambda2(:)
+  integer i
+  open(25,file=strfname,status='unknown')
+  do i = 1,size(lambda1)
+     write(25,'(i8,2(x,es24.17))') i, lambda1(i), lambda2(i)
+  end do
+  close(25)
+end subroutine dumplambdas
 !**********************************************************************

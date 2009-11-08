@@ -168,6 +168,12 @@ PROGRAM cell
        double precision :: xfn(:,:)
        integer elmnew(:,:)
      end subroutine volume_area
+
+
+     subroutine dumplambdas(lambda1, lambda2, strfname)
+       double precision :: lambda1(:), lambda2(:)
+       character(len=*) strfname
+     end subroutine dumplambdas
   end interface
 
   !**********************************************************************
@@ -656,6 +662,18 @@ PROGRAM cell
         call volume_area(klok, xfn(:,cap_n_start(i):cap_n_end(i)), &
              elmnew(:, cap_e_start(i):cap_e_end(i)), i)
 
+        call makefilename('lambda1___', i, '.txt', strfname)
+        open(400, file=strfname, access='append')
+        write(400,'(i6,x,es24.17,x,es24.17)') klok, minval(lambda1),&
+             maxval(lambda1)
+        close(400)
+
+        call makefilename('lambda2___', i, '.txt', strfname)
+        open(400, file=strfname, access='append')
+        write(400,'(i6,x,es24.17,x,es24.17)') klok, minval(lambda2),&
+             maxval(lambda2)
+        close(400)
+
         if ((klok/$smalldumpint$)*$smalldumpint$==klok) then
            call profile(i, xfn(1:3,cap_n_start(i):cap_n_end(i)), &
                 klok)
@@ -700,6 +718,8 @@ PROGRAM cell
         call saveallsolid(frc,strfname)
         message = 'cell l296'
         call dumpstatus(klok, message, 'status.txt')
+        call makefilename('stretches_',KLOK,'.txt',strfname)
+        call dumplambdas(lambda1, lambda2, strfname)
      end if
      message = 'cell l299'
      call dumpstatus(klok, message, 'status.txt')
