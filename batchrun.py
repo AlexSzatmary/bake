@@ -9,15 +9,46 @@
 import os, time, os.path, sys, re, listruns, optparse
 
 optparser = optparse.OptionParser()
-optparser.add_option('--plot', '-p')
-optparser.add_option('--run', '-r')
-optparser.add_option('--rerun', '-R')
-optparser.add_option('--extract', '-e')
-optparser.add_option('--slice', '-s')
-optparser.add_option('--list', '-l', action='store_true')
+optparser.add_option('--plot', '-p',
+                     help="Makes a datafile for a DF-m plot. "
+                     "This is only useful right now for Alex's research, but "
+                     "if you want code for something like this, let him know.")
+optparser.add_option('--run', '-r',
+                     help="""Start a run; specify a system to run on.
+                     eg, "-r foo" asks to run the code on system foo.
+                     A system must be specified. Currently used systems
+                     include "hpc", "pople", and "sun".""")
+optparser.add_option('--rerun', '-R',
+                     help="""Like -r, but restarts a stopped run.
+                     The only difference between this and -r is that new
+                     directories are not made.""",)
+optparser.add_option('--extract', '-e',
+                     help="""Extracts last line of the data file specified
+                     here, for each run, prints these lines, and saves them.
+                     """)
+optparser.add_option('--slice', '-s',
+                     help="""Selects a subset of the runs specified in the
+                     file, eg, -s 5:9 does runs 5, 6, 7, and 8 out of however
+                     many runs would be referred to in the given file.""")
+optparser.add_option('--list', '-l', action='store_true',
+                     help="""Lists the jobs that would be operated on with the
+                     given parameter file and options.""")
 optparser.add_option('--overwrite', '-o', action='append',
-		     help="Overwrite a line in a batch parameter file")
-optparser.add_option('--foreach', '-E')
+		     help="""Overwrite a line in a batch parameter file,
+                     eg, "-o '\$foo\$;bar;baz'" replaces a parameter line
+                     starting with "$foo$" with "$foo$;bar;baz".
+                     This option can be used repeatedly.
+                     (Note: if the parameter specified is absent from the file,
+                     the new line will simply be added to the options in the
+                     file, it won't overwrite anything.)
+                     """)
+optparser.add_option('--foreach', '-E',
+                     help="""Execute a command in each job specified, eg, "tail
+                     TaylorDF__0001.txt"
+                     """)
+optparser.add_option('--fit', '-f', action='store_true',
+                     help="""Does a curve fit to 1-exp(t) using gnuplot for
+                     Taylor DF.""")
 options, arguments = optparser.parse_args()
 
 print options
@@ -75,6 +106,11 @@ try:
     extractfile = options.plot
     if extractfile == 'DF':
       extractfile = 'TaylorDF__00001.txt'
+
+  if options.fit:
+    if 'task' in dir():
+      raise Exception('Multiple tasks requested')
+    task = 'fit'
 
   if options.foreach:
     if 'task' in dir():
@@ -151,6 +187,14 @@ pattern = re.compile('\$.+?\$')
 
 if task == 'extract' or task == 'plot':
   hout = open('extract' + extractfile, 'w')
+
+if task == 'fit':
+  hout = open('gnuplot_scripts/fitTaylorDF.run.plt', 'w')
+# Fortran uses d to indicate double precision in scientific notation:
+# eg, 3.14d0. This converts these floating point numbers to using an e
+# instead of a d, when called by re.sub.
+  def convert_d_to_e(matchobj):
+    return matchobj.group().replace('d','e')
 
 # This is the main loop, setting up each of the runs
 for values in listruns.ItRunValues(list_values, tokens, n_values, N_values, m, 
@@ -262,9 +306,24 @@ for values in listruns.ItRunValues(list_values, tokens, n_values, N_values, m,
     os.chdir(wd)
     os.system(options.foreach)
     os.chdir(os.path.join('..', '..'))
+  elif task == 'fit':
+    hin = open('gnuplot_scripts/fitTaylorDF.raw.plt')
+    for line in hin.readlines():
+      for j in range(0,len(tokens)):
+        line = line.replace(tokens[j], values[j])
+      line = re.sub(r'\d.?d-?\d', convert_d_to_e, line)
+# 
+      line = line.replace('$cd$', cd)
+      line = line.replace('$wd$', wd)
+      hout.write(line)
+    hin.close()
 
 if task == 'extract' or task == 'plot':
   hout.close()
   hin = open('extract' + extractfile, 'r')
   print hin.read()
   hin.close()
+
+if task == 'fit':
+  hout.close()
+  os.system('gnuplot gnuplot_scripts/fitTaylorDF.run.plt')
