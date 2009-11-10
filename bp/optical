@@ -54,4 +54,4 @@ $index$;0
 $opticalPower$;0.14d0
 $lightSpeed$;299792458d0
 $numberOfMaxReflections$;2
-$optical$;1
+$optical$;1$centerstable$;0

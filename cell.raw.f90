@@ -638,7 +638,11 @@ PROGRAM cell
      message = 'cell l255'
      call dumpstatus(klok, message, 'status.txt')
      CALL MOVE(UR,VR,WR,XFN,FIRSTN,NUMBER,NEXTN)
-
+     if ($centerstable$ == 1) then
+        xfn(1,:) = xfn(1,:) - sum(xfn(1,:))/size(xfn,2) + cap_center(1,1)
+        xfn(2,:) = xfn(2,:) - sum(xfn(2,:))/size(xfn,2) + cap_center(2,1)
+        xfn(3,:) = xfn(3,:) - sum(xfn(3,:))/size(xfn,2) + cap_center(3,1)
+     end if
      message = 'cell l258'
      call dumpstatus(klok, message, 'status.txt')
      write(message, *) 'xfn(1,1)',xfn(1,1)

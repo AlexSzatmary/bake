@@ -125,3 +125,8 @@ This is $lcube$/$radx$, useful in taking care of the domain dependence
 
 $gamma_dot_p$
 The shear rate in program units
+
+$vstable$
+An experimental parameter used to turn on a weird velocity
+stabilization technique. Leave it zero if you don't know why you'd
+want it.

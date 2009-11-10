@@ -18,17 +18,9 @@ for root, dirs, files in os.walk('./bp/'):
         lines = hin.readlines()
         hin.close()
         hout = open(os.path.join(root, fname), 'w')
-        linesout = []
-        label = ''
         for line in lines:
-            if line[0] != '#':
-                l = line.split(';')
-                if l[0] != '':
-                    label += l[0]+l[1]
-                linesout.append(';'.join(l[1:]))
+            if "$vstable$;" in line:
+                hout.write(line.replace("vstable","centerstable"))
             else:
-                linesout.append(line)
-        hout.write('$label$;'+label+'\n')
-        for line in linesout:
-            hout.write(line)
+                hout.write(line)
         hout.close()
