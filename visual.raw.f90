@@ -174,7 +174,7 @@ subroutine dzy(zy,icount,klok, cap_i)
   return
 end subroutine Dzy
 !**********************************************************************
-subroutine calculateDF(clock, cap_i, xfn, my_nnode)
+subroutine calculateDF(clock, cap_i, xfn, my_nnode, lambda1, lambda2)
   implicit none
   integer my_nnode
   double precision :: xfn(:, :)
@@ -184,6 +184,8 @@ subroutine calculateDF(clock, cap_i, xfn, my_nnode)
   double precision :: cgx, cgy, cgz
   double precision :: DF
   character*19 strfname
+  integer imax, imin
+  double precision :: lambda1(:), lambda2(:)
 
   rmin = 1000d0
   rmax = -1000d0
@@ -203,15 +205,31 @@ subroutine calculateDF(clock, cap_i, xfn, my_nnode)
   do i = 1, my_nnode
      r = dsqrt((xfn(1,i)-cgx)**2 + (xfn(2,i)-cgy)**2 + &
           (xfn(3,i)-cgz)**2)
-     if(r > rmax) rmax = r
-     if(r < rmin) rmin = r
+     if(r > rmax) then
+        rmax = r
+        imax = i
+     end if
+     if(r < rmin) then 
+        rmin = r
+        imin = i
+     end if
   end do
 
   DF = (rmax - rmin)/(rmax+rmin)
 
   call makefilename('TaylorDF__', cap_i,'.txt',strfname)
   open(204, file=strfname, access='append')
-  write(204,'(i6,3x,es24.17)') clock, DF
+  write(204,'(i6,3(x,es24.17))') clock, DF, rmin, rmax
+  close(204)
+
+  call makefilename('lambdarmax', cap_i,'.txt',strfname)
+  open(204, file=strfname, access='append')
+  write(204,'(i6,3(x,es24.17))') clock, lambda1(imax), lambda2(imax)
+  close(204)
+
+  call makefilename('lambdarmin', cap_i,'.txt',strfname)
+  open(204, file=strfname, access='append')
+  write(204,'(i6,3(x,es24.17))') clock, lambda1(imin), lambda2(imin)
   close(204)
 
   return

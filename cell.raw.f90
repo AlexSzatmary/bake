@@ -87,11 +87,13 @@ PROGRAM cell
        integer :: klok, nnode, elmnew(:,:), nelm, cap_i
      end subroutine shape
 
-     subroutine calculateDF(clock, cap_i, xfn, my_nnode)
+     subroutine calculateDF(clock, cap_i, xfn, my_nnode, lambda1, lambda2)
        implicit none
        integer clock, cap_i, my_nnode
        double precision :: xfn(:,:)
+       double precision :: lambda1(:), lambda2(:)
      end subroutine calculateDF
+
      subroutine profile(cap_i, xfn, clock)
        implicit none
        integer cap_i, clock
@@ -493,7 +495,9 @@ PROGRAM cell
              nnode(i), elmnew(1:3, cap_e_start(i):cap_e_end(i)), &
              nelm(i))
         call calculateDF(klok, i, xfn(1:3, cap_n_start(i): &
-             cap_n_end(i)), nnode(i))
+             cap_n_end(i)), nnode(i), &
+             lambda1(cap_e_start(i):cap_e_end(i)), &
+             lambda2(cap_e_start(i):cap_e_end(i)))
         call profile(i, xfn(1:3,cap_n_start(i):cap_n_end(i)), &
              klok)
      end do
@@ -662,7 +666,10 @@ PROGRAM cell
         message = 'cell l262'
         call dumpstatus(klok, message, 'status.txt')
         call calculateDF(klok, i, xfn(1:3, cap_n_start(i): &
-             cap_n_end(i)), nnode(i))
+             cap_n_end(i)), nnode(i), &
+             lambda1(cap_e_start(i):cap_e_end(i)), &
+             lambda2(cap_e_start(i):cap_e_end(i)))
+
         call minmaxxfn(klok, xfn(:,cap_n_start(i):cap_n_end(i)), i)
         call volume_area(klok, xfn(:,cap_n_start(i):cap_n_end(i)), &
              elmnew(:, cap_e_start(i):cap_e_end(i)), i)
