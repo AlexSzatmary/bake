@@ -576,7 +576,8 @@ PROGRAM cell
      call meanfluidvelocity(vr, meanv)
      call meanfluidvelocity(wr, meanw)
      open(403, file='meanfluidv.txt',  access='append')
-     write(403,*) klok, dreal(meanu), dreal(meanv), dreal(meanw)
+     write(403,'(i6,3(x,es24.17)))') klok, dreal(meanu), dreal(meanv), &
+          dreal(meanw)
      close(403)
 
      message = 'cell l240'

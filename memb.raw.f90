@@ -102,7 +102,7 @@ subroutine generatecapsule(RAD,H,XFN, elmnew,shpint,shpfs, &
   call padzeros(strfname)
   open(400,file=strfname,status='unknown')
   do i=1,size(xfn,2)
-     write(400,'(13x,e20.13,e20.13,e20.13)')xfn(1,i),xfn(2,i),xfn(3,i)
+     write(400,'(es24.17,2(x,es24.17))')xfn(1,i),xfn(2,i),xfn(3,i)
   end do
   close(400)
 
@@ -124,11 +124,11 @@ subroutine generatecapsule(RAD,H,XFN, elmnew,shpint,shpfs, &
   call padzeros(strfname)
   open(402,file=strfname,status='unknown')
   do i = 1, size(shpfs, 2)
-     write(400,'(1pe15.8,3x,1pe15.8,3x,1pe15.8,3x,1pe15.8)') shpfs(1,i), &
+     write(400,'(es24.17,3(x,es24.17))') shpfs(1,i), &
           shpfs(2,i), shpfs(3,i), shpfs(7,i)
-     write(401,'(1pe15.8,3x,1pe15.8,3x,1pe15.8)') shpfs(4,i), shpfs(5,i), &
+     write(401,'(es24.17,2(x,es24.17))') shpfs(4,i), shpfs(5,i), &
           shpfs(6,i)
-     write(402,'(1pe15.8,3x,1pe15.8,3x,1pe15.8)') shpint(1,i), shpint(2,i), &
+     write(402,'(es24.17,2(x,es24.17))') shpint(1,i), shpint(2,i), &
           shpint(3,i)
   end do
   close(400)
