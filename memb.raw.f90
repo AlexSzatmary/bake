@@ -110,7 +110,7 @@ subroutine generatecapsule(RAD,H,XFN, elmnew,shpint,shpfs, &
   call padzeros(strfname)
   open(400, file=strfname)
   do i = 1, size(elmnew,2)
-     write(400, '(3(i7))') elmnew(i, 1), elmnew(i, 2), elmnew(i, 3)
+     write(400, '(3(i7))') elmnew(1, i), elmnew(2, i), elmnew(3, i)
   end do
   close(400)
 
