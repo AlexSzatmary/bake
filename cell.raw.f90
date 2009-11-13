@@ -710,11 +710,11 @@ PROGRAM cell
         call wprofile(wr, klok)
         message = 'cell l276'
         call dumpstatus(klok, message, 'status.txt')
-     end if
-     message = 'cell l279'
-     call dumpstatus(klok, message, 'status.txt')
 
-     if ((klok/$bigdumpint$)*$bigdumpint$ == klok) then
+        message = 'cell l279'
+        call dumpstatus(klok, message, 'status.txt')
+
+! Files that are saved every smalldumpint, but only kept every bigdumpint
         call uvwpdump(ur, vr, wr, pr, KLOK)
         message = 'cell l284'
         call dumpstatus(klok, message, 'status.txt')
@@ -732,7 +732,40 @@ PROGRAM cell
         call dumpstatus(klok, message, 'status.txt')
         call makefilename('stretches_',KLOK,'.txt',strfname)
         call dumplambdas(lambda1, lambda2, strfname)
+
+! This doesn't kill the files that are zero, one, or two smalldumpints old
+! or any files that have a klok count that is an even multiple of bigdumpint
+        if ((((klok-2*$smalldumpint$)/$bigdumpint$)*$bigdumpint$) /= klok - &
+           2*$smalldumpint$ .and. (klok-2*$smalldumpint$) > 0) then
+
+! Delete old copies of these files
+! Delete old velocity/pressure information
+           call makefilename('uvwpdump__', klok-2*$smalldumpint$,'.txt',&
+                strfname)
+           open(300, file=strfname, form = 'unformatted')
+           close(300, status='delete')
+
+! Delete the total configuration of the solid nodes
+           call makefilename('solidnodes',klok-2*$smalldumpint$,'.txt', &
+                strfname)
+           open(300, file=strfname, form = 'unformatted')
+           close(300, status='delete')
+
+! Delete the total configuration of the solid forces
+           call makefilename('solidforce',klok-2*$smalldumpint$,'.txt', &
+                strfname)
+           open(300, file=strfname, form = 'unformatted')
+           close(300, status='delete')
+
+! Delete the file storing stretch ratios for each solid node
+           call makefilename('stretches_',klok-2*$smalldumpint$,'.txt', &
+                strfname)
+           open(300, file=strfname, form = 'unformatted')
+           close(300, status='delete')
+
+        end if
      end if
+
      message = 'cell l299'
      call dumpstatus(klok, message, 'status.txt')
 
