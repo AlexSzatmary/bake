@@ -1,0 +1,51 @@
+$label$;shear$lngx$f$FVS$g$capillary_no$
+$umean$;(/0.d0,0.d0,0.d0/)
+$bfs1$;(/0.d0, 0.d0, 0.d0/)
+$bfs2$;(/0.d0, 0.d0, $gamma_dot_p$/2.d0/)
+$bfs3$;(/0.d0, $gamma_dot_p$/2.d0, 0.d0/)
+$ncap$;1
+$rad$;(/$radx$/)
+$xc_cap$;(/0.5d0*(flngx+1.d0)/)
+$yc_cap$;(/0.5d0*(flngy+1.d0)/)
+$zc_cap$;(/0.5d0*(flngz-1.d0)/)
+$fineness$;(/5/)
+$npls$;0
+$sqrtnpl$;32
+$planey$;2.5d0
+$recty$;$planey$
+$pl_n1$;$sqrtnpl$
+$pl_n2$;$sqrtnpl$
+$lngx$;5
+$FVS$;0;1
+$gapratio$;0.00d0
+$b$;4.d0
+$mix$;0
+$smalldumpint$;1
+$bigdumpint$;1
+$nu$;($mu$/$rho$)
+$lcube$;($radx$*$b$)
+# Density of plasma (g/(cm^3)), Neofytou 2004
+$rho$;1.025d0
+$td$;($gamma_dot_p$/$gamma_dot$)
+$gamma_dot$;($Eh$*$capillary_no$/($radx$*$mu$))
+$dpdz$;0.d0
+$gamma_dot_p$;($t_end$/$nend$)
+$t_end$;2.d0
+$Eh$;1.d0
+$capillary_no$;1.d-4;2.d-4;5.d-4;1.d-3;2.d-3;5.d-3;1.d-2;2.d-2;5.d-2;1.d-1;2.d-1;5.d-1
+$radx$;3.338d-4
+# Viscosity of plasma (poise), Eggleton & Popel 1998
+$mu$;1.20d-2
+$nend$;2000
+$nstep$;2000
+$nm$;1.33d0
+$np$;1.37d0
+$omega_zero$;1.5d-6
+$epsilono$;8.85418781762d-12
+$lambda$;833e-9
+$index$;0 
+$opticalPower$;0.14d0
+$lightSpeed$;299792458d0
+$numberOfMaxReflections$;2
+$optical$;0
+$centerstable$;0
