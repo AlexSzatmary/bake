@@ -36,8 +36,8 @@ $Eh$;1.d0
 $radx$;3.338d-4
 # Viscosity of plasma (poise), Eggleton & Popel 1998
 $mu$;6.d-3
-$nend$;10
-$nstep$;10
+$nend$;2000
+$nstep$;2000
 $nm$;1.33d0
 $np$;1.37d0
 $omega_zero$;1.5d-6
