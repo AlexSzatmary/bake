@@ -1,5 +1,5 @@
 $label$;shear$capillary_no$
-$t_end$;2.5;5;7.5;10;12.5
+$t_end$;2.d0
 $capillary_no$;2.d-1;1.d-1;5.d-2;2.5d-2;1.25d-2
 $gamma_dot$;($Eh$*$capillary_no$/($radx$*$mu$))
 $td$;($gamma_dot_p$/$gamma_dot$)
