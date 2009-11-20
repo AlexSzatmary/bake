@@ -23,8 +23,8 @@ $FVS$;1
 $gapratio$;0.00d0
 $b$;4.d0
 $mix$;0
-$smalldumpint$;1
-$bigdumpint$;5
+$smalldumpint$;50
+$bigdumpint$;500
 $nu$;($mu$/$rho$)
 $lcube$;($radx$*$b$)
 # Density of plasma (g/(cm^3)), Neofytou 2004
