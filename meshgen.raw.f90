@@ -426,10 +426,13 @@ subroutine sf(xfn, elmnew, shpint, shpfs)
      b2=xi1-xk1
      b3=xj1-xi1
 
+! c1 is the area of a parallelogram with two sides given by the vectors
+! xj and xk. It is twice the area of the actual triangular element.
      c1=xj1*xk2-xk1*xj2
      c2=xk1*xi2-xi1*xk2
      c3=xi1*xj2-xj1*xi2
 
+! The nonzero term used in computing d1 is c1
      d1=a1*xi1+b1*xi2+c1
      d2=a2*xj1+b2*xj2+c2
      d3=a3*xk1+b3*xk2+c3
@@ -448,6 +451,7 @@ subroutine sf(xfn, elmnew, shpint, shpfs)
      shpfs(4,i) = b1
      shpfs(5,i) = b2
      shpfs(6,i) = b3
+     ! The d1 is twice the area of the element.
      shpfs(7,i) = d1
      shpint(1,i) = xj1
      shpint(2,i) = xk1

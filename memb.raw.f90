@@ -89,6 +89,10 @@ subroutine generatecapsule(RAD,H,XFN, elmnew,shpint,shpfs, &
      shpfs(4,i)=shpfs(4,i)/rad
      shpfs(5,i)=shpfs(5,i)/rad
      shpfs(6,i)=shpfs(6,i)/rad
+! shpfs(7,:) is probably the element in shpfs/shpint that would be most useful
+! to someone writing analysis code. This number is twice the area of the
+! element. It's twice the area of the element, rather than just the area of the
+! element, for historical reasons.
      shpfs(7,i)=shpfs(7,i)*rad*rad
      !     The following 3 lines added 5-2-07 due to changes in scaling in
      !     membnx.
@@ -479,6 +483,8 @@ subroutine elmfrc(shpfs,ielm,u2,u3,v3,fx1,fy1,fx2,fy2, &
   !     
   !     Calculate nodal forces in cgs units.
   !     
+  ! a0 is twice the area of the element, so the factor of 0.5 appears here
+  ! to give the area of the triangular element. See comment in 
   fx1 =(dwdl1*dl1du1 + dwdl2*dl2du1)*0.5d0*a0
   fx2 =(dwdl1*dl1du2 + dwdl2*dl2du2)*0.5d0*a0
   fx3 =(dwdl1*dl1du3 + dwdl2*dl2du3)*0.5d0*a0
