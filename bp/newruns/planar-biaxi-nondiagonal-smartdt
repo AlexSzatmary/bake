@@ -22,7 +22,7 @@ $lngx$;5
 $FVS$;1
 $gapratio$;0.00d0
 $b$;6.d0
-$mix$;0.0d0;0.1d0;0.2d0;0.3d0;0.4d0;0.5d0;0.6d0;0.7d0;0.8d0;0.9d0;1.0d0
+$mix$;0.1d0;0.2d0;0.3d0;0.4d0;0.5d0;0.6d0;0.7d0;0.8d0;0.9d0;1.0d0
 $smalldumpint$;10
 $bigdumpint$;500
 $nu$;($mu$/$rho$)
