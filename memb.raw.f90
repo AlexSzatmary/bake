@@ -36,7 +36,7 @@ SUBROUTINE INHIST(XFN,FIRSTN,NUMBER,NEXTN)
 END SUBROUTINE INHIST
 !************************************************************
 subroutine generatecapsule(RAD,H,XFN, elmnew,shpint,shpfs, &
-     my_cap_center, my_fineness, cap_i)
+     my_cap_center, my_fineness, cap_i, a_prestress)
   IMPLICIT NONE
   interface 
      subroutine sph(fineness, xfnew, ilmnew)
@@ -56,7 +56,7 @@ subroutine generatecapsule(RAD,H,XFN, elmnew,shpint,shpfs, &
   integer, parameter :: ngx=2**lxng,ngy=2**lyng,ngz=2**lzng
   double precision, parameter :: flngx=ngx,flngy=ngy,flngz=ngz
   INTEGER i 
-  double precision H,pi,theta,x,y,rad
+  double precision H,pi,theta,x,y,rad, a_prestress
   double precision :: XFN(:,:)
   INTEGER elmnew(:,:)
   double precision :: shpint(:,:), shpfs(:,:) 
@@ -83,22 +83,22 @@ subroutine generatecapsule(RAD,H,XFN, elmnew,shpint,shpfs, &
   !     This scales the sphere's (non-dimensional) finite element parameters
   !     to real units.
   do i= 1, size(elmnew,2)
-     shpfs(1,i)=shpfs(1,i)/rad
-     shpfs(2,i)=shpfs(2,i)/rad
-     shpfs(3,i)=shpfs(3,i)/rad
-     shpfs(4,i)=shpfs(4,i)/rad
-     shpfs(5,i)=shpfs(5,i)/rad
-     shpfs(6,i)=shpfs(6,i)/rad
+     shpfs(1,i)=shpfs(1,i)/rad*(1+a_prestress)
+     shpfs(2,i)=shpfs(2,i)/rad*(1+a_prestress)
+     shpfs(3,i)=shpfs(3,i)/rad*(1+a_prestress)
+     shpfs(4,i)=shpfs(4,i)/rad*(1+a_prestress)
+     shpfs(5,i)=shpfs(5,i)/rad*(1+a_prestress)
+     shpfs(6,i)=shpfs(6,i)/rad*(1+a_prestress)
 ! shpfs(7,:) is probably the element in shpfs/shpint that would be most useful
 ! to someone writing analysis code. This number is twice the area of the
 ! element. It's twice the area of the element, rather than just the area of the
 ! element, for historical reasons.
-     shpfs(7,i)=shpfs(7,i)*rad*rad
+     shpfs(7,i)=shpfs(7,i)*rad*rad/(1+a_prestress)/(1+a_prestress)
      !     The following 3 lines added 5-2-07 due to changes in scaling in
      !     membnx.
-     shpint(1,i) = shpint(1,i)*rad
-     shpint(2,i) = shpint(2,i)*rad
-     shpint(3,i) = shpint(3,i)*rad
+     shpint(1,i) = shpint(1,i)*rad/(1+a_prestress)
+     shpint(2,i) = shpint(2,i)*rad/(1+a_prestress)
+     shpint(3,i) = shpint(3,i)*rad/(1+a_prestress)
   enddo
 
 

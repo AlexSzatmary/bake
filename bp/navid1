@@ -46,3 +46,4 @@ drift;$lngx$;5
 ;$numberOfMaxReflections$;2
 $optical$;0
 $centerstable$;0
+$a_prestress$;(/0.d0/)

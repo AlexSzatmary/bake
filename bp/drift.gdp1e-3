@@ -48,3 +48,4 @@ $mu$;1.20d-2
 $nend$;2000
 $nstep$;2000
 $centerstable$;0
+$a_prestress$;(/0.d0/)

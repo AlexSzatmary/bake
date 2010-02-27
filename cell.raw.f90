@@ -36,12 +36,12 @@ PROGRAM cell
      end subroutine inhist
      
      subroutine generatecapsule(RAD,H,XFN, elmnew,shpint,shpfs, &
-     my_cap_center, my_fineness, cap_i)
+     my_cap_center, my_fineness, cap_i, a_prestress)
        implicit none
        double precision :: rad, h
        double precision :: xfn(:,:), shpint(:,:), shpfs(:,:)
        integer :: elmnew(:,:)
-       double precision :: my_cap_center(:)
+       double precision :: my_cap_center(:), a_prestress
        integer :: my_fineness, cap_i
      end subroutine generatecapsule
 
@@ -205,7 +205,7 @@ PROGRAM cell
   double precision fnrectnodes
   INTEGER KLOK,KLOK1,KLOKEND,NSTEP
   double precision :: T,H,h64,TD,VSC,TIME,RHO,PI,RADX,FOSTAR
-  double precision, allocatable :: rad(:)
+  double precision, allocatable :: rad(:), a_prestress(:)
   double precision, allocatable :: xcenter(:), ycenter(:), &
        zcenter(:)
   double precision, allocatable :: xcenterold(:), ycenterold(:), & 
@@ -293,6 +293,7 @@ PROGRAM cell
      allocate(cap_n_start(ncap), cap_n_end(ncap), cap_e_start(ncap), &
           cap_e_end(ncap))
      allocate(fineness(ncap), nnode(ncap), nelm(ncap), cap_center(3,ncap))
+     allocate(a_prestress(ncap))
      fineness = $fineness$
      do i=1,ncap
         call capsuletable(fineness(i),nnode(i),nelm(i))
@@ -390,6 +391,7 @@ PROGRAM cell
      cap_center(1,:)=$xc_cap$
      cap_center(2,:)=$yc_cap$
      cap_center(3,:)=$zc_cap$
+     a_prestress = $a_prestress$
   end if
   
 
@@ -439,7 +441,7 @@ PROGRAM cell
              elmnew(1:3,cap_e_start(i):cap_e_end(i)), &
              shpint(1:3,cap_e_start(i):cap_e_end(i)), &
              shpfs(1:7,cap_e_start(i):cap_e_end(i)), &
-             cap_center(:,i), fineness(i), i)
+             cap_center(:,i), fineness(i), i, a_prestress(i))
      end do
      !     nrects is the number of rectangles. If there is one, it should be
      !     initialized.
@@ -813,6 +815,7 @@ PROGRAM cell
              rect_n_end)
      end if
      if (ncap > 0) then 
+        deallocate(a_prestress)
         deallocate(fineness, nnode, nelm)
         deallocate(cap_n_start, cap_n_end, cap_e_start, cap_e_end)
         deallocate(rad, xcenter, ycenter, zcenter, &
