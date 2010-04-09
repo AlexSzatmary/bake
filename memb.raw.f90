@@ -36,7 +36,7 @@ SUBROUTINE INHIST(XFN,FIRSTN,NUMBER,NEXTN)
 END SUBROUTINE INHIST
 !************************************************************
 subroutine generatecapsule(RAD,H,XFN, elmnew,shpint,shpfs, &
-     my_cap_center, my_fineness, cap_i, a_prestress)
+     my_cap_center, my_fineness, cap_i, a_prestress, my_nvec_i)
   IMPLICIT NONE
   interface 
      subroutine sph(fineness, xfnew, ilmnew)
@@ -62,6 +62,7 @@ subroutine generatecapsule(RAD,H,XFN, elmnew,shpint,shpfs, &
   double precision :: shpint(:,:), shpfs(:,:) 
   double precision :: my_cap_center(:)
   integer my_fineness, cap_i
+  integer my_nvec_i(:)
   character(len=12) strfname
 
   pi = 3.14159265358979323846d0 ! Taken from Wikipedia; 20 digits
@@ -79,6 +80,9 @@ subroutine generatecapsule(RAD,H,XFN, elmnew,shpint,shpfs, &
      XFN(2,i) =RAD*y/H + my_cap_center(2)
      XFN(3,i) =RAD*XFN(3,i)/H + my_cap_center(3)
   enddo
+
+  my_nvec_i(1:3) = maxloc(xfn, 2)
+  my_nvec_i(4:6) = minloc(xfn, 2)
 
   !     This scales the sphere's (non-dimensional) finite element parameters
   !     to real units.

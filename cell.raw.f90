@@ -36,13 +36,14 @@ PROGRAM cell
      end subroutine inhist
      
      subroutine generatecapsule(RAD,H,XFN, elmnew,shpint,shpfs, &
-     my_cap_center, my_fineness, cap_i, a_prestress)
+     my_cap_center, my_fineness, cap_i, a_prestress, my_nvec_i)
        implicit none
        double precision :: rad, h
        double precision :: xfn(:,:), shpint(:,:), shpfs(:,:)
        integer :: elmnew(:,:)
        double precision :: my_cap_center(:), a_prestress
        integer :: my_fineness, cap_i
+       integer :: my_nvec_i(:)
      end subroutine generatecapsule
 
      subroutine cellcenter(klok, xfn, my_nnode, cap_i, xcenter, &
@@ -210,6 +211,7 @@ PROGRAM cell
        zcenter(:)
   double precision, allocatable :: xcenterold(:), ycenterold(:), & 
        zcenterold(:)
+  integer, allocatable :: nvec_i(:,:)
   integer ncap
   double precision ::  LCUBE,NU,MU,MASS,LENGTH
   !     Velocities are always expressed in program units
@@ -293,7 +295,7 @@ PROGRAM cell
      allocate(cap_n_start(ncap), cap_n_end(ncap), cap_e_start(ncap), &
           cap_e_end(ncap))
      allocate(fineness(ncap), nnode(ncap), nelm(ncap), cap_center(3,ncap))
-     allocate(a_prestress(ncap))
+     allocate(a_prestress(ncap), nvec_i(6, ncap))
      fineness = $fineness$
      do i=1,ncap
         call capsuletable(fineness(i),nnode(i),nelm(i))
@@ -441,7 +443,7 @@ PROGRAM cell
              elmnew(1:3,cap_e_start(i):cap_e_end(i)), &
              shpint(1:3,cap_e_start(i):cap_e_end(i)), &
              shpfs(1:7,cap_e_start(i):cap_e_end(i)), &
-             cap_center(:,i), fineness(i), i, a_prestress(i))
+             cap_center(:,i), fineness(i), i, a_prestress(i), nvec_i(:,i))
      end do
      !     nrects is the number of rectangles. If there is one, it should be
      !     initialized.
@@ -815,7 +817,7 @@ PROGRAM cell
              rect_n_end)
      end if
      if (ncap > 0) then 
-        deallocate(a_prestress)
+        deallocate(a_prestress, nvec_i)
         deallocate(fineness, nnode, nelm)
         deallocate(cap_n_start, cap_n_end, cap_e_start, cap_e_end)
         deallocate(rad, xcenter, ycenter, zcenter, &

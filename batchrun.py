@@ -260,7 +260,7 @@ for values in listruns.ItRunValues(list_values, tokens, n_values, N_values, m,
     os.chdir(wd)
     # Insert compile command here  
     if system == 'gfortran':
-      fortran_command = 'gfortran -Wall -g -o cell' + cd
+      fortran_command = 'gfortran -Wall -g -m64 -o cell' + cd
     elif system == 'gfortranopenmp':
       fortran_command = 'gfortran -Wall -fopenmp -g -o cell' + cd
     elif system == 'sun':
