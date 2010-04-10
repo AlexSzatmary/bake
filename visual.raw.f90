@@ -623,3 +623,22 @@ subroutine dumplambdas(lambda1, lambda2, strfname)
   close(25)
 end subroutine dumplambdas
 !**********************************************************************
+subroutine dumpnvec(clock, xfn, xcenter, ycenter, zcenter, my_nvec_i, cap_i)
+  implicit none
+  integer clock
+  double precision :: xfn(:,:), xcenter, ycenter, zcenter
+  integer my_nvec_i(:)
+  integer j
+  character*14 strfname
+  integer cap_i
+  do j = 1, 6
+     write(strfname,'(A4,I1,A1,I4,A4)') 'nvec', j, '_', cap_i, '.txt'
+     call padzeros(strfname)
+     open(401, file=strfname, access='append')
+     write(401,'(i6,3(x,es24.17))') clock, xfn(1, my_nvec_i(j)) - xcenter, &
+          xfn(2, my_nvec_i(j)) - ycenter, &
+          xfn(3, my_nvec_i(j)) - zcenter
+     close(401)
+  end do
+  return
+end subroutine dumpnvec

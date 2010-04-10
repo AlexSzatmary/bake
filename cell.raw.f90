@@ -177,6 +177,14 @@ PROGRAM cell
        double precision :: lambda1(:), lambda2(:)
        character(len=*) strfname
      end subroutine dumplambdas
+
+     subroutine dumpnvec(clock, xfn, xcenter, ycenter, zcenter, my_nvec_i, &
+          cap_i)
+       integer clock
+       double precision :: xfn(:,:), xcenter, ycenter, zcenter
+       integer my_nvec_i(:)
+       integer cap_i
+     end subroutine dumpnvec
   end interface
 
   !**********************************************************************
@@ -443,7 +451,7 @@ PROGRAM cell
              elmnew(1:3,cap_e_start(i):cap_e_end(i)), &
              shpint(1:3,cap_e_start(i):cap_e_end(i)), &
              shpfs(1:7,cap_e_start(i):cap_e_end(i)), &
-             cap_center(:,i), fineness(i), i, a_prestress(i), nvec_i(:,i))
+             cap_center(:,i), fineness(i), i, a_prestress(i), nvec_i(:, i))
      end do
      !     nrects is the number of rectangles. If there is one, it should be
      !     initialized.
@@ -461,6 +469,8 @@ PROGRAM cell
         xcenterold(i) = xcenter(i)
         ycenterold(i) = ycenter(i)
         zcenterold(i) = zcenter(i)
+        call dumpnvec(klok, xfn(:,cap_n_start(i):cap_n_end(i)), xcenter(i), &
+             ycenter(i), zcenter(i), nvec_i(:, i), i)
      end do
 
      !  Initialize the activation variables --
@@ -578,6 +588,8 @@ PROGRAM cell
         xcenterold(i) = xcenter(i)
         ycenterold(i) = ycenter(i)
         zcenterold(i) = zcenter(i)
+        call dumpnvec(klok, xfn(:,cap_n_start(i):cap_n_end(i)), xcenter(i), &
+             ycenter(i), zcenter(i), nvec_i(:, i), i)
      end do
 
      call meanfluidvelocity(ur, meanu)
