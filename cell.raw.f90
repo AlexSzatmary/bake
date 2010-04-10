@@ -452,16 +452,9 @@ PROGRAM cell
              shpint(1:3,cap_e_start(i):cap_e_end(i)), &
              shpfs(1:7,cap_e_start(i):cap_e_end(i)), &
              cap_center(:,i), fineness(i), i, a_prestress(i), nvec_i(:, i))
-     end do
-     !     nrects is the number of rectangles. If there is one, it should be
-     !     initialized.
-     do i= 1, nrects
-        call inrect(xpi, xfn(1:3,rect_n_start(i):rect_n_end(i)), rect_n1(i), &
-             rect_n2(i), recty(i))
-     end do
-     
-     !     Get an initial measurement of the center of the capsule
-     do i=1,ncap
+        ! Get an initial measurement of the center of the capsule
+        ! This is so that the first capsule center velocity measurement has
+        ! some physical meaning.
         call cellcenter(klok,xfn(1:3,cap_n_start(i):cap_n_end(i)), &
              nnode(i), i, xcenter(i), ycenter(i), zcenter(i))
         !     Use these values to measure velocity. It's a crappy measure, it's
@@ -471,7 +464,24 @@ PROGRAM cell
         zcenterold(i) = zcenter(i)
         call dumpnvec(klok, xfn(:,cap_n_start(i):cap_n_end(i)), xcenter(i), &
              ycenter(i), zcenter(i), nvec_i(:, i), i)
+        call shape(h64,klok, i, xfn(1:3, cap_n_start(i): &
+             cap_n_end(i)), &
+             nnode(i), elmnew(1:3, cap_e_start(i):cap_e_end(i)), &
+             nelm(i))
+        call calculateDF(klok, i, xfn(1:3, cap_n_start(i): &
+             cap_n_end(i)), nnode(i), &
+             lambda1(cap_e_start(i):cap_e_end(i)), &
+             lambda2(cap_e_start(i):cap_e_end(i)))
+        call profile(i, xfn(1:3,cap_n_start(i):cap_n_end(i)), &
+             klok)
      end do
+     !     nrects is the number of rectangles. If there is one, it should be
+     !     initialized.
+     do i= 1, nrects
+        call inrect(xpi, xfn(1:3,rect_n_start(i):rect_n_end(i)), rect_n1(i), &
+             rect_n2(i), recty(i))
+     end do
+     
 
      !  Initialize the activation variables --
      open(206,file='checkinit.txt',access='append')
@@ -503,18 +513,7 @@ PROGRAM cell
      call saveallsolid(XFN,strfname)
      call makefilename('solidforce', 0,'.txt',strfname)
      call saveallsolid(frc,strfname)
-     do i = 1,ncap
-        call shape(h64,klok, i, xfn(1:3, cap_n_start(i): &
-             cap_n_end(i)), &
-             nnode(i), elmnew(1:3, cap_e_start(i):cap_e_end(i)), &
-             nelm(i))
-        call calculateDF(klok, i, xfn(1:3, cap_n_start(i): &
-             cap_n_end(i)), nnode(i), &
-             lambda1(cap_e_start(i):cap_e_end(i)), &
-             lambda2(cap_e_start(i):cap_e_end(i)))
-        call profile(i, xfn(1:3,cap_n_start(i):cap_n_end(i)), &
-             klok)
-     end do
+
      t=0.d0
 
      if ($optical$ /= 0) then
@@ -574,23 +573,6 @@ PROGRAM cell
      call meanforce(klok, frc)
      message = 'cell l228'
      call dumpstatus(klok, message, 'status.txt')
-     do i=1,ncap
-        call cellcenter(klok,xfn(1:3,cap_n_start(i):cap_n_end(i)), &
-             nnode(i), i, xcenter(i), ycenter(i), zcenter(i))
-        message = 'cell l232'
-        call dumpstatus(klok, message, 'status.txt')
-        !     todo Make filename change with capsule index
-        call makefilename('capsulev__', i,'.txt',strfname)
-        open(402,file=strfname, access='append')
-        write(402,'(i6,3(x,es24.17))') klok, xcenter(i) - xcenterold(i), &
-             ycenter(i) - ycenterold(i), zcenter(i) - zcenterold(i)
-        close(402)
-        xcenterold(i) = xcenter(i)
-        ycenterold(i) = ycenter(i)
-        zcenterold(i) = zcenter(i)
-        call dumpnvec(klok, xfn(:,cap_n_start(i):cap_n_end(i)), xcenter(i), &
-             ycenter(i), zcenter(i), nvec_i(:, i), i)
-     end do
 
      call meanfluidvelocity(ur, meanu)
      call meanfluidvelocity(vr, meanv)
@@ -675,6 +657,20 @@ PROGRAM cell
 
      !     End of the loop, do post-processing stuff
      do i=1,ncap
+        call cellcenter(klok,xfn(1:3,cap_n_start(i):cap_n_end(i)), &
+             nnode(i), i, xcenter(i), ycenter(i), zcenter(i))
+        message = 'cell l232'
+        call dumpstatus(klok, message, 'status.txt')
+        call makefilename('capsulev__', i,'.txt',strfname)
+        open(402,file=strfname, access='append')
+        write(402,'(i6,3(x,es24.17))') klok, xcenter(i) - xcenterold(i), &
+             ycenter(i) - ycenterold(i), zcenter(i) - zcenterold(i)
+        close(402)
+        xcenterold(i) = xcenter(i)
+        ycenterold(i) = ycenter(i)
+        zcenterold(i) = zcenter(i)
+        call dumpnvec(klok, xfn(:,cap_n_start(i):cap_n_end(i)), xcenter(i), &
+             ycenter(i), zcenter(i), nvec_i(:, i), i)
         call shape(h64,klok, i, xfn(1:3, cap_n_start(i): &
              cap_n_end(i)), &
              nnode(i), elmnew(1:3, cap_e_start(i):cap_e_end(i)), &
