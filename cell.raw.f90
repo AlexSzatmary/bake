@@ -88,11 +88,13 @@ PROGRAM cell
        integer :: klok, nnode, elmnew(:,:), nelm, cap_i
      end subroutine shape
 
-     subroutine calculateDF(clock, cap_i, xfn, my_nnode, lambda1, lambda2)
+     subroutine calculateDF(clock, cap_i, xfn, my_nnode, lambda1, lambda2, &
+       xcenter, ycenter, zcenter)
        implicit none
        integer clock, cap_i, my_nnode
        double precision :: xfn(:,:)
        double precision :: lambda1(:), lambda2(:)
+       double precision :: xcenter, ycenter, zcenter
      end subroutine calculateDF
 
      subroutine profile(cap_i, xfn, clock)
@@ -471,7 +473,8 @@ PROGRAM cell
         call calculateDF(klok, i, xfn(1:3, cap_n_start(i): &
              cap_n_end(i)), nnode(i), &
              lambda1(cap_e_start(i):cap_e_end(i)), &
-             lambda2(cap_e_start(i):cap_e_end(i)))
+             lambda2(cap_e_start(i):cap_e_end(i)), &
+             xcenter(i), ycenter(i), zcenter(i))
         call profile(i, xfn(1:3,cap_n_start(i):cap_n_end(i)), &
              klok)
      end do
@@ -680,7 +683,8 @@ PROGRAM cell
         call calculateDF(klok, i, xfn(1:3, cap_n_start(i): &
              cap_n_end(i)), nnode(i), &
              lambda1(cap_e_start(i):cap_e_end(i)), &
-             lambda2(cap_e_start(i):cap_e_end(i)))
+             lambda2(cap_e_start(i):cap_e_end(i)), &
+             xcenter(i), ycenter(i), zcenter(i))
 
         call minmaxxfn(klok, xfn(:,cap_n_start(i):cap_n_end(i)), i)
         call volume_area(klok, xfn(:,cap_n_start(i):cap_n_end(i)), &

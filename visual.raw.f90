@@ -174,7 +174,8 @@ subroutine dzy(zy,icount,klok, cap_i)
   return
 end subroutine Dzy
 !**********************************************************************
-subroutine calculateDF(clock, cap_i, xfn, my_nnode, lambda1, lambda2)
+subroutine calculateDF(clock, cap_i, xfn, my_nnode, lambda1, lambda2, &
+     xcenter, ycenter, zcenter)
   implicit none
   integer my_nnode
   double precision :: xfn(:, :)
@@ -186,6 +187,7 @@ subroutine calculateDF(clock, cap_i, xfn, my_nnode, lambda1, lambda2)
   character*19 strfname
   integer imax, imin
   double precision :: lambda1(:), lambda2(:)
+  double precision :: xcenter, ycenter, zcenter
 
   rmin = 1000d0
   rmax = -1000d0
@@ -232,17 +234,18 @@ subroutine calculateDF(clock, cap_i, xfn, my_nnode, lambda1, lambda2)
   write(204,'(i6,3(x,es24.17))') clock, lambda1(imin), lambda2(imin)
   close(204)
 
-!   call makefilename('mvecrmax__', cap_i,'.txt',strfname)
-!   open(204, file=strfname, access='append')
-!   write(204,'(i6,3(x,es24.17))') clock, xfn(1, my_nvec_i(j)) - xcenter, &
-!           xfn(2, my_nvec_i(j)) - ycenter, &
-!           xfn(3, my_nvec_i(j)) - zcenter
-!   close(204)
+  call makefilename('mvecrmax__', cap_i,'.txt',strfname)
+  open(204, file=strfname, access='append')
+  write(204,'(i6,3(x,es24.17))') clock, xfn(1, imax) - xcenter, &
+          xfn(2, imax) - ycenter, xfn(3, imax) - zcenter
+  close(204)
 
-!   call makefilename('mvecrmin__', cap_i,'.txt',strfname)
-!   open(204, file=strfname, access='append')
-!   write(204,'(i6,3(x,es24.17))') clock, lambda1(imin), lambda2(imin)
-!   close(204)
+  call makefilename('mvecrmin__', cap_i,'.txt',strfname)
+  open(204, file=strfname, access='append')
+  write(204,'(i6,3(x,es24.17))') clock, xfn(1, imin) - xcenter, &
+          xfn(2, imin) - ycenter, xfn(3, imin) - zcenter
+  close(204)
+  close(204)
 
   return
 end subroutine calculateDF
