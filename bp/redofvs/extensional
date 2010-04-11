@@ -3,7 +3,9 @@ $umean$;(/0.d0,0.d0,0.d0/)
 $bfs1$;(/-$gamma_dot_p$/2.d0, 0.d0, 0.d0/)
 $bfs2$;(/0.d0, -$gamma_dot_p$/2.d0, 0.d0/)
 $bfs3$;(/0.d0, 0.d0, $gamma_dot_p$/)
-$ncap$;1
+$nsph$;1
+$ncap$;($nsph$+$nellip$)
+$nellip$;0
 $rad$;(/$radx$/)
 $xc_cap$;(/0.5d0*(flngx+1.d0)/)
 $yc_cap$;(/0.5d0*(flngy+1.d0)/)
@@ -50,3 +52,16 @@ $numberOfMaxReflections$;2
 $optical$;0
 $centerstable$;0
 $a_prestress$;(/0.d0/)
+# Specify geometry for ellipses
+# ellipa is the semi-major axis length in the n1 direction
+# b in the n2, and c in the n3
+$ellipa$;(//)
+$ellipb$;(//)
+$ellipc$;(//)
+# Each ellipsoid has three entries in each of these arrays,
+# ie, entries 1:3 in $ellipn2$ correspond to the n2 vector
+# of the first ellipse, entries 4:6 correspond to the n2
+# vector of the second ellipse, and so on.
+$ellipn1$;(//)
+$ellipn2$;(//)
+$ellipn3$;(//)

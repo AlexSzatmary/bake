@@ -7,7 +7,9 @@
 ;$yc_cap$;(/0.69d0*(flngy+1.d0), 0.69d0*(flngy+1.d0), \n0.31d0*(flngy+1.d0), 0.31d0*(flngy+1.d0), \n0.5d0*(flngy+1.d0)/)
 ;$zc_cap$;(/0.31d0*(flngz-1.d0), 0.31d0*(flngz-1.d0), \n0.69d0*(flngz-1.d0), 0.69d0*(flngz-1.d0), \n0.5d0*(flngz-1.d0)/)
 ;$fineness$;(/5, 5, 5, 5, 5/)
-;$ncap$;5
+;$nsph$;5
+$ncap$;($nsph$+$nellip$)
+$nellip$;0
 ;$npls$;0
 ;$pl_n2$;$pl_n1$
 ;$pl_n1$;32
@@ -47,3 +49,16 @@ collision5cap;$lngx$;5
 $optical$;0
 $centerstable$;0
 $a_prestress$;(/0.d0,0.d0,0.d0,0.d0,0.d0/)
+# Specify geometry for ellipses
+# ellipa is the semi-major axis length in the n1 direction
+# b in the n2, and c in the n3
+$ellipa$;(//)
+$ellipb$;(//)
+$ellipc$;(//)
+# Each ellipsoid has three entries in each of these arrays,
+# ie, entries 1:3 in $ellipn2$ correspond to the n2 vector
+# of the first ellipse, entries 4:6 correspond to the n2
+# vector of the second ellipse, and so on.
+$ellipn1$;(//)
+$ellipn2$;(//)
+$ellipn3$;(//)
