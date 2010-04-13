@@ -11,7 +11,7 @@
 # directory of the repository, so you have a tree that looks something
 # like this:
 # cell/batch/myjob
-# cell/myjob
+# cell/check/myjob
 # Run this script:
 # ./megadiff.py myjob
 # This will then diff a handful of files. If you see noise, you broke
@@ -35,7 +35,9 @@ files = ['TaylorDF__00001.txt', 'capsulev__00001.txt',
          'wprofile__00007.txt', 'wprofile__00008.txt',
          'wprofile__00009.txt', 'wprofile__00010.txt',
          'minmaxx___00001.txt', 'minmaxy___00001.txt', 'minmaxz___00001.txt',
-         'volumearea00001.txt',
+         'volumearea00001.txt', 'shpa0001.txt',
+         'shpb0001.txt', 'shpi0001.txt',
          'thumbprint.txt']
 for file in files:
+    print('***' + file + '***')
     os.system('diff batch/'+wd+'/'+file+' check/'+wd+'/'+file)
