@@ -34,9 +34,9 @@ PROGRAM cell
        double precision :: xfn(:,:)
        integer firstn(:,:),number(:,:),nextn(:)       
      end subroutine inhist
-     
+
      subroutine generatecapsule(RAD,H,XFN, elmnew,shpint,shpfs, &
-     my_cap_center, my_fineness, cap_i, a_prestress, my_nvec_i)
+          my_cap_center, my_fineness, cap_i, a_prestress, my_nvec_i)
        implicit none
        double precision :: rad, h
        double precision :: xfn(:,:), shpint(:,:), shpfs(:,:)
@@ -89,7 +89,7 @@ PROGRAM cell
      end subroutine shape
 
      subroutine calculateDF(clock, cap_i, xfn, my_nnode, lambda1, lambda2, &
-       xcenter, ycenter, zcenter)
+          xcenter, ycenter, zcenter)
        implicit none
        integer clock, cap_i, my_nnode
        double precision :: xfn(:,:)
@@ -104,7 +104,7 @@ PROGRAM cell
      end subroutine profile
 
      subroutine membnx(xfn, elmnew, shpint, shpfs, FRC,h,FOSTAR, &
-       lambda1, lambda2)
+          lambda1, lambda2)
        implicit none
        double precision :: xfn(:,:), shpint(:,:),&
             shpfs(:,:), frc(:,:), h, fostar
@@ -305,7 +305,7 @@ PROGRAM cell
   integer, parameter ::  numberOfMaxReflections = $numberOfMaxReflections$, index = $index$
   double precision :: disp  , z0
   integer numberOfRays
-!  integer sysclockstart, sysclockend, rate
+  !  integer sysclockstart, sysclockend, rate
 
   !**********************************************************************
   !     End variable declaration, start real code
@@ -369,7 +369,7 @@ PROGRAM cell
      print *, i, nnode(i), cap_n_start(i), cap_n_end(i)
      print *, i, nelm(i), cap_e_start(i), cap_e_end(i)
   end do
-  
+
   do i = 1, nrects
      print *, 'rectangle', i, rect_nnode(i), rect_n_start(i), rect_n_end(i)
   end do
@@ -448,7 +448,7 @@ PROGRAM cell
      a_prestress = $a_prestress$
   end if
 
-!todo take these lines out once ellipsoid code is validated
+  !todo take these lines out once ellipsoid code is validated
   print *, "fineness", fineness
   print *, "ellipa", ellipa
   print *, "ellipb", ellipb
@@ -539,7 +539,7 @@ PROGRAM cell
         call inrect(xpi, xfn(1:3,rect_n_start(i):rect_n_end(i)), rect_n1(i), &
              rect_n2(i), recty(i))
      end do
-     
+
 
      !  Initialize the activation variables --
      open(206,file='checkinit.txt',access='append')
@@ -575,10 +575,10 @@ PROGRAM cell
      t=0.d0
 
      if ($optical$ /= 0) then
-!        CALL findRays (XFN , elmnew ,zcenter(1), numberOfrays )
+        !        CALL findRays (XFN , elmnew ,zcenter(1), numberOfrays )
         ALLOCATE (rays(1:9,1:numberOfRays))
-!        CALL initializeRays(rays, numberOfRays)
-!        call capsuleForce(XFN , Foptical, shpfs , elmnew , rays , FOSTAR, &
+        !        CALL initializeRays(rays, numberOfRays)
+        !        call capsuleForce(XFN , Foptical, shpfs , elmnew , rays , FOSTAR, &
         !        zcenter(1), &
         !             RADX, H,cap_center(:,1),z0,disp,numberOfrays)
      end if
@@ -591,7 +591,7 @@ PROGRAM cell
      T=klok*time
   end if
 
-  
+
   !     Initialize the fluid solver
   call influidu(vsc,qrfact, dsq,dx,dy,dz)
 
@@ -625,7 +625,7 @@ PROGRAM cell
      call dumpstatus(klok, message, 'thumbprint.txt')
      write(message, *) 'frc(2,nfsize)',frc(1,nfsize/2)
      call dumpstatus(klok, message, 'thumbprint.txt')
-     
+
      message = 'cell l225'
      call dumpstatus(klok, message, 'status.txt')
      call meanforce(klok, frc)
@@ -671,16 +671,16 @@ PROGRAM cell
         call poiseuille(wr, pr, -$dpdz$, vsc)
      end if
 
-!     call system_clock(sysclockstart)
+     !     call system_clock(sysclockstart)
      CALL FLUIDUP(KLOK,UR,VR,WR, pr, QRFACT, DSQ, DX, DY, DZ)
      if (fvs /= 0) then
         call fvssub(ur, vr, wr, -bfs, -umean)
         call poiseuille(wr, pr, $dpdz$, vsc)
      end if
-!     call system_clock(sysclockend, rate)
-!     print *, 'clock', klok, 'fluidup time', &
-!          float(sysclockend - sysclockstart)/rate
-!     print *, 'start', sysclockstart, 'end', sysclockend
+     !     call system_clock(sysclockend, rate)
+     !     print *, 'clock', klok, 'fluidup time', &
+     !          float(sysclockend - sysclockstart)/rate
+     !     print *, 'start', sysclockstart, 'end', sysclockend
      message = 'cell l252'
      call dumpstatus(klok, message, 'status.txt')
 
@@ -787,7 +787,7 @@ PROGRAM cell
         message = 'cell l279'
         call dumpstatus(klok, message, 'status.txt')
 
-! Files that are saved every smalldumpint, but only kept every bigdumpint
+        ! Files that are saved every smalldumpint, but only kept every bigdumpint
         call uvwpdump(ur, vr, wr, pr, KLOK)
         message = 'cell l284'
         call dumpstatus(klok, message, 'status.txt')
@@ -806,31 +806,31 @@ PROGRAM cell
         call makefilename('stretches_',KLOK,'.txt',strfname)
         call dumplambdas(lambda1, lambda2, strfname)
 
-! This doesn't kill the files that are zero, one, or two smalldumpints old
-! or any files that have a klok count that is an even multiple of bigdumpint
+        ! This doesn't kill the files that are zero, one, or two smalldumpints old
+        ! or any files that have a klok count that is an even multiple of bigdumpint
         if ((((klok-2*$smalldumpint$)/$bigdumpint$)*$bigdumpint$) /= klok - &
-           2*$smalldumpint$ .and. (klok-2*$smalldumpint$) > 0) then
+             2*$smalldumpint$ .and. (klok-2*$smalldumpint$) > 0) then
 
-! Delete old copies of these files
-! Delete old velocity/pressure information
+           ! Delete old copies of these files
+           ! Delete old velocity/pressure information
            call makefilename('uvwpdump__', klok-2*$smalldumpint$,'.txt',&
                 strfname)
            open(300, file=strfname, form = 'unformatted')
            close(300, status='delete')
 
-! Delete the total configuration of the solid nodes
+           ! Delete the total configuration of the solid nodes
            call makefilename('solidnodes',klok-2*$smalldumpint$,'.txt', &
                 strfname)
            open(300, file=strfname, form = 'unformatted')
            close(300, status='delete')
 
-! Delete the total configuration of the solid forces
+           ! Delete the total configuration of the solid forces
            call makefilename('solidforce',klok-2*$smalldumpint$,'.txt', &
                 strfname)
            open(300, file=strfname, form = 'unformatted')
            close(300, status='delete')
 
-! Delete the file storing stretch ratios for each solid node
+           ! Delete the file storing stretch ratios for each solid node
            call makefilename('stretches_',klok-2*$smalldumpint$,'.txt', &
                 strfname)
            open(300, file=strfname, form = 'unformatted')
@@ -874,26 +874,26 @@ PROGRAM cell
      end if
   end do
 
-     message = 'cell l304'
-     call dumpstatus(klok, message, 'status.txt')
+  message = 'cell l304'
+  call dumpstatus(klok, message, 'status.txt')
 
-     deallocate(xpi)
-     deallocate(lambda1,lambda2)
-     DEALLOCATE (UR,VR,WR,FIRSTN,NUMBER,NEXTN,XFN,FRC)
-     DEALLOCATE(QRFACT,elmnew,shpint,shpfs)
-     if (nrects > 0) then
-        deallocate(rect_nnode, rect_n1, rect_n2, recty,rect_n_start, &
-             rect_n_end)
-     end if
-     if (ncap > 0) then 
-        deallocate(a_prestress, nvec_i)
-        deallocate(fineness, nnode, nelm)
-        deallocate(cap_n_start, cap_n_end, cap_e_start, cap_e_end)
-        deallocate(xcenter, ycenter, zcenter, &
-             xcenterold, ycenterold, zcenterold)
+  deallocate(xpi)
+  deallocate(lambda1,lambda2)
+  DEALLOCATE (UR,VR,WR,FIRSTN,NUMBER,NEXTN,XFN,FRC)
+  DEALLOCATE(QRFACT,elmnew,shpint,shpfs)
+  if (nrects > 0) then
+     deallocate(rect_nnode, rect_n1, rect_n2, recty,rect_n_start, &
+          rect_n_end)
+  end if
+  if (ncap > 0) then 
+     deallocate(a_prestress, nvec_i)
+     deallocate(fineness, nnode, nelm)
+     deallocate(cap_n_start, cap_n_end, cap_e_start, cap_e_end)
+     deallocate(xcenter, ycenter, zcenter, &
+          xcenterold, ycenterold, zcenterold)
      deallocate(ellipn1, ellipn2, ellipn3)
      deallocate(ellipa, ellipb, ellipc)
      if (nsph > 0) deallocate(rad) 
-     end if
-   END PROGRAM cell
+  end if
+END PROGRAM cell
 !**********************************************************************
