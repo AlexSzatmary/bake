@@ -217,12 +217,20 @@ PROGRAM cell
   INTEGER KLOK,KLOK1,KLOKEND,NSTEP
   double precision :: T,H,h64,TD,VSC,TIME,RHO,PI,RADX,FOSTAR
   double precision, allocatable :: rad(:), a_prestress(:)
+  double precision, allocatable :: ellipa(:), ellipb(:), ellipc(:)
+  double precision, allocatable :: ellipn1(:), ellipn2(:), ellipn3(:)
   double precision, allocatable :: xcenter(:), ycenter(:), &
        zcenter(:)
   double precision, allocatable :: xcenterold(:), ycenterold(:), & 
        zcenterold(:)
+  ! This is a 6xncap array of integers. The integers are indices for xfn, they
+  ! represent nodes, the six nodes that are at the tips of the semi-major
+  ! axes of an ellipse. For a sphere, these indices correspond to the points
+  ! at the +/- extremes in the x, y, z directions of the sphere before the flow
+  ! is applied.
   integer, allocatable :: nvec_i(:,:)
   integer ncap
+  integer nsph, nellip
   double precision ::  LCUBE,NU,MU,MASS,LENGTH
   !     Velocities are always expressed in program units
   double COMPLEX,ALLOCATABLE :: UR(:,:,:),VR(:,:,:),WR(:,:,:)
@@ -299,8 +307,13 @@ PROGRAM cell
   nfsize2 = 0
 
   ncap=$ncap$
+  nsph = $nsph$
+  nellip = $nellip$
   if (ncap > 0) then
-     allocate(rad(ncap), xcenter(ncap), ycenter(ncap), zcenter(ncap), &
+     if (nsph > 0) allocate(rad(nsph))
+     allocate(ellipa(ncap), ellipb(ncap), ellipc(ncap))
+     allocate(ellipn1(3*ncap), ellipn2(3*ncap), ellipn3(3*ncap))
+     allocate(xcenter(ncap), ycenter(ncap), zcenter(ncap), &
           xcenterold(ncap), ycenterold(ncap), zcenterold(ncap))
      allocate(cap_n_start(ncap), cap_n_end(ncap), cap_e_start(ncap), &
           cap_e_end(ncap))
@@ -399,13 +412,44 @@ PROGRAM cell
   fostar = (mass*h/td**2)
 
   if (ncap > 0) then
-     rad = $rad$
+     if (nsph > 0) then
+        rad = $rad$
+        ellipa(1:nsph) = rad
+        ellipb(1:nsph) = rad
+        ellipc(1:nsph) = rad
+        do i = 1,nsph
+           ellipn1(1+(i-1)*3:3+(i-1)*3) = (/1.d0, 0.d0, 0.d0/)
+           ellipn2(1+(i-1)*3:3+(i-1)*3) = (/0.d0, 1.d0, 0.d0/)
+           ellipn3(1+(i-1)*3:3+(i-1)*3) = (/0.d0, 0.d0, 1.d0/)
+        end do
+     end if
+
+     if (nellip > 0) then
+        ellipa(nsph+1:ncap) = $ellipa$
+        ellipb(nsph+1:ncap) = $ellipb$
+        ellipc(nsph+1:ncap) = $ellipc$
+        ellipn1(nsph*3+1:ncap*3) = $ellipn1$
+        ellipn2(nsph*3+1:ncap*3) = $ellipn2$
+        ellipn3(nsph*3+1:ncap*3) = $ellipn3$
+     end if
+
+
      cap_center(1,:)=$xc_cap$
      cap_center(2,:)=$yc_cap$
      cap_center(3,:)=$zc_cap$
      a_prestress = $a_prestress$
   end if
-  
+
+  print *, "fineness", fineness
+  print *, "ellipa", ellipa
+  print *, "ellipb", ellipb
+  print *, "ellipc", ellipc
+  print *, "ellipn1", ellipn1
+  print *, "ellipn2", ellipn2
+  print *, "ellipn3", ellipn3
+  print *, "cap_center(1,:)", cap_center(1,:)
+  print *, "cap_center(2,:)", cap_center(2,:)
+  print *, "cap_center(3,:)", cap_center(3,:)
 
   !     Added to implement BC homogenization
   !     These are in the program units for 1/T
@@ -464,6 +508,8 @@ PROGRAM cell
         xcenterold(i) = xcenter(i)
         ycenterold(i) = ycenter(i)
         zcenterold(i) = zcenter(i)
+        ! Save the n vectors, the six vectors from the center of the capsule
+        ! to the six tracer points.
         call dumpnvec(klok, xfn(:,cap_n_start(i):cap_n_end(i)), xcenter(i), &
              ycenter(i), zcenter(i), nvec_i(:, i), i)
         call shape(h64,klok, i, xfn(1:3, cap_n_start(i): &
@@ -672,6 +718,8 @@ PROGRAM cell
         xcenterold(i) = xcenter(i)
         ycenterold(i) = ycenter(i)
         zcenterold(i) = zcenter(i)
+        ! Save the n vectors, the six vectors from the center of the capsule
+        ! to the six tracer points.
         call dumpnvec(klok, xfn(:,cap_n_start(i):cap_n_end(i)), xcenter(i), &
              ycenter(i), zcenter(i), nvec_i(:, i), i)
         call shape(h64,klok, i, xfn(1:3, cap_n_start(i): &
@@ -832,8 +880,11 @@ PROGRAM cell
         deallocate(a_prestress, nvec_i)
         deallocate(fineness, nnode, nelm)
         deallocate(cap_n_start, cap_n_end, cap_e_start, cap_e_end)
-        deallocate(rad, xcenter, ycenter, zcenter, &
+        deallocate(xcenter, ycenter, zcenter, &
              xcenterold, ycenterold, zcenterold)
+     deallocate(ellipn1, ellipn2, ellipn3)
+     deallocate(ellipa, ellipb, ellipc)
+     if (nsph > 0) deallocate(rad) 
      end if
    END PROGRAM cell
-       !**********************************************************************
+!**********************************************************************
