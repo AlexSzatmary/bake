@@ -217,7 +217,9 @@ PROGRAM cell
   INTEGER KLOK,KLOK1,KLOKEND,NSTEP
   double precision :: T,H,h64,TD,VSC,TIME,RHO,PI,RADX,FOSTAR
   double precision, allocatable :: rad(:), a_prestress(:)
+  ! The lengths of the semi-axes of all the capsules
   double precision, allocatable :: ellipa(:), ellipb(:), ellipc(:)
+  ! The orientations of the semi-axes of all the capsules
   double precision, allocatable :: ellipn1(:), ellipn2(:), ellipn3(:)
   double precision, allocatable :: xcenter(:), ycenter(:), &
        zcenter(:)
@@ -229,7 +231,13 @@ PROGRAM cell
   ! at the +/- extremes in the x, y, z directions of the sphere before the flow
   ! is applied.
   integer, allocatable :: nvec_i(:,:)
+  ! ncap is the total number of elastic capsules: all elastic capsules are
+  ! modeled as ellipsoids
   integer ncap
+  ! nsph is the number of spheres input from the bp files, nellip is the number
+  ! of ellipsoids input from the bp files. ncap=nsph+nellip, and all of
+  ! the arrays that talk about the parameters of the capsules have entries for
+  ! the spheres, then for the ellipsoids.
   integer nsph, nellip
   double precision ::  LCUBE,NU,MU,MASS,LENGTH
   !     Velocities are always expressed in program units
@@ -412,6 +420,7 @@ PROGRAM cell
   fostar = (mass*h/td**2)
 
   if (ncap > 0) then
+     ! All objects described as spheres are re-posed as ellipsoids.
      if (nsph > 0) then
         rad = $rad$
         ellipa(1:nsph) = rad
@@ -433,13 +442,13 @@ PROGRAM cell
         ellipn3(nsph*3+1:ncap*3) = $ellipn3$
      end if
 
-
      cap_center(1,:)=$xc_cap$
      cap_center(2,:)=$yc_cap$
      cap_center(3,:)=$zc_cap$
      a_prestress = $a_prestress$
   end if
 
+!todo take these lines out once ellipsoid code is validated
   print *, "fineness", fineness
   print *, "ellipa", ellipa
   print *, "ellipb", ellipb
