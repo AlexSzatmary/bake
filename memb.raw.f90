@@ -56,7 +56,7 @@ subroutine generatecapsule(RAD,H,XFN, elmnew,shpint,shpfs, &
   integer, parameter :: ngx=2**lxng,ngy=2**lyng,ngz=2**lzng
   double precision, parameter :: flngx=ngx,flngy=ngy,flngz=ngz
   INTEGER i 
-  double precision H,pi,theta,x,y,rad, a_prestress
+  double precision H,pi,x,y,rad, a_prestress
   double precision :: XFN(:,:)
   INTEGER elmnew(:,:)
   double precision :: shpint(:,:), shpfs(:,:) 
@@ -66,19 +66,24 @@ subroutine generatecapsule(RAD,H,XFN, elmnew,shpint,shpfs, &
   character(len=12) strfname
 
   pi = 3.14159265358979323846d0 ! Taken from Wikipedia; 20 digits
-  theta =  pi/4.0d0
+
   !     The sphere comes in as the unit sphere.
   call sph(my_fineness, xfn, elmnew)
   call sf(xfn, elmnew, shpint, shpfs)
 
-  do i = 1, size(xfn,2)
-     x = XFN(1,i)*dcos(theta) - XFN(2,i)*dsin(theta)
-     y = XFN(1,i)*dsin(theta) + XFN(2,i)*dcos(theta)
-     !     Move the sphere to the center of the flow field, give it radius rad.
+  do i = 1, size(xfn, 2)
+     XFN(1,i) =RAD*xfn(1,i)
+     XFN(2,i) =RAD*xfn(2,i)
+     XFN(3,i) =RAD*XFN(3,i)
+  end do
 
-     XFN(1,i) =RAD*x/H + my_cap_center(1)
-     XFN(2,i) =RAD*y/H + my_cap_center(2)
-     XFN(3,i) =RAD*XFN(3,i)/H + my_cap_center(3)
+  call sf(xfn, elmnew, shpint, shpfs)
+
+  do i = 1, size(xfn,2)
+     !     Move the sphere to the center of the flow field, give it radius rad.
+     XFN(1,i) =xfn(1,i)/H + my_cap_center(1)
+     XFN(2,i) =xfn(2,i)/H + my_cap_center(2)
+     XFN(3,i) =XFN(3,i)/H + my_cap_center(3)
   enddo
 
   my_nvec_i(1:3) = maxloc(xfn, 2)
@@ -87,12 +92,12 @@ subroutine generatecapsule(RAD,H,XFN, elmnew,shpint,shpfs, &
   !     This scales the sphere's (non-dimensional) finite element parameters
   !     to real units.
   do i= 1, size(elmnew,2)
-     shpfs(1,i)=shpfs(1,i)/rad*(1+a_prestress)
-     shpfs(2,i)=shpfs(2,i)/rad*(1+a_prestress)
-     shpfs(3,i)=shpfs(3,i)/rad*(1+a_prestress)
-     shpfs(4,i)=shpfs(4,i)/rad*(1+a_prestress)
-     shpfs(5,i)=shpfs(5,i)/rad*(1+a_prestress)
-     shpfs(6,i)=shpfs(6,i)/rad*(1+a_prestress)
+     shpfs(1,i)=shpfs(1,i)/(1+a_prestress)
+     shpfs(2,i)=shpfs(2,i)/(1+a_prestress)
+     shpfs(3,i)=shpfs(3,i)/(1+a_prestress)
+     shpfs(4,i)=shpfs(4,i)/(1+a_prestress)
+     shpfs(5,i)=shpfs(5,i)/(1+a_prestress)
+     shpfs(6,i)=shpfs(6,i)/(1+a_prestress)
 ! shpfs(7,:) is probably the element in shpfs/shpint that would be most useful
 ! to someone writing analysis code. This number is twice the area of the
 ! element. It's twice the area of the element, rather than just the area of the
@@ -100,9 +105,9 @@ subroutine generatecapsule(RAD,H,XFN, elmnew,shpint,shpfs, &
      shpfs(7,i)=shpfs(7,i)*rad*rad/(1+a_prestress)/(1+a_prestress)
      !     The following 3 lines added 5-2-07 due to changes in scaling in
      !     membnx.
-     shpint(1,i) = shpint(1,i)*rad/(1+a_prestress)
-     shpint(2,i) = shpint(2,i)*rad/(1+a_prestress)
-     shpint(3,i) = shpint(3,i)*rad/(1+a_prestress)
+     shpint(1,i) = shpint(1,i)/(1+a_prestress)
+     shpint(2,i) = shpint(2,i)/(1+a_prestress)
+     shpint(3,i) = shpint(3,i)/(1+a_prestress)
   enddo
 
 
