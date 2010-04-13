@@ -79,11 +79,10 @@ subroutine generatecapsule(RAD,H,XFN, elmnew,shpint,shpfs, &
 
   call sf(xfn, elmnew, shpint, shpfs)
 
-  do i = 1, size(xfn,2)
-     !     Move the sphere to the center of the flow field, give it radius rad.
-     XFN(1,i) =xfn(1,i)/H + my_cap_center(1)
-     XFN(2,i) =xfn(2,i)/H + my_cap_center(2)
-     XFN(3,i) =XFN(3,i)/H + my_cap_center(3)
+  do i = 1, 3
+     ! Scale the capsule to the grid size, and position it in the computational
+     ! domain
+     XFN(i,:) =xfn(i,:)/H + my_cap_center(i)
   enddo
 
   my_nvec_i(1:3) = maxloc(xfn, 2)
