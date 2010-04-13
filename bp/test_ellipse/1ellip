@@ -1,4 +1,4 @@
-$label$;shear$lngx$
+$label$;1ellip$lngx$
 # I'm just going for ten timesteps.
 $t_end$;1.d-2
 $capillary_no$;1.d-2
@@ -63,6 +63,6 @@ $ellipc$;(/$radx$/2/)
 # ie, entries 1:3 in $ellipn2$ correspond to the n2 vector
 # of the first ellipse, entries 4:6 correspond to the n2
 # vector of the second ellipse, and so on.
-$ellipn1$;(/sqrt(2)/2, sqrt(2)/2, 0/)
-$ellipn2$;(/sqrt(2)/2, -sqrt(2)/2, 0/)
-$ellipn3$;(/0, 0, 1/)
+$ellipn1$;(/dsqrt(2.d0)/2.d0, dsqrt(2.d0)/2.d0, 0.d0/)
+$ellipn2$;(/dsqrt(2.d0)/2.d0, -dsqrt(2.d0)/2.d0, 0.d0/)
+$ellipn3$;(/0.d0, 0.d0, 1.d0/)
