@@ -65,5 +65,7 @@ $ellipc$;$cmag$*(/dcos($phi$)*dsin($theta$), dsin($phi$)*dsin($theta$), \n dcos(
 $amag$;($radx$)
 $bmag$;($radx$/2.d0)
 $cmag$;($radx$/2.d0)
-$theta$;0.d0
-$phi$;0.d0;pi/2.d0
+$theta$;(pi*$thetaf$)
+$phi$;(pi*$phif$)
+$thetaf$;0.d0
+$phif$;0.d0;0.5d0
