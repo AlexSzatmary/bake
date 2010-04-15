@@ -59,7 +59,7 @@ $a_prestress$;(/0.d0/)
 # ie, entries 1:3 in $ellipb$ correspond to the b vector
 # of the first ellipse, entries 4:6 correspond to the b
 # vector of the second ellipse, and so on.
-$ellipa$;$amag$*(/dsin($theta$), -dcos($phi$), 0.d0/)
+$ellipa$;$amag$*(/dsin($phi$), -dcos($phi$), 0.d0/)
 $ellipb$;$bmag$*(/dcos($phi$)*dcos($theta$), dsin($phi$)*dcos($theta$), \n-dsin($theta$)/)
 $ellipc$;$cmag$*(/dcos($phi$)*dsin($theta$), dsin($phi$)*dsin($theta$), \n dcos($theta$)/)
 $amag$;($radx$/2.d0)
