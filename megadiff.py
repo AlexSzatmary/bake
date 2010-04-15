@@ -37,7 +37,8 @@ files = ['TaylorDF__00001.txt', 'capsulev__00001.txt',
          'minmaxx___00001.txt', 'minmaxy___00001.txt', 'minmaxz___00001.txt',
          'volumearea00001.txt', 'shpa0001.txt',
          'shpb0001.txt', 'shpi0001.txt',
-         'thumbprint.txt']
+         'thumbprint.txt', 'dotproducts.txt', 'nvec1_0001.txt', 
+         'mvecrmax__00001.txt']
 for file in files:
     print('***' + file + '***')
     os.system('diff batch/'+wd+'/'+file+' check/'+wd+'/'+file)
