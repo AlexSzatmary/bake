@@ -289,8 +289,6 @@ PROGRAM cell
   integer ios
   logical lex
 
-  double precision :: mix
-
   integer, allocatable :: fineness(:), nnode(:), nelm(:)
   double precision, allocatable :: cap_center(:,:)
 
@@ -459,7 +457,6 @@ PROGRAM cell
   !     bodyfs imposes stresses on the faces of the domain; these stresses are
   !     picked to generate the same flow field that FVS would, if there were
   !     no immersed body.
-  mix = $mix$
   bfs(1,:) = $bfs1$*td
   bfs(2,:) = $bfs2$*td
   bfs(3,:) = $bfs3$*td
