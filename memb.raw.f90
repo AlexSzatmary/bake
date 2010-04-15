@@ -101,7 +101,7 @@ subroutine generatecapsule(RAD,H,XFN, elmnew,shpint,shpfs, &
 ! to someone writing analysis code. This number is twice the area of the
 ! element. It's twice the area of the element, rather than just the area of the
 ! element, for historical reasons.
-     shpfs(7,i)=shpfs(7,i)*rad*rad/(1+a_prestress)/(1+a_prestress)
+     shpfs(7,i)=shpfs(7,i)/(1+a_prestress)/(1+a_prestress)
      !     The following 3 lines added 5-2-07 due to changes in scaling in
      !     membnx.
      shpint(1,i) = shpint(1,i)/(1+a_prestress)
