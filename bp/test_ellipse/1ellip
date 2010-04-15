@@ -54,15 +54,12 @@ $optical$;0
 $centerstable$;0
 $a_prestress$;(/0.d0/)
 # Specify geometry for ellipses
-# ellipa is the semi-major axis length in the n1 direction
-# b in the n2, and c in the n3
-$ellipa$;(/$radx$/)
-$ellipb$;(/$radx$/2/)
-$ellipc$;(/$radx$/2/)
+# ellipa, b, c describe the semi-principal axes; each is a vector going from 
+# the center to semi-principal points. These vectors should be orthogonal.
 # Each ellipsoid has three entries in each of these arrays,
-# ie, entries 1:3 in $ellipn2$ correspond to the n2 vector
-# of the first ellipse, entries 4:6 correspond to the n2
+# ie, entries 1:3 in $ellipb$ correspond to the b vector
+# of the first ellipse, entries 4:6 correspond to the b
 # vector of the second ellipse, and so on.
-$ellipn1$;(/dsqrt(2.d0)/2.d0, dsqrt(2.d0)/2.d0, 0.d0/)
-$ellipn2$;(/dsqrt(2.d0)/2.d0, -dsqrt(2.d0)/2.d0, 0.d0/)
-$ellipn3$;(/0.d0, 0.d0, 1.d0/)
+$ellipa$;$radx$*(/dsqrt(2.d0)/2.d0, dsqrt(2.d0)/2.d0, 0.d0/)
+$ellipb$;$radx$/2*(/dsqrt(2.d0)/2.d0, -dsqrt(2.d0)/2.d0, 0.d0/)
+$ellipc$;$radx$/2*(/0.d0, 0.d0, 1.d0/)

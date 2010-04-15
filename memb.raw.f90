@@ -35,8 +35,8 @@ SUBROUTINE INHIST(XFN,FIRSTN,NUMBER,NEXTN)
   RETURN
 END SUBROUTINE INHIST
 !************************************************************
-subroutine generatecapsule(RAD,H,XFN, elmnew,shpint,shpfs, &
-     my_cap_center, my_fineness, cap_i, a_prestress, my_nvec_i)
+subroutine generatecapsule(my_ellipa, my_ellipb, my_ellipc, H,XFN, elmnew, &
+     shpint, shpfs, my_cap_center, my_fineness, cap_i, a_prestress, my_nvec_i)
   IMPLICIT NONE
   interface 
      subroutine sph(fineness, xfnew, ilmnew)
@@ -56,7 +56,8 @@ subroutine generatecapsule(RAD,H,XFN, elmnew,shpint,shpfs, &
   integer, parameter :: ngx=2**lxng,ngy=2**lyng,ngz=2**lzng
   double precision, parameter :: flngx=ngx,flngy=ngy,flngz=ngz
   INTEGER i 
-  double precision H,pi,x,y,rad, a_prestress
+  double precision H,pi, a_prestress
+  double precision :: my_ellipa(:), my_ellipb(:), my_ellipc(:)
   double precision :: XFN(:,:)
   INTEGER elmnew(:,:)
   double precision :: shpint(:,:), shpfs(:,:) 
@@ -64,17 +65,41 @@ subroutine generatecapsule(RAD,H,XFN, elmnew,shpint,shpfs, &
   integer my_fineness, cap_i
   integer my_nvec_i(:)
   character(len=12) strfname
+  double precision :: x, y, z
 
   pi = 3.14159265358979323846d0 ! Taken from Wikipedia; 20 digits
 
   !     The sphere comes in as the unit sphere.
   call sph(my_fineness, xfn, elmnew)
-  call sf(xfn, elmnew, shpint, shpfs)
+
+  open(300, file='dotproducts.txt', access='append')
+  write(300,*) 'capsule #', cap_i
+  x = sqrt(my_ellipa(1)**2 + my_ellipa(2)**2 + my_ellipa(3)**2)
+  y = sqrt(my_ellipb(1)**2 + my_ellipb(2)**2 + my_ellipb(3)**2)
+  z = sqrt(my_ellipc(1)**2 + my_ellipc(2)**2 + my_ellipc(3)**2)
+  write(300,*) 'sqrt(a.a)', x
+  write(300,*) 'sqrt(b.b)', y
+  write(300,*) 'sqrt(c.c)', z
+  write(300,*) 'ahat.bhat', (my_ellipa(1)*my_ellipb(1) + &
+       my_ellipa(2)*my_ellipb(2) + &
+       my_ellipa(3)*my_ellipb(3))/x/y
+  write(300,*) 'ahat.chat', (my_ellipa(1)*my_ellipc(1) + &
+       my_ellipa(2)*my_ellipc(2) + &
+       my_ellipa(3)*my_ellipc(3))/x/z
+  write(300,*) 'bhat.chat', (my_ellipb(1)*my_ellipc(1) + &
+       my_ellipb(2)*my_ellipc(2) + &
+       my_ellipb(3)*my_ellipc(3))/y/z
+  close(300)
+
+  ! Sets up the tracer vectors nvec; see comment on nvec_i in cell.raw.f
+  my_nvec_i(1:3) = maxloc(xfn, 2)
+  my_nvec_i(4:6) = minloc(xfn, 2)
 
   do i = 1, size(xfn, 2)
-     XFN(1,i) =RAD*xfn(1,i)
-     XFN(2,i) =RAD*xfn(2,i)
-     XFN(3,i) =RAD*XFN(3,i)
+     x = xfn(1,i)
+     y = xfn(2,i)
+     z = xfn(3,i)
+     XFN(:,i) = my_ellipa(:)*x + my_ellipb(:)*y + my_ellipc(:)*z
   end do
 
   call sf(xfn, elmnew, shpint, shpfs)
@@ -84,9 +109,6 @@ subroutine generatecapsule(RAD,H,XFN, elmnew,shpint,shpfs, &
      ! domain
      XFN(i,:) =xfn(i,:)/H + my_cap_center(i)
   enddo
-
-  my_nvec_i(1:3) = maxloc(xfn, 2)
-  my_nvec_i(4:6) = minloc(xfn, 2)
 
   !     This scales the sphere's (non-dimensional) finite element parameters
   !     to real units.

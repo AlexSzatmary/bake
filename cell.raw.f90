@@ -35,12 +35,14 @@ PROGRAM cell
        integer firstn(:,:),number(:,:),nextn(:)       
      end subroutine inhist
 
-     subroutine generatecapsule(RAD,H,XFN, elmnew,shpint,shpfs, &
+     subroutine generatecapsule(my_ellipa, my_ellipb, my_ellipc, H, XFN, &
+          elmnew, shpint, shpfs, &
           my_cap_center, my_fineness, cap_i, a_prestress, my_nvec_i)
        implicit none
-       double precision :: rad, h
+       double precision :: h
        double precision :: xfn(:,:), shpint(:,:), shpfs(:,:)
        integer :: elmnew(:,:)
+       double precision :: my_ellipa(:), my_ellipb(:), my_ellipc(:)
        double precision :: my_cap_center(:), a_prestress
        integer :: my_fineness, cap_i
        integer :: my_nvec_i(:)
@@ -220,7 +222,6 @@ PROGRAM cell
   ! The lengths of the semi-axes of all the capsules
   double precision, allocatable :: ellipa(:), ellipb(:), ellipc(:)
   ! The orientations of the semi-axes of all the capsules
-  double precision, allocatable :: ellipn1(:), ellipn2(:), ellipn3(:)
   double precision, allocatable :: xcenter(:), ycenter(:), &
        zcenter(:)
   double precision, allocatable :: xcenterold(:), ycenterold(:), & 
@@ -319,8 +320,7 @@ PROGRAM cell
   nellip = $nellip$
   if (ncap > 0) then
      if (nsph > 0) allocate(rad(nsph))
-     allocate(ellipa(ncap), ellipb(ncap), ellipc(ncap))
-     allocate(ellipn1(3*ncap), ellipn2(3*ncap), ellipn3(3*ncap))
+     allocate(ellipa(3*ncap), ellipb(3*ncap), ellipc(3*ncap))
      allocate(xcenter(ncap), ycenter(ncap), zcenter(ncap), &
           xcenterold(ncap), ycenterold(ncap), zcenterold(ncap))
      allocate(cap_n_start(ncap), cap_n_end(ncap), cap_e_start(ncap), &
@@ -423,23 +423,17 @@ PROGRAM cell
      ! All objects described as spheres are re-posed as ellipsoids.
      if (nsph > 0) then
         rad = $rad$
-        ellipa(1:nsph) = rad
-        ellipb(1:nsph) = rad
-        ellipc(1:nsph) = rad
         do i = 1,nsph
-           ellipn1(1+(i-1)*3:3+(i-1)*3) = (/1.d0, 0.d0, 0.d0/)
-           ellipn2(1+(i-1)*3:3+(i-1)*3) = (/0.d0, 1.d0, 0.d0/)
-           ellipn3(1+(i-1)*3:3+(i-1)*3) = (/0.d0, 0.d0, 1.d0/)
+           ellipa(1+(i-1)*3:3+(i-1)*3) = rad(i)*(/1.d0, 0.d0, 0.d0/)
+           ellipb(1+(i-1)*3:3+(i-1)*3) = rad(i)*(/0.d0, 1.d0, 0.d0/)
+           ellipc(1+(i-1)*3:3+(i-1)*3) = rad(i)*(/0.d0, 0.d0, 1.d0/)
         end do
      end if
 
      if (nellip > 0) then
-        ellipa(nsph+1:ncap) = $ellipa$
-        ellipb(nsph+1:ncap) = $ellipb$
-        ellipc(nsph+1:ncap) = $ellipc$
-        ellipn1(nsph*3+1:ncap*3) = $ellipn1$
-        ellipn2(nsph*3+1:ncap*3) = $ellipn2$
-        ellipn3(nsph*3+1:ncap*3) = $ellipn3$
+        ellipa(nsph*3+1:ncap*3) = $ellipa$
+        ellipb(nsph*3+1:ncap*3) = $ellipb$
+        ellipc(nsph*3+1:ncap*3) = $ellipc$
      end if
 
      cap_center(1,:)=$xc_cap$
@@ -453,9 +447,6 @@ PROGRAM cell
   print *, "ellipa", ellipa
   print *, "ellipb", ellipb
   print *, "ellipc", ellipc
-  print *, "ellipn1", ellipn1
-  print *, "ellipn2", ellipn2
-  print *, "ellipn3", ellipn3
   print *, "cap_center(1,:)", cap_center(1,:)
   print *, "cap_center(2,:)", cap_center(2,:)
   print *, "cap_center(3,:)", cap_center(3,:)
@@ -501,7 +492,10 @@ PROGRAM cell
      do i = 1,ncap
         write(*,*) 'l290', cap_n_start(i), cap_n_end(i), &
              cap_e_start(i),cap_e_end(i), cap_center(:,i)
-        call generatecapsule(rad(i),h, &
+        call generatecapsule(ellipa((i-1)*3+1:(i-1)*3+3), &
+             ellipb((i-1)*3+1:(i-1)*3+3), &
+             ellipc((i-1)*3+1:(i-1)*3+3), &
+             h, &
              xfn(1:3,cap_n_start(i):cap_n_end(i)), &
              elmnew(1:3,cap_e_start(i):cap_e_end(i)), &
              shpint(1:3,cap_e_start(i):cap_e_end(i)), &
@@ -891,7 +885,6 @@ PROGRAM cell
      deallocate(cap_n_start, cap_n_end, cap_e_start, cap_e_end)
      deallocate(xcenter, ycenter, zcenter, &
           xcenterold, ycenterold, zcenterold)
-     deallocate(ellipn1, ellipn2, ellipn3)
      deallocate(ellipa, ellipb, ellipc)
      if (nsph > 0) deallocate(rad) 
   end if
