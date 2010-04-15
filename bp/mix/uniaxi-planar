@@ -1,11 +1,8 @@
 $label$;planar-axi-nd$lngx$m$mix$g$capillary_no$
 $umean$;(/0.d0,0.d0,0.d0/)
-$bfs1$;(/0.d0,\n $y$,\n $z$/)*$gamma_dot$
-$bfs2$;(/$y$,\n 0.d0,\n $y$/)*$gamma_dot$
-$bfs3$;(/$z$,\n $y$,\n 0.d0/)*$gamma_dot$
-$x$;($mix$/sqrt(2.d0-$mix$))
-$y$;(2.d0/($x$+sqrt(8.d0+$x$**2)))
-$z$;($x$*$y$)
+$bfs1$;(/-1.d0, 0.d0, 0.d0/)*$gamma_dot$
+$bfs2$;(/0.d0, 1.d0 - $r$/2.d0, 0.0d0/)*$gamma_dot$
+$bfs3$;(/0.d0, 0.d0, $r$/2/)*$gamma_dot$
 $nsph$;1
 $ncap$;($nsph$+$nellip$)
 $nellip$;0
@@ -24,7 +21,7 @@ $lngx$;5
 $FVS$;1
 $gapratio$;0.00d0
 $b$;6.d0
-$mix$;0.0d0;0.1d0;0.2d0;0.3d0;0.4d0;0.5d0;0.6d0;0.7d0;0.8d0;0.9d0;1.0d0
+$r$;0.0d0;0.1d0;0.2d0;0.3d0;0.4d0;0.5d0;0.6d0;0.7d0;0.8d0;0.9d0;1.0d0
 $smalldumpint$;10
 $bigdumpint$;500
 $nu$;($mu$/$rho$)
