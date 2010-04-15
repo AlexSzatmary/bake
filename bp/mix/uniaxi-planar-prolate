@@ -1,4 +1,4 @@
-$label$;planar-axi-nd$lngx$m$mix$g$capillary_no$
+$label$;up-pr-l$lngx$r$r$g$capillary_no$t$theta$p$phi$
 $umean$;(/0.d0,0.d0,0.d0/)
 $bfs1$;(/-1.d0, 0.d0, 0.d0/)*$gamma_dot$
 $bfs2$;(/0.d0, 1.d0 - $r$/2.d0, 0.0d0/)*$gamma_dot$
@@ -21,7 +21,7 @@ $lngx$;5
 $FVS$;1
 $gapratio$;0.00d0
 $b$;6.d0
-$r$;0.0d0;0.1d0;0.2d0;0.3d0;0.4d0;0.5d0;0.6d0;0.7d0;0.8d0;0.9d0;1.0d0
+$r$;0.0d0
 $smalldumpint$;10
 $bigdumpint$;500
 $nu$;($mu$/$rho$)
@@ -34,7 +34,7 @@ $dpdz$;0.d0
 $gamma_dot_p$;($t_end$/$nend$)
 $t_end$;2.d0*($capillary_no$/1.d-2)
 $Eh$;1.d0
-$capillary_no$;1.d-4;2.d-4;5.d-4;1.d-3;2.d-3;5.d-3;1.d-2;2.d-2;5.d-2;1.d-1;2.d-1;5.d-1
+$capillary_no$;1.d-2
 $radx$;3.338d-4
 # Viscosity of plasma (poise), Eggleton & Popel 1998
 $mu$;1.20d-2
@@ -59,7 +59,11 @@ $a_prestress$;(/0.d0/)
 # ie, entries 1:3 in $ellipb$ correspond to the b vector
 # of the first ellipse, entries 4:6 correspond to the b
 # vector of the second ellipse, and so on.
-$ellipa$;$radx$*(/dsin($theta$), /)
-$ellipb$;$radx$/2*(//)
-$ellipc$;$radx$/2*(//)
-$
+$ellipa$;$amag$*(/dsin($theta$), -dcos($phi$), 0/)
+$ellipb$;$bmag$*(/dcos($phi$)*dcos($theta$), dsin($phi$)*dcos($theta$), \n-dsin($theta$)/)
+$ellipc$;$cmag$*(/dcos($phi$)*dsin($theta$), dsin($phi$)*dsin($theta$), \n dcos($theta$)/)
+$amag$;($radx$)
+$bmag$;($radx$/2.d0)
+$cmag$;($radx$/2.d0)
+$theta$;0.d0
+$phi$;0.d0;pi/2.d0
