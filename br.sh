@@ -5,3 +5,4 @@
 ./batchrun.py bp/test/poiseuille -r $1
 ./batchrun.py bp/test/2cap -r $1
 ./batchrun.py bp/test/collision5cap -r $1
+./batchrun.py bp/test/3sph2ellip -r $1

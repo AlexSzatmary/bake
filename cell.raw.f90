@@ -116,7 +116,8 @@ PROGRAM cell
 
      subroutine restart(lcube,nu,rho,td,ur,vr,wr,pr, &
           xfn,xpi,firstn,number,nextn,elmnew,shpint,shpfs, &
-          xcenterold, ycenterold, zcenterold)
+          xcenterold, ycenterold, zcenterold, nsph, nellip, ellipa, ellipb, &
+          ellipc, a_prestress, nvec_i)
        implicit none
        double precision :: lcube,nu,td,rho
        double COMPLEX :: UR(:,:,:)
@@ -129,11 +130,15 @@ PROGRAM cell
        integer elmnew(:,:)
        double precision :: shpint(:,:),shpfs(:,:)
        double precision :: xcenterold(:), ycenterold(:), zcenterold(:)
+       integer nsph, nellip
+       double precision :: ellipa(:), ellipb(:), ellipc(:), a_prestress(:)
+       integer :: nvec_i(:,:)
      end subroutine restart
 
      subroutine wrstart(lcube,nu,rho,td,klok,ur,vr,wr,pr, &
           xfn,xpi,firstn,number,nextn,elmnew,shpint,shpfs, &
-          xcenterold, ycenterold, zcenterold)
+          xcenterold, ycenterold, zcenterold, nsph, nellip, ellipa, ellipb, &
+          ellipc, a_prestress, nvec_i)
        implicit none
        double precision :: lcube,nu,td,rho
        integer klok
@@ -147,6 +152,9 @@ PROGRAM cell
        integer elmnew(:,:)
        double precision :: shpint(:,:),shpfs(:,:)       
        double precision :: xcenterold(:), ycenterold(:), zcenterold(:)
+       integer nsph, nellip
+       double precision :: ellipa(:), ellipb(:), ellipc(:), a_prestress(:)
+       integer :: nvec_i(:,:)
      end subroutine wrstart
 
      subroutine saveallsolid(xfn, strfname)
@@ -578,7 +586,8 @@ PROGRAM cell
   else
      write(*,*) 'cell l367 Restarting'
      call restart(lcube, nu, rho,td,ur,vr,wr, pr, &
-          xfn,xpi,firstn,number,nextn,elmnew,shpint,shpfs, xcenterold, ycenterold, zcenterold)
+          xfn,xpi,firstn,number,nextn,elmnew,shpint,shpfs, xcenterold, ycenterold, zcenterold, nsph, nellip, ellipa, ellipb, &
+          ellipc, a_prestress, nvec_i)
      T=klok*time
   end if
 
@@ -764,7 +773,8 @@ PROGRAM cell
      call dumpstatus(klok, message, 'status.txt')
 
      call wrstart(lcube, nu, rho,td,klok,ur,vr,wr, pr, &
-          xfn,xpi,firstn,number,nextn,elmnew,shpint,shpfs, xcenterold, ycenterold, zcenterold)
+          xfn,xpi,firstn,number,nextn,elmnew,shpint,shpfs, xcenterold, ycenterold, zcenterold, nsph, nellip, ellipa, ellipb, &
+          ellipc, a_prestress, nvec_i)
      message = 'cell l270'
 
      call dumpstatus(klok, message, 'status.txt')

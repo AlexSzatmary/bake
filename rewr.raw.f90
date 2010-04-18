@@ -1,5 +1,7 @@
 SUBROUTINE RESTART(LCUBE,NU,RHO,TD,UR,VR,WR, pr, &
-     XFN,xpi,FIRSTN,NUMBER,NEXTN,elmnew,shpint,shpfs, xcenterold, ycenterold, zcenterold)
+     XFN,xpi,FIRSTN,NUMBER,NEXTN,elmnew,shpint,shpfs, xcenterold, ycenterold, &
+     zcenterold, nsph, nellip, ellipa, ellipb, &
+          ellipc, a_prestress, nvec_i)
   IMPLICIT NONE
   INTEGER LXNG,LYNG,LZNG,NGX,NGY,NGZ
   INTEGER NGXM1,NGYM1,NGZM1,NBX,NBY,NBZ
@@ -20,6 +22,10 @@ SUBROUTINE RESTART(LCUBE,NU,RHO,TD,UR,VR,WR, pr, &
   integer elmnew(:,:)
   double precision :: shpint(:,:),shpfs(:,:)
   double precision :: xcenterold(:), ycenterold(:), zcenterold(:)
+  integer nsph, nellip
+  double precision :: ellipa(:), ellipb(:), ellipc(:), a_prestress(:)
+  integer :: nvec_i(:,:)
+
   READ(101)LCUBE,NU,RHO,TD
   REWIND(101)
   READ(102) UR
@@ -48,11 +54,22 @@ SUBROUTINE RESTART(LCUBE,NU,RHO,TD,UR,VR,WR, pr, &
   rewind(113)
   read(114) pr
   rewind(114)
+  read(115) a_prestress
+  rewind(115)
+  read(116) nsph, nellip
+  rewind(116)
+  read(117) ellipa, ellipb, ellipc
+  rewind(117)
+  read(118) nvec_i
+  rewind(118)
 END SUBROUTINE RESTART
 !**********************************************************************
 SUBROUTINE WRSTART(LCUBE,NU,RHO,TD,KLOK,UR,VR,WR, pr, &
-     XFN,xpi,FIRSTN,NUMBER,NEXTN,elmnew,shpint,shpfs, xcenterold, ycenterold, zcenterold)
+     XFN,xpi,FIRSTN,NUMBER,NEXTN,elmnew,shpint,shpfs, xcenterold, ycenterold, &
+     zcenterold, nsph, nellip, ellipa, ellipb, &
+          ellipc, a_prestress, nvec_i)
   IMPLICIT NONE
+!todo Get rid of these magic parameters, they're not used.
   INTEGER LXNG,LYNG,LZNG,NGX,NGY,NGZ
   INTEGER NGXM1,NGYM1,NGZM1,NBX,NBY,NBZ
   double precision :: FLNGX,FLNGY,FLNGZ
@@ -73,6 +90,10 @@ SUBROUTINE WRSTART(LCUBE,NU,RHO,TD,KLOK,UR,VR,WR, pr, &
   integer elmnew(:,:)
   double precision :: shpint(:,:),shpfs(:,:)
   double precision :: xcenterold(:), ycenterold(:), zcenterold(:)
+  integer nsph, nellip
+  double precision :: ellipa(:), ellipb(:), ellipc(:), a_prestress(:)
+  integer :: nvec_i(:,:)
+
   open(100, position='rewind', form='unformatted')
   write(100) klok
   rewind(100)
@@ -105,6 +126,14 @@ SUBROUTINE WRSTART(LCUBE,NU,RHO,TD,KLOK,UR,VR,WR, pr, &
   rewind(113)
   write(114) pr
   rewind(114)
+  write(115) a_prestress
+  rewind(115)
+  write(116) nsph, nellip
+  rewind(116)
+  write(117) ellipa, ellipb, ellipc
+  rewind(117)
+  write(118) nvec_i
+  rewind(118)
 END SUBROUTINE WRSTART
 !**********************************************************************
 
