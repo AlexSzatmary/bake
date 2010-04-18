@@ -67,5 +67,5 @@ $bmag$;($radx$/2.d0)
 $cmag$;($radx$/2.d0)
 $theta$;(pi*$thetaf$)
 $phi$;(pi*$phif$)
-$thetaf$;0.d0
-$phif$;0.d0;0.5d0
+$thetaf$;0.0d0
+$phif$;0.00d0;0.25d0;0.50d0
