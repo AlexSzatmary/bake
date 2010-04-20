@@ -2,9 +2,11 @@
 # rewrite.py
 # I made this Python script to make it easy to batch rewrite my bp files
 
-import os
+import os, re
 
-for root, dirs, files in os.walk('./bp/test'):
+pattern = re.compile('^\$nscale\$')
+
+for root, dirs, files in os.walk('./bp'):
     if '.svn' in dirs:
 	dirs.remove('.svn')
     for fname in files:
@@ -19,5 +21,7 @@ for root, dirs, files in os.walk('./bp/test'):
         hin.close()
         hout = open(os.path.join(root, fname), 'w')
         for line in lines:
-            hout.write(line.replace('$nstep$;10', '$nstep$;5'))
+            hout.write(line)
+            if (re.search(pattern, line)):
+                hout.write('$nend$;$nscale$\n')
         hout.close()

@@ -542,6 +542,7 @@ PROGRAM cell
 
      !  Initialize the activation variables --
      open(206,file='checkinit.txt',access='append')
+     write(206,*) $nscale$  ,' = nscale'
      write(206,*) $nend$  ,' = nend'
      write(206,*) lcube  ,' cm = lcube'
      write(206,*) nu     ,' cm**2/sec = nu'

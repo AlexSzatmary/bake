@@ -34,12 +34,13 @@ $lcube$;($radx$*$b$)
 $rho$;1.025d0
 $dpdz$;0.d0
 # This is the shear rate in the program units; it dictates the timestep.
-$gamma_dot_p$;($t_end$/$nend$)
+$gamma_dot_p$;($t_end$/$nscale$)
 $Eh$;1.d0
 $radx$;3.338d-4
 # Viscosity of plasma (poise), Eggleton & Popel 1998
 $mu$;1.20d-2
-$nend$;10
+$nscale$;10
+$nend$;$nscale$
 $nstep$;10
 $nm$;1.33d0
 $np$;1.37d0

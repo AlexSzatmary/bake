@@ -29,13 +29,13 @@ drift;$lngx$;5
 ;$td$;($gamma_dot_p$/$gamma_dot$)
 ;$gamma_dot$;($Eh$*$capillary_no$/($radx$*$mu$))
 ;$dpdz$;0.d0
-;$gamma_dot_p$;($t_end$/$nend$)
+;$gamma_dot_p$;($t_end$/$nscale$)
 ;$t_end$;1.d-4
 ;$Eh$;1.d0
 ;$capillary_no$;1.d-1
 ;$radx$;3.338d-4
 ;$mu$;1.20d-2
-;$nend$;10
+;$nscale$;10
 ;$nstep$;10
 ;$nm$;1.33d0
 ;$np$;1.37d0
