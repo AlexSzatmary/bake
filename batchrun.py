@@ -55,8 +55,8 @@ optparser.add_option('--clone', '-c',
                      """)
 options, arguments = optparser.parse_args()
 
-print options
-print arguments
+#print options
+#print arguments
 
 try:
   if options.extract:
@@ -128,7 +128,7 @@ try:
     clonefile = options.clone
 
   myfile = arguments[0]
-  print task
+#  print task
 
 except Exception, data:
   if data[0] == 'Invalid system specified':
@@ -158,7 +158,7 @@ if options.overwrite:
 else:
   lines = []
 
-print lines
+# print lines
 hin = open(myfile,'r')
 lines += hin.readlines()
 hin.close()
@@ -166,10 +166,10 @@ hin.close()
 (tokens, list_values, n_values, N_values, tokendict, m) = \
     listruns.parseBPlines(lines)
 
-print tokens
-print list_values
-print n_values
-print m
+#print tokens
+#print list_values
+# print n_values
+# print m
 print 'Number of runs in file ', N_values
 
 if 'slice_start' not in dir():
@@ -330,10 +330,13 @@ for values in listruns.ItRunValues(list_values, tokens, n_values, N_values, m,
       hout.write(line)
     hin.close()
   elif task == 'clone':
+    print cd
     if not os.path.exists(os.path.join('Alex', 'clone', cd)):
       os.mkdir(os.path.join('Alex', 'clone', cd))
-    os.system('cp ' + os.path.join(wd, clonefile) + ' ' +
-              os.path.join('Alex', 'clone', cd))
+    os.chdir(wd)
+    os.system('cp ' + clonefile + ' ' +
+              os.path.join('..', '..', 'Alex', 'clone', cd))
+    os.chdir(os.path.join('..', '..'))
 
 if task == 'extract' or task == 'plot':
   hout.close()
