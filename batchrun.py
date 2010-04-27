@@ -330,10 +330,10 @@ for values in listruns.ItRunValues(list_values, tokens, n_values, N_values, m,
       hout.write(line)
     hin.close()
   elif task == 'clone':
-    if not os.path.exists(os.path.join('Alex', clone, cd)):
-      os.mkdir(os.path.join('Alex', clone, cd))
+    if not os.path.exists(os.path.join('Alex', 'clone', cd)):
+      os.mkdir(os.path.join('Alex', 'clone', cd))
     os.system('cp ' + os.path.join(wd, clonefile) + ' ' +
-              os.path.join('Alex', clone, cd))
+              os.path.join('Alex', 'clone', cd))
 
 if task == 'extract' or task == 'plot':
   hout.close()
