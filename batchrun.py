@@ -49,6 +49,9 @@ optparser.add_option('--foreach', '-E',
 optparser.add_option('--fit', '-f', action='store_true',
                      help="""Does a curve fit to 1-exp(t) using gnuplot for
                      Taylor DF.""")
+optparser.add_option('--clone', '-c', 
+                     help="""Copies one file from each specified directory to
+                     a clone in Alex/clone.""")
 options, arguments = optparser.parse_args()
 
 print options
@@ -118,6 +121,13 @@ try:
     task = 'foreach'
   myfile = arguments[0]
   print task
+
+  if options.clone:
+    if 'task' in dir():
+      raise Exception('Multiple tasks requested')
+    task = 'clone'
+    clonefile = options.clone
+
 except Exception, data:
   if data[0] == 'Invalid system specified':
     print data[0]
@@ -317,6 +327,11 @@ for values in listruns.ItRunValues(list_values, tokens, n_values, N_values, m,
       line = line.replace('$wd$', wd)
       hout.write(line)
     hin.close()
+  elif task == 'clone':
+    if not os.path.exists(os.path.join('Alex', clone, cd)):
+      os.mkdir(os.path.join('Alex', clone, cd))
+    os.system('cp ' + os.path.join(wd, clonefile) + ' ' +
+              os.path.join('Alex', clone, cd))
 
 if task == 'extract' or task == 'plot':
   hout.close()
