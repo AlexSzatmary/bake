@@ -51,7 +51,8 @@ optparser.add_option('--fit', '-f', action='store_true',
                      Taylor DF.""")
 optparser.add_option('--clone', '-c', 
                      help="""Copies one file from each specified directory to
-                     a clone in Alex/clone.""")
+                     a clone in Alex/clone.
+                     """)
 options, arguments = optparser.parse_args()
 
 print options
@@ -119,14 +120,15 @@ try:
     if 'task' in dir():
       raise Exception('Multiple tasks requested')
     task = 'foreach'
-  myfile = arguments[0]
-  print task
 
   if options.clone:
     if 'task' in dir():
       raise Exception('Multiple tasks requested')
     task = 'clone'
     clonefile = options.clone
+
+  myfile = arguments[0]
+  print task
 
 except Exception, data:
   if data[0] == 'Invalid system specified':
