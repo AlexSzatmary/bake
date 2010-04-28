@@ -216,6 +216,7 @@ for values in listruns.ItRunValues(list_values, tokens, n_values, N_values, m,
   wd = os.path.join('.', 'batch', cd)
 
   if task == 'run' or task == 'rerun':
+    print cd
     if task == 'run':
       os.mkdir(wd)
   # String replace the tokens for the values
@@ -315,10 +316,12 @@ for values in listruns.ItRunValues(list_values, tokens, n_values, N_values, m,
   elif task == 'list':
     print cd
   elif task == 'foreach':
+    print cd
     os.chdir(wd)
     os.system(options.foreach)
     os.chdir(os.path.join('..', '..'))
   elif task == 'fit':
+    print cd
     hin = open('gnuplot_scripts/fitTaylorDF.raw.plt')
     for line in hin.readlines():
       for j in range(0,len(tokens)):
