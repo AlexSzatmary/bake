@@ -1,0 +1,64 @@
+set xlabel "time"
+set ylabel "phi"
+set terminal postscript eps enhanced color font "times"
+set output "Figure_7_uniaxial_prolate_phi.eps"
+plot "./batch/up-pr-l5r0.0d0g1.d-2t0.00d0p0.00d0/nvec1_0001.txt"  \
+u ($1/100.):(pi/2-atan(sqrt($3**2+$4**2)/abs($2))) w l t "phi_0=0", \
+"./batch/up-pr-l5r0.0d0g1.d-2t0.00d0p0.25d0/nvec1_0001.txt"  \
+u ($1/100.):(pi/2-atan(sqrt($3**2+$4**2)/abs($2))) w l t "phi_0=pi/4", \
+"./batch/up-pr-l5r0.0d0g1.d-2t0.00d0p0.50d0/nvec1_0001.txt"  \
+u ($1/100.):(pi/2-atan(sqrt($3**2+$4**2)/abs($2))) w l t "phi_0=pi/2"
+unset output
+
+set xlabel "time"
+set ylabel "phi"
+set terminal postscript eps enhanced color font "times"
+set output "Figure_8_compare_alignment.eps"
+plot './batch/up-pr-l5r0.0d0g1.d-2t0.00d0p0.00d0/nvec1_0001.txt' u \
+($1/100.):(pi/2-atan(sqrt($3**2+$4**2)/abs($2))) w l t \
+'Uniaxial-prolate', \
+'./batch/up-ob-l5r0.0d0g1.d-2t0.00d0p0.50d0/nvec1_0001.txt' u \
+($1/100.):(pi/2-atan(sqrt($3**2+$4**2)/abs($2))) w l t \
+'Uniaxial-oblate', \
+'./batch/bp-pr-l5r0.0d0g1.d-2t0.00d0p0.50d0/nvec1_0001.txt' u \
+($1/100.):(pi/2-atan(sqrt($3**2+$4**2)/abs($2))) w l t \
+'Biaxial-prolate', \
+'./batch/bp-ob-l5r0.0d0g1.d-2t0.00d0p0.00d0/nvec1_0001.txt' u \
+($1/100.):(pi/2-atan(sqrt($3**2+$4**2)/abs($2))) w l t \
+'Biaxial-oblate', \
+'./batch/up-pr-l5r1.0d0g1.d-2t0.00d0p0.00d0/nvec1_0001.txt' u \
+($1/100.):(pi/2-atan(sqrt($3**2+$4**2)/abs($2))) w l t 'Planar-prolate', \
+'./batch/up-ob-l5r1.0d0g1.d-2t0.00d0p0.50d0/nvec1_0001.txt' \
+u ($1/100.):(pi/2-atan(sqrt($3**2+$4**2)/abs($2))) w l t 'Planar-oblate'
+unset output
+
+set xlabel "time"
+set ylabel "phi"
+set terminal postscript eps enhanced color font "times"
+set output "Figure_9_planar_prolate_phi.eps"
+plot './batch/up-pr-l5r1.0d0g1.d-2t0.00d0p0.00d0/nvec1_0001.txt' u ($1/100.):(pi/2-atan(sqrt($3**2+$4**2)/abs($2))) w l t 'theta_0=0', './batch/up-pr-l5r1.0d0g1.d-2t0.25d0p0.00d0/nvec1_0001.txt' u ($1/100.):(pi/2-atan(sqrt($3**2+$4**2)/abs($2))) w l t 'theta_0=0.25pi', './batch/up-pr-l5r1.0d0g1.d-2t0.50d0p0.00d0/nvec1_0001.txt' u ($1/100.):(pi/2-atan(sqrt($3**2+$4**2)/abs($2))) w l t 'theta_0=0.5pi'
+unset output
+
+set xlabel "time"
+set ylabel "theta"
+set terminal postscript eps enhanced color font "times"
+set output "Figure_10_planar_oblate_theta.eps"
+plot './batch/up-ob-l5r1.0d0g1.d-2t0.00d0p0.00d0/nvec1_0001.txt' \
+u ($1/100.):(atan($4/$3)) w l t "theta_0=0", \
+'./batch/up-ob-l5r1.0d0g1.d-2t0.25d0p0.00d0/nvec1_0001.txt' \
+u ($1/100.):(atan($4/$3)) w l t "theta_0=0.25pi", \
+'./batch/up-ob-l5r1.0d0g1.d-2t0.50d0p0.00d0/nvec1_0001.txt' \
+u ($1/100.):(atan($4/$3)) w l t "theta_0=0.5pi"
+unset output
+
+#set xlabel "time"
+#set ylabel "phi"
+#set terminal postscript eps enhanced color font "times"
+#set output "Figure_11_planar_oblate_phi.eps"
+#plot './batch/up-ob-l5r1.0d0g1.d-2t0.00d0p0.00d0/nvec1_0001.txt' \
+#u ($1/100.):(pi/2-atan(sqrt($3**2+$4**2)/abs($2))) w l t "phi_0=0", \
+#'./batch/up-ob-l5r1.0d0g1.d-2t0.00d0p0.25d0/nvec1_0001.txt' \
+#u ($1/100.):(pi/2-atan(sqrt($3**2+$4**2)/abs($2))) w l t "phi_0=0.25pi", \
+#'./batch/up-ob-l5r1.0d0g1.d-2t0.00d0p0.50d0/nvec1_0001.txt' \
+#u ($1/100.):(pi/2-atan(sqrt($3**2+$4**2)/abs($2))) w l t "phi_0=0.5pi"
+#unset output
