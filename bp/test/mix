@@ -1,8 +1,8 @@
 $label$;mix$lngx$
 $umean$;(/0.d0,0.d0,0.d0/)
-$bfs1$;(/-mix*$gamma_dot$/2.d0,\n $gamma_dot$*(1-mix), 0.d0/)
-$bfs2$;(/$gamma_dot$*(1-mix),\n -mix*$gamma_dot$/2.d0, 0.d0/)
-$bfs3$;(/0.d0, 0.d0,\n $gamma_dot$*mix/)
+$bfs1$;(/-$mix$*$gamma_dot$/2.d0,\n $gamma_dot$*(1-$mix$), 0.d0/)
+$bfs2$;(/$gamma_dot$*(1-$mix$),\n -$mix$*$gamma_dot$/2.d0, 0.d0/)
+$bfs3$;(/0.d0, 0.d0,\n $gamma_dot$*$mix$/)
 $nsph$;1
 $ncap$;($nsph$+$nellip$)
 $nellip$;0
