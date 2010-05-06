@@ -17,7 +17,7 @@ optparser.add_option('--run', '-r',
                      help="""Start a run; specify a system to run on.
                      eg, "-r foo" asks to run the code on system foo.
                      A system must be specified. Currently used systems
-                     include "hpc", "pople", and "sun".""")
+                     include "hpc", "pople", "tara", and "sun".""")
 optparser.add_option('--rerun', '-R',
                      help="""Like -r, but restarts a stopped run.
                      The only difference between this and -r is that new
@@ -79,9 +79,9 @@ try:
     # Figure out what system I'm running on; make a lot of select cases for this
     # Make sure it's a system that has been scripted for, otherwise bad things
     # could happen
-    if (system != 'gfortran' and system != 'gfortranopenmp' and 
-        system != 'ifort' and system != 'hpc' and system != 'pople'
-        and system != 'sun' and system != 'popledebug'):
+    system_list = ['gfortran', 'gfortranopenmp', 'ifort' ,'hpc', 'pople',
+                   'tara', 'sun', 'popledebug']
+    if system not in system_list:
       raise Exception('Invalid system specified')
 
   # Perform operation on a Slice of the runs      
@@ -248,6 +248,16 @@ for values in listruns.ItRunValues(list_values, tokens, n_values, N_values, m,
         houtcode.write(line)
       hin.close()
       houtcode.close()
+    if system == 'tara':
+      hin = open('tara.serial.raw.slurm','r')
+      houtcode = open(os.path.join(wd, 'tara.serial.run.slurm'), 'w')
+      for line in hin.readlines():
+        for j in range(0,len(tokens)):
+          line = line.replace(tokens[j], values[j])
+        line = line.replace('$cd$', cd)
+        houtcode.write(line)
+      hin.close()
+      houtcode.close()
     if system == 'pople':
       hin = open('qsub_pople.raw','r')
       houtcode = open(os.path.join(wd, 'qsub_pople.run'), 'w')
@@ -282,6 +292,8 @@ for values in listruns.ItRunValues(list_values, tokens, n_values, N_values, m,
       fortran_command = 'ifort -o cell' + cd
     elif system == 'hpc':
       fortran_command = 'mpif90 -o cell' + cd
+    elif system == 'tara':
+      fortran_command = 'gfortran -o cell' + cd
     elif system == 'pople' or system == 'popledebug':
       fortran_command = 'ifort -o cell' + cd
     for file in code_files:
@@ -292,6 +304,8 @@ for values in listruns.ItRunValues(list_values, tokens, n_values, N_values, m,
       os.system('./cell' + cd)
     elif system == 'hpc':
       os.system('qsub qsub_script.run')
+    elif system == 'tara':
+      os.system('sbatch tara.serial.run.slurm')
     elif system == 'pople':
       os.system('qsub qsub_pople.run')
     elif system == 'popledebug':
