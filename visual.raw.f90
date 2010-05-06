@@ -6,9 +6,9 @@
 ! that plots zy in shape should be used.
 subroutine profile(cap_i, xfn, clock)
   implicit none
-  integer, parameter :: lngx = $lngx$
-  integer, parameter :: ngx = 2**lngx
-  double precision, parameter :: fngx = ngx
+  integer, parameter :: lngz = $lngx$
+  integer, parameter :: ngz = 2**lngz - 1
+  double precision, parameter :: fngz = ngz
   character*21 strfname
   integer cap_i, clock, i
   double precision :: xfn(:, :)
@@ -21,9 +21,9 @@ subroutine profile(cap_i, xfn, clock)
   call padzeros(strfname)
   open(25, file=strfname, access='append')
   DO i=1, nnode
-     IF((XFN(1,i) >fngx/2.d0-1.d0).AND.(XFN(1,i) &
-          <fngx/2.d0+1.d0)) THEN
-        write(25,'(es24.17,x,es24.17)') XFN(2,i),XFN(3,i)
+     IF((XFN(3,i) > 0.5d0*(fngz-1.d0) - 0.5d0) .AND.(XFN(3,i) &
+          < 0.5d0*(fngz-1.d0) + 0.5d0)) THEN
+        write(25,'(es24.17,x,es24.17)') XFN(1,i),XFN(2,i)
      ENDIF
   ENDDO
   close(25)
@@ -129,7 +129,7 @@ SUBROUTINE SHAPE(H64,KLOK, cap_i, xfn,nnode,elmnew,nelm)
         zy(2,icount) = yc
      endif
   enddo
-  !     printout profile in the zy plane and value of Dxy
+  !     printout theta and DF based on dzy
   call dzy(zy,icount,klok, cap_i)
   DEALLOCATE (zy,XFP)
   return 
