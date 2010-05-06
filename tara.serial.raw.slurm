@@ -1,7 +1,7 @@
 #!/bin/bash
-#SBATCH --job-name=hello_serial
+#SBATCH --job-name=cell$cd$
 #SBATCH --output=slurm.out
 #SBATCH --error=slurm.err
-#SBATCH --partition=develop
+#SBATCH --partition=serial
 
-./hello_serial
+./cell$cd$
