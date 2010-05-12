@@ -1,8 +1,8 @@
-$label$;planar-axi-nd$lngx$m$mix$g$capillary_no$
+$label$;up-sp-l$lngx$r$r$g$capillary_no$
 $umean$;(/0.d0,0.d0,0.d0/)
 $bfs1$;(/1.d0, 0.d0, 0.d0/)*$gamma_dot$
-$bfs2$;(/0.d0, -1.d0 + $r$/2.d0, 0.0d0/)*$gamma_dot$
-$bfs3$;(/0.d0, 0.d0, -$r$/2/)*$gamma_dot$
+$bfs2$;(/0.d0, -(1.d0 + $r$)/2.d0, 0.0d0/)*$gamma_dot$
+$bfs3$;(/0.d0, 0.d0, -(1.d0 - $r$)/2.d0/)*$gamma_dot$
 $nsph$;1
 $ncap$;($nsph$+$nellip$)
 $nellip$;0
@@ -22,7 +22,7 @@ $FVS$;1
 $gapratio$;0.00d0
 $b$;6.d0
 $r$;0.0d0;0.1d0;0.2d0;0.3d0;0.4d0;0.5d0;0.6d0;0.7d0;0.8d0;0.9d0;1.0d0
-$smalldumpint$;10
+$smalldumpint$;100
 $bigdumpint$;500
 $nu$;($mu$/$rho$)
 $lcube$;(radx*$b$)
@@ -34,13 +34,13 @@ $dpdz$;0.d0
 $gamma_dot_p$;($t_end$/$nscale$)
 $t_end$;2.d0*($capillary_no$/1.d-2)
 $Eh$;1.d0
-$capillary_no$;1.d-4;2.d-4;5.d-4;1.d-3;2.d-3;5.d-3;1.d-2;2.d-2;5.d-2;1.d-1;2.d-1;5.d-1
+$capillary_no$;1.d-2
 $radx$;3.338d-4
 # Viscosity of plasma (poise), Eggleton & Popel 1998
 $mu$;1.20d-2
 $nscale$;2000
-$nend$;$nscale$
-$nstep$;$nscale$
+$nend$;$nscale$*10
+$nstep$;2000
 $nm$;1.33d0
 $np$;1.37d0
 $omega_zero$;1.5d-6
