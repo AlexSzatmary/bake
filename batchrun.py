@@ -322,9 +322,9 @@ for values in listruns.ItRunValues(list_values, tokens, n_values, N_values, m,
     print os.path.join(wd, extractfile)
     if os.path.exists(os.path.join(wd, extractfile)):
       hin = open(os.path.join(wd, extractfile),'r')
-      mix = values[tokendict['$mix$']]
+      r = values[tokendict['$r$']]
       capillary_no = values[tokendict['$capillary_no$']]
-      line = mix + ' ' + capillary_no + hin.readlines()[-1]
+      line = r + ' ' + capillary_no + hin.readlines()[-1]
       hout.write(wd + ' ' + line)
       hin.close()
   elif task == 'list':
