@@ -1,0 +1,31 @@
+set terminal postscript eps enhanced color font "times"
+set xlabel "timestep"
+set ylabel "phi"
+
+set title "planar prolate rmax"
+set output "20100422123255.eps"
+plot "./batch/up-pr-l5r1.d0g1.d-2t0.d0p0.d0/mvecrmax__00001.txt" u 1:(pi/2-atan(sqrt($3**2+$4**2)/abs($2))) w l t "phi_0=0", "./batch/up-pr-l5r1.d0g1.d-2t0.d0p0.25d0/mvecrmax__00001.txt" u 1:(pi/2-atan(sqrt($3**2+$4**2)/abs($2))) w l t "phi_0=pi/4", "./batch/up-pr-l5r1.d0g1.d-2t0.d0p0.50d0/mvecrmax__00001.txt" u 1:(pi/2-atan(sqrt($3**2+$4**2)/abs($2))) w l t "phi_0=pi/2"
+
+set title "planar oblate rmin"
+set output "20100422123259.eps"
+plot "./batch/up-ob-l5r1.d0g1.d-2t0.d0p0.d0/mvecrmin__00001.txt" u 1:(pi/2-atan(sqrt($3**2+$4**2)/abs($2))) w l t "phi_0=0", "./batch/up-ob-l5r1.d0g1.d-2t0.d0p0.25d0/mvecrmin__00001.txt" u 1:(pi/2-atan(sqrt($3**2+$4**2)/abs($2))) w l t "phi_0=pi/4", "./batch/up-ob-l5r1.d0g1.d-2t0.d0p0.50d0/mvecrmin__00001.txt" u 1:(pi/2-atan(sqrt($3**2+$4**2)/abs($2))) w l t "phi_0=pi/2"
+
+set xlabel "timestep"
+set ylabel "theta"
+set title "planar prolate rmax"
+set output "20100422123303.eps"
+plot "./batch/up-pr-l5r1.d0g1.d-2t0.d0p0.d0/mvecrmax__00001.txt" u 1:(atan($4/$3)) w l t "theta_0=0", "./batch/up-pr-l5r1.d0g1.d-2t0.25d0p0.00d0/mvecrmax__00001.txt" u 1:(atan($4/$3)) w l t "theta_0=pi/4", "./batch/up-pr-l5r1.d0g1.d-2t0.50d0p0.00d0/mvecrmax__00001.txt" u 1:(atan($4/$3)) w l t "theta_0=pi/2"
+
+set title "planar oblate rmin"
+set output "20100422123309.eps"
+plot "./batch/up-ob-l5r1.d0g1.d-2t0.d0p0.d0/mvecrmin__00001.txt" u 1:(atan($4/$3)) w l t "theta_0=0", "./batch/up-ob-l5r1.d0g1.d-2t0.25d0p0.00d0/mvecrmin__00001.txt" u 1:(atan($4/$3)) w l t "theta_0=pi/4", "./batch/up-ob-l5r1.d0g1.d-2t0.50d0p0.00d0/mvecrmin__00001.txt" u 1:(atan($4/$3)) w l t "theta_0=pi/2"
+
+set xlabel "timestep"
+set ylabel "phi"
+set title "planar prolate rmax"
+set output "20100422123313.eps"
+plot "./batch/up-pr-l5r1.d0g1.d-2t0.d0p0.d0/mvecrmax__00001.txt" u 1:(pi/2-atan(sqrt($3**2+$4**2)/abs($2))) w l t "theta_0=0", "./batch/up-pr-l5r1.d0g1.d-2t0.25d0p0.00d0/mvecrmax__00001.txt" u 1:(pi/2-atan(sqrt($3**2+$4**2)/abs($2))) w l t "theta_0=pi/4", "./batch/up-pr-l5r1.d0g1.d-2t0.50d0p0.00d0/mvecrmax__00001.txt" u 1:(pi/2-atan(sqrt($3**2+$4**2)/abs($2))) w l t "theta_0=pi/2"
+
+set title "planar oblate rmin"
+set output "20100422123319.eps"
+plot "./batch/up-ob-l5r1.d0g1.d-2t0.d0p0.d0/mvecrmin__00001.txt" u 1:(pi/2-atan(sqrt($3**2+$4**2)/abs($2))) w l t "theta_0=0", "./batch/up-ob-l5r1.d0g1.d-2t0.25d0p0.00d0/mvecrmin__00001.txt" u 1:(pi/2-atan(sqrt($3**2+$4**2)/abs($2))) w l t "theta_0=pi/4", "./batch/up-ob-l5r1.d0g1.d-2t0.50d0p0.00d0/mvecrmin__00001.txt" u 1:(pi/2-atan(sqrt($3**2+$4**2)/abs($2))) w l t "theta_0=pi/2"
