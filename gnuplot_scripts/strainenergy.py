@@ -1,37 +1,30 @@
 #!/usr/bin/python
 
-import optparse
+#import optparse
+#optparser = optparse.OptionParser()
+#options, arguments = optparser.parse_args()
+#print arguments
+#for argument in arguments:
+#    print argument
 
-optparser = optparse.OptionParser()
-
-options, arguments = optparser.parse_args()
-
-print arguments
-
-for argument in arguments:
-    print argument
-    hin = open(argument, 'r')
-    DFlist = []
-    for line in hin.readlines():
-	elements = line.split(' ')
-	while '' in elements:
-	    elements.remove('')
-#	print ' '.join(elements)[:-1]
-	DFlist.append(float(elements[4]))
-    hin.close()
-#    print DFlist
-    n = len(DFlist)
-
-    if 'sp' not in argument:
-	print 'tweaking DF'
-	for i in xrange(n):
-	    DFlist[i] = (3*DFlist[i]-1)/(3-DFlist[i])
-
-    DFdifflist = []
-    for i in xrange(n):
-	DFdifflist.append(abs((DFlist[i] - (DFlist[-1]*i/(n-1) + 
-		   DFlist[0]*(n-i-1)/(n-1)))/DFlist[i]))
-
-#    for diff in DFdifflist:
-#	print diff
-    print max(DFdifflist)
+hinstretches = open('stretches_04000.txt', 'r')
+hinshpa = open('shpa0001.txt', 'r')
+W = 0.
+area = 0.
+for line in hinstretches:
+    elements = line.split(' ')
+    while '' in elements:
+        elements.remove('')
+    l1 = float(elements[1])
+    l2 = float(elements[2][:-1])
+    line = hinshpa.readline()
+    elements = line.split(' ')
+    while '' in elements:
+        elements.remove('')
+    area_i = float(elements[3])
+    area = area + area_i
+    W = W + (l1*l1 + l2*l2 + 1/(l1*l1*l2*l2) - 3)*area_i/3
+W = W/area
+hinstretches.close()
+hinshpa.close()
+print '%.14e'%W
