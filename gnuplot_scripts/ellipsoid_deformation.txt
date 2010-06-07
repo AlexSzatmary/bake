@@ -5,6 +5,8 @@ set yr[0:]
 set terminal postscript eps enhanced color font "helvetica"
 set output "Figure_7a.eps"
 #set title "Figure 7a"
+unset label
+set label "(a)" at graph 0.05, graph 0.95
 plot 'up-sp-DF.txt' u 2:5 pt 1 ps 2 lw 6 t 'Sphere', 'up-pr-DF.txt' u 2:(($7-$6*2)/($7+$6*2)) pt 5 ps 2 t 'Prolate', 'up-ob-DF.txt' u 2:(($7-$6*2)/($7+$6*2)) pt 7 ps 2 t 'Oblate'
 unset output
 
@@ -13,6 +15,8 @@ set ylabel "DF"
 set yr[0:]
 set output "Figure_7b.eps"
 #set title "Figure 7b"
+unset label
+set label "(b)" at graph 0.05, graph 0.95
 plot 'bp-sp-DF.txt' u 2:5 pt 1 ps 2 lw 6 t 'Sphere', 'bp-pr-DF.txt' u 2:(($7-$6*2)/($7+$6*2)) pt 5 ps 2 t 'Prolate', 'bp-ob-DF.txt' u 2:(($7-$6*2)/($7+$6*2)) pt 7 ps 2 t 'Oblate'
 unset output
 
@@ -21,6 +25,8 @@ set ylabel "{/Symbol t}"
 set yr[0:]
 set output "Figure_8a.eps"
 #set title "Figure 8a"
+unset label
+set label "(a)" at graph 0.05, graph 0.95
 plot 'up-sp-tau.txt' u ($0/10.):3 pt 1 ps 2 lw 6 t 'Sphere', 'up-pr-tau.txt' u ($0/10.):3 pt 5 ps 2 t 'Prolate', 'up-ob-tau.txt' u \
 ($0/10.):3 pt 7 ps 2 t 'Oblate'
 unset output
@@ -30,6 +36,8 @@ set ylabel "{/Symbol t}"
 set yr[0:]
 set output "Figure_8b.eps"
 #set title "Figure 8b"
+unset label
+set label "(b)" at graph 0.05, graph 0.95
 plot 'bp-sp-tau.txt' u ($0/10.):3 pt 1 ps 2 lw 6 t 'Sphere', 'bp-pr-tau.txt' u ($0/10.):3 pt 5 ps 2 t 'Prolate', 'bp-ob-tau.txt' u ($0/10.):3 pt 7 ps 2 t 'Oblate'
 unset output
 
@@ -38,6 +46,8 @@ set ylabel "(Strain energy){/Symbol \264}1000"
 set yr[0:]
 set output "Figure_9a.eps"
 #set title "Figure 9a"
+unset label
+set label "(a)" at graph 0.05, graph 0.95
 plot 'up-sp-W.txt' u ($0/10.):($1*1000.) pt 1 ps 2 lw 6 t 'Sphere', 'up-pr-W.txt' u ($0/10.):($1*1000.) pt 5 ps 2 t 'Prolate', 'up-ob-W.txt' u \
 ($0/10.):($1*1000.) pt 7 ps 2 t 'Oblate'
 unset output
@@ -47,6 +57,8 @@ set ylabel "(Strain energy){/Symbol \264}1000"
 set yr[0:]
 set output "Figure_9b.eps"
 #set title "Figure 9b"
+unset label
+set label "(b)" at graph 0.05, graph 0.95
 plot 'bp-sp-W.txt' u ($0/10.):($1*1000.) pt 1 ps 2 lw 6 t 'Sphere', 'bp-pr-W.txt' u ($0/10.):($1*1000.) pt 5 ps 2 t 'Prolate', 'bp-ob-W.txt' u ($0/10.):($1*1000.) pt 7 ps 2 t 'Oblate'
 unset output
 
@@ -59,6 +71,8 @@ set ylabel "Surface area"
 set yr[0:]
 set output "Figure_10a.eps"
 #set title "Figure 10a"
+unset label
+set label "(a)" at graph 0.05, graph 0.95
 plot 'up-sp-area.txt' u 2:(($6-sp_area_0)/sp_area_0*100) pt 1 ps 2 lw 6 t 'Sphere','up-pr-area.txt' u 2:(($6-pr_area_0)/pr_area_0*100) pt 5 ps 2 t 'Prolate', 'up-ob-area.txt' u 2:(($6-ob_area_0)/ob_area_0*100) pt 7 ps 2 t 'Oblate'
 unset output
 
@@ -67,5 +81,7 @@ set ylabel "Surface area"
 set yr[0:]
 set output "Figure_10b.eps"
 #set title "Figure 10b"
+unset label
+set label "(b)" at graph 0.05, graph 0.95
 plot 'bp-sp-area.txt' u 2:(($6-sp_area_0)/sp_area_0*100) pt 1 ps 2 lw 6 t 'Sphere', 'bp-pr-area.txt' u 2:(($6-pr_area_0)/pr_area_0*100) pt 5 ps 2 t 'Prolate', 'bp-ob-area.txt' u 2:(($6-ob_area_0)/ob_area_0*100) pt 7 ps 2 t 'Oblate'
 unset output
