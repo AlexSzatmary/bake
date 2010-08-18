@@ -259,8 +259,10 @@ PROGRAM cell
   double complex :: DY(0:NBX,0:NBY,0:NGZM1)
   double COMPLEX :: DZ(0:NBX,0:NBY,0:NGZM1)
   double precision :: DSQ(0:NBX,0:NBY,0:NGZM1)
+  ! Eh is in cgs units, dyn/cm^2
   double precision, parameter :: Eh = $Eh$
 
+  ! Controls whether or not fluid velocity superposition is used.
   integer, parameter :: FVS = $FVS$
 
   !     cap_n_start is an array of the indices to xfn, the *n*ode indices
@@ -276,7 +278,7 @@ PROGRAM cell
   INTEGER,ALLOCATABLE :: FIRSTN(:,:),NUMBER(:,:),NEXTN(:)
   !     xfn is the x coordinates of the solid nodes, in program units
   !     frc is the force exerted at each node on the fluid; this is in program
-  !     units.
+  !     units, (h^3*rho)*h/dt^2, as in fostar
   !     shpint and shpfs are arrays of finite element shape factor parameters.
   !     These are in real dimensions.
   double precision, ALLOCATABLE :: XFN(:,:),FRC(:,:),Foptical(:,:),shpint(:,:), &
@@ -400,8 +402,10 @@ PROGRAM cell
   disp = index * RADX*1e-2/30
 
   lcube = $lcube$ ! Length of one edge of the fluid domain cube (cm)
+! mu doesn't seem to do anything.
   mu = $mu$
   rho = $rho$
+  ! in cm^2/sec
   nu = $nu$ ! Kinematic viscosity
 
   td = $td$ ! Timestep (s)
@@ -418,6 +422,7 @@ PROGRAM cell
   !     side length of h.
   mass = rho*h**3
 
+  ! vsc is viscosity in program units, h^2/td
   vsc = nu/((h**2)/td)
   !     h64 is used in converting from length in program units to
   !     non-dimensional units; currently, only used in shape.
