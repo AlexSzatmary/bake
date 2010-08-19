@@ -1,22 +1,23 @@
-subroutine inmv(lcube,radx,h,xfn,elmnew,n1,n2,elmv,imic,irec, rlbs,ltb)
+subroutine inmv(my_ellipa, my_ellipb, my_ellipc, lcube,radx,h,xfn,elmnew, &
+     elmv,imic,irec, rlbs,ltb)
 !     Initialize microvilli
   implicit none
 
   integer, parameter :: nfsize=10242, nfsize2=20480
 ! mic - number of microvilli; mrec number of microvilli per receptor
   integer, parameter :: mic=252,mrec=50
-  integer n1,n2,i,j,k
+  integer i,j,k
   real lcube,h,radx
   real xc1, yc1, zc1, xc2, yc2, zc2, dist, distm
   real x1,y1,z1,x2,y2,z2,x3,y3,z3
   integer j1,j2,j3,m1,m2,m3,m4
-  integer imic(1:mic),irec(1:mrec,1:mic)
+  integer imic(:),irec(:,:)
 !     elmv - element nearest a given microvillus
-  integer elmnew(1:3,1:nfsize2),elmv(1:12,1:mic)
-  integer el(1:3),ev(1:12),ltb(1:2,1:mrec,1:mic)
+  integer elmnew(:,:),elmv(:,:)
+  integer el(1:3),ev(1:12),ltb(:,:,:)
 
 !     cmv - coordinates of microvilli
-  real xfn(1:3,1:nfsize),cmv(1:3,1:mic)
+  real xfn(:,:),cmv(1:3,1:mic)
 !     edr does nothing. rlbs - 
   real edr(1:nfsize2),rlbs(1:3,1:mrec,1:mic)
 
@@ -27,15 +28,33 @@ subroutine inmv(lcube,radx,h,xfn,elmnew,n1,n2,elmv,imic,irec, rlbs,ltb)
   yc1 = 0.0
   zc1 = 0.0
 !     Scale the microvilli coordinates
-  do i = 1,mic
+
+  do i = 1, mic
      read(25,21) cmv(1,i),cmv(2,i),cmv(3,i)
-     cmv(1,i) = radx*cmv(1,i)/h
-     cmv(2,i) = radx*cmv(2,i)/h
-     cmv(3,i) = radx*cmv(3,i)/h
-     cmv(1,i) = (cmv(1,i) + 0.5*lcube/h)
-     cmv(2,i) = (cmv(2,i) + 0.38*lcube/h)
-     cmv(3,i) = (cmv(3,i )+ 0.375*lcube/h)
   end do
+  
+
+!todo add my_ellip*, my_cap_center to call line for inmv
+  do i = 1, mic
+     x = cmv(1,i)
+     y = cmv(2,i)
+     z = cmv(3,i)
+     cmv(:,i) = my_ellipa(:)*x + my_ellipb(:)*y + my_ellipc(:)*z
+  end do
+  
+  do i = 1, 3
+     cmv(i,:) = cmv(i,:)/H + my_cap_center(i)
+  end do
+
+!   do i = 1,mic
+!      read(25,21) cmv(1,i),cmv(2,i),cmv(3,i)
+!      cmv(1,i) = radx*cmv(1,i)/h
+!      cmv(2,i) = radx*cmv(2,i)/h
+!      cmv(3,i) = radx*cmv(3,i)/h
+!      cmv(1,i) = (cmv(1,i) + 0.5*lcube/h)
+!      cmv(2,i) = (cmv(2,i) + 0.38*lcube/h)
+!      cmv(3,i) = (cmv(3,i )+ 0.375*lcube/h)
+!  end do
   print *, cmv(1, i), cmv(2, i), cmv(3, i)
 21 format(4x, e20.13, 3x, e20.13, 3x, e20.13)
 
@@ -60,7 +79,7 @@ subroutine inmv(lcube,radx,h,xfn,elmnew,n1,n2,elmv,imic,irec, rlbs,ltb)
      xc1 = cmv(1,k)
      yc1 = cmv(2,k)
      zc1 = cmv(3,k)
-     do i = 1,2*n2
+     do i = 1,nfsize2
         j1 = elmnew(1,i)
         j2 = elmnew(2,i)
         j3 = elmnew(3,i)
@@ -96,7 +115,7 @@ subroutine inmv(lcube,radx,h,xfn,elmnew,n1,n2,elmv,imic,irec, rlbs,ltb)
      do m1 = 1, 3
         ev(m1)=elmv(m1,k)
      end do
-     do i = 1, 2*n2
+     do i = 1, nfsize2
         do m2 = 1, 3
            el(m2) = elmnew(m2, i)
         end do
@@ -139,7 +158,7 @@ subroutine inmv(lcube,radx,h,xfn,elmnew,n1,n2,elmv,imic,irec, rlbs,ltb)
            endif
         endif
      end do
-     do i=1,2*n2
+     do i=1,nfsize2
         do m3=1,3
            el(m3)=elmnew(m3,i)
         end do
