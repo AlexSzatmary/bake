@@ -1,4 +1,24 @@
-program rbc3d
+program microdriver
+  interface
+     subroutine inmv(lcube,radx,h,xfn,elmnew,elmv,imic,irec, rlbs,ltb)
+       implicit none
+       real lcube,h,radx
+       double precision :: xfn(:,:)
+       integer :: elmnew(:,:)
+     end subroutine inmv
+     subroutine generatecapsule(my_ellipa, my_ellipb, my_ellipc, H, XFN, &
+          elmnew, shpint, shpfs, &
+          my_cap_center, my_fineness, cap_i, a_prestress, my_nvec_i)
+       implicit none
+       double precision :: h
+       double precision :: xfn(:,:), shpint(:,:), shpfs(:,:)
+       integer :: elmnew(:,:)
+       double precision :: my_ellipa(:), my_ellipb(:), my_ellipc(:)
+       double precision :: my_cap_center(:), a_prestress
+       integer :: my_fineness, cap_i
+       integer :: my_nvec_i(:)
+     end subroutine generatecapsule
+  end interface
   implicit none
 
   integer, parameter :: lxng=6,lyng=lxng,lzng=lxng+1
@@ -7,7 +27,7 @@ program rbc3d
   integer, parameter :: nfsize=10242, nfsize2=20480
   integer, parameter :: mic=252,mrec=50
 
-  integer clock,clock1,clock0,clockend,nstep,n1,n2,i, j
+  integer clock,clock1,clock0,clockend,nstep,,n2,i, j
   real t,h,h64,dt,vsc,time,rho,radx,fostar,bfs,const
   real, parameter :: pi = 3.141592654
   real lcube,nu,mu,mass,length
@@ -72,8 +92,8 @@ program rbc3d
   vsc = nu/((length**2)/time)
   h64 = h/radx
   fostar = (mass*length/time**2)
-  call inspher(lcube,radx,h,n1,n2,xfi,xfn,elmnew,shpint,shpfs)
-  call inmv(lcube,radx,h,xfn,elmnew,n1,n2,elmv,imic,irec,rlbs,ltb)
+  call inspher(lcube,radx,h,,n2,xfi,xfn,elmnew,shpint,shpfs)
+  call inmv(lcube,radx,h,xfn,elmnew,elmv,imic,irec,rlbs,ltb)
   do i = 1,12
      print *, elmv(i,1)
   end do
@@ -93,4 +113,4 @@ program rbc3d
   deallocate(xpi,xpl,fpl,xtn,ftn)
   deallocate(irec,imic,rlbs,ltb,ihist,rlbf)
 
-end program rbc3d
+end program microdriver
