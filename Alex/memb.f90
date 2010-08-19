@@ -1,4 +1,4 @@
-      subroutine inspher(lcube,radx,h,n1,n2,xfi,xfn,elmnew,shpint,shpfs) 
+      subroutine inspher(lcube,radx,h,xfi,xfn,elmnew,shpint,shpfs) 
 
       implicit none
 
@@ -48,7 +48,7 @@
 !     standard, so either the code should be made smarter, the mesh gen
 !     should be standardized, or this should be clearly documented.
 
-      do i = 1, 2*n2
+      do i = 1, nfsize2
          read(20,103) elmnew(1,i), elmnew(2,i), elmnew(3,i)
  103     format(3(i8))
 !     !m The mesh generator isn't making much sense. All of shpfs
@@ -63,7 +63,7 @@
  106  format(3(i8))
 
 !     !m This scaling could be done as the file is loaded.
-      do i= 1,2*n2
+      do i= 1,nfsize2
          shpfs(1,i)=shpfs(1,i)/radx
          shpfs(2,i)=shpfs(2,i)/radx
          shpfs(3,i)=shpfs(3,i)/radx
@@ -168,7 +168,7 @@
  222  format(i8,x,e13.6,x,e13.6,x,e13.6)
  223  format(i9,x,i9)
 
-      do i = 1,2*n2
+      do i = 1,nfsize2
          j1 = elmnew(1,i)
          j2 = elmnew(2,i)
          j3 = elmnew(3,i)
