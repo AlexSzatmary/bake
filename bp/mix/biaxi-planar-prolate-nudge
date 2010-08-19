@@ -70,3 +70,5 @@ $theta$;(pi*$thetaf$)
 $phi$;(pi*$phif$)
 $thetaf$;0.00d0
 $phif$;0.05d0
+# Disable adhesion code
+$adhesion$;.false.

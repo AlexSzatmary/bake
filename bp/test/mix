@@ -62,3 +62,5 @@ $a_prestress$;(/0.d0/)
 $ellipa$;(/0/)
 $ellipb$;(/0/)
 $ellipc$;(/0/)
+# Disable adhesion code
+$adhesion$;.false.
