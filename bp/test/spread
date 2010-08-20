@@ -1,8 +1,8 @@
 $label$;spread$lngx$
-$umean$;(/0.d0, 0.d0, (h/td)*$gamma_dot_p$*((flngy+1.d0)/2.d0-$planey$)/)
+$umean$;(/0.d0, 0.d0, 0.d0/)
 $bfs1$;(/0.d0, 0.d0, 0.d0/)
 $bfs2$;(/0.d0, 0.d0, 0.d0/)
-$bfs3$;(/0.d0, $gamma_dot$, 0.d0/)
+$bfs3$;(/0.d0, 0.d0, 0.d0/)
 $nsph$;1
 $ncap$;($nsph$+$nellip$)
 $nellip$;0
