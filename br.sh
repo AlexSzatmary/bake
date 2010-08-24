@@ -6,3 +6,5 @@
 ./batchrun.py bp/test/2cap -r $1
 ./batchrun.py bp/test/collision5cap -r $1
 ./batchrun.py bp/test/3sph2ellip -r $1
+./batchrun.py bp/test/spread -r $1
+./batchrun.py bp/test/roll -r $1

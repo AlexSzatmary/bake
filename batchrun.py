@@ -181,7 +181,7 @@ if 'slice_end' not in dir() or slice_end == 0:
 
 #Define which files need tweaking
 code_files = ['cell', 'fluid', 'force', 'memb', 'rewr', 'visual', 'fvs',
-         'math', 'meshgen']
+         'math', 'meshgen', 'micro']
 file_in_suffix = '.raw.f90'
 file_out_suffix = '.run.f90'
 
