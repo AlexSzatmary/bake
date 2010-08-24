@@ -197,6 +197,30 @@ PROGRAM cell
        integer my_nvec_i(:)
        integer cap_i
      end subroutine dumpnvec
+
+     subroutine inmv(my_ellipa, my_ellipb, my_ellipc, my_cap_center, &
+          h,xfn,elmnew, elmv,imic,irec, rlbs,ltb)
+       implicit none
+       double precision :: my_ellipa(:), my_ellipb(:), my_ellipc(:)
+       double precision :: my_cap_center(:)
+       double precision :: h
+       double precision :: xfn(:,:)
+       integer :: elmnew(:,:)
+       integer :: imic(:),irec(:,:),elmv(:,:)
+       double precision :: rlbs(:,:,:)
+       integer :: ltb(:,:,:)
+     end subroutine inmv
+     
+     subroutine fmv(klok,mass,length,time,xfn,frc,elmv, &
+          imic,irec,rlbs,rlbf,ihist,ltb)
+       implicit none
+       integer klok
+       double precision :: mass,length,time
+       double precision :: xfn(:,:),frc(:,:),rlbf(:,:)
+       double precision :: rlbs(:,:,:)
+       integer imic(:),irec(:,:),elmv(:,:)
+       integer ihist(0:),ltb(:,:,:)
+     end subroutine fmv
   end interface
 
   !**********************************************************************
@@ -312,6 +336,13 @@ PROGRAM cell
   double precision, parameter :: nm = $nm$ , np = $np$ , omega_zero = $omega_zero$, epsilono = $epsilono$ 
   double precision, parameter :: lambda= $lambda$ , opticalPower = $opticalPower$, lightSpeed = $lightSpeed$ 
   integer, parameter ::  numberOfMaxReflections = $numberOfMaxReflections$, index = $index$
+
+! Adhesion variables
+  integer, parameter :: mic=252,mrec=50
+  integer, allocatable :: imic(:),irec(:,:),elmv(:,:),ihist(:)
+  double precision,allocatable :: rlbs(:,:,:),rlbf(:,:)
+  integer,allocatable :: ltb(:,:,:)
+
   double precision :: disp  , z0
   integer numberOfRays
   !  integer sysclockstart, sysclockend, rate
@@ -402,7 +433,7 @@ PROGRAM cell
   disp = index * RADX*1e-2/30
 
   lcube = $lcube$ ! Length of one edge of the fluid domain cube (cm)
-! mu doesn't seem to do anything.
+  ! mu doesn't seem to do anything.
   mu = $mu$
   rho = $rho$
   ! in cm^2/sec
@@ -453,14 +484,13 @@ PROGRAM cell
      a_prestress = $a_prestress$
   end if
 
-  !todo take these lines out once ellipsoid code is validated
-  print *, "fineness", fineness
-  print *, "ellipa", ellipa
-  print *, "ellipb", ellipb
-  print *, "ellipc", ellipc
-  print *, "cap_center(1,:)", cap_center(1,:)
-  print *, "cap_center(2,:)", cap_center(2,:)
-  print *, "cap_center(3,:)", cap_center(3,:)
+!!$  print *, "fineness", fineness
+!!$  print *, "ellipa", ellipa
+!!$  print *, "ellipb", ellipb
+!!$  print *, "ellipc", ellipc
+!!$  print *, "cap_center(1,:)", cap_center(1,:)
+!!$  print *, "cap_center(2,:)", cap_center(2,:)
+!!$  print *, "cap_center(3,:)", cap_center(3,:)
 
   !     Added to implement BC homogenization
   !     These are in the program units for 1/T
@@ -587,6 +617,26 @@ PROGRAM cell
         !        zcenter(1), &
         !             RADX, H,cap_center(:,1),z0,disp,numberOfrays)
      end if
+     if ($adhesion$) then
+        allocate(ltb(1:2,1:mrec,1:mic))
+        allocate(imic(1:mic),irec(1:mrec,1:mic),elmv(1:12,1:mic),ihist(0:50))
+        allocate(rlbs(1:3,1:mrec,1:mic),rlbf(1:mrec,1:mic))
+
+! This call to inmv currently only works with one capsule. To adapt it to use
+! multiple capsules, a method for describing microvilli on different capsules
+! in one array will need to be developed.
+        do i = 1,ncap
+           call inmv(ellipa((i-1)*3+1:(i-1)*3+3), &
+             ellipb((i-1)*3+1:(i-1)*3+3), &
+             ellipc((i-1)*3+1:(i-1)*3+3), &
+             cap_center(:,i), &
+             h, &
+             xfn(1:3,cap_n_start(i):cap_n_end(i)), &
+             elmnew(1:3,cap_e_start(i):cap_e_end(i)), &
+             elmv, & 
+             imic,irec, rlbs,ltb)
+        end do
+     end if
 
      call inhist(xfn,firstn,number,nextn)
   else
@@ -615,6 +665,11 @@ PROGRAM cell
              FRC(:,cap_n_start(i):cap_n_end(i)),h,FOSTAR,&
              lambda1(cap_e_start(i):cap_e_end(i)), &
              lambda2(cap_e_start(i):cap_e_end(i)))
+        if ($adhesion$) then
+           call fmv(klok,mass,length,time,xfn(:,cap_n_start(i):cap_n_end(i)), &
+                frc(:,cap_n_start(i):cap_n_end(i)), elmv, &
+                imic,irec,rlbs,rlbf,ihist,ltb)
+        end if
      end do
 
      message = 'cell l220'
@@ -883,6 +938,14 @@ PROGRAM cell
 
   message = 'cell l304'
   call dumpstatus(klok, message, 'status.txt')
+
+  if ($adhesion$) then
+     deallocate(rlbs,rlbf)
+     deallocate(imic,irec,elmv,ihist)
+     deallocate(ltb)
+  end if
+
+  
 
   deallocate(xpi)
   deallocate(lambda1,lambda2)

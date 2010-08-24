@@ -1,15 +1,21 @@
-subroutine inmv(my_ellipa, my_ellipb, my_ellipc, lcube,radx,h,xfn,elmnew, &
-     elmv,imic,irec, rlbs,ltb)
+subroutine inmv(my_ellipa, my_ellipb, my_ellipc, my_cap_center, h, &
+     xfn,elmnew, elmv,imic,irec, rlbs,ltb)
 !     Initialize microvilli
   implicit none
-
+  interface
+     subroutine saveallsolid(xfn, strfname)
+       character(len=*) strfname
+       double precision :: xfn(:,:)
+     end subroutine saveallsolid
+  end interface
+  
   integer, parameter :: nfsize=10242, nfsize2=20480
 ! mic - number of microvilli; mrec number of microvilli per receptor
   integer, parameter :: mic=252,mrec=50
-  integer i,j,k
-  real lcube,h,radx
-  real xc1, yc1, zc1, xc2, yc2, zc2, dist, distm
-  real x1,y1,z1,x2,y2,z2,x3,y3,z3
+  integer i,k
+  double precision :: h
+  double precision :: xc1, yc1, zc1, xc2, yc2, zc2, dist, distm
+  double precision :: x1,y1,z1,x2,y2,z2,x3,y3,z3
   integer j1,j2,j3,m1,m2,m3,m4
   integer imic(:),irec(:,:)
 !     elmv - element nearest a given microvillus
@@ -17,13 +23,17 @@ subroutine inmv(my_ellipa, my_ellipb, my_ellipc, lcube,radx,h,xfn,elmnew, &
   integer el(1:3),ev(1:12),ltb(:,:,:)
 
 !     cmv - coordinates of microvilli
-  real xfn(:,:),cmv(1:3,1:mic)
-!     edr does nothing. rlbs - 
-  real edr(1:nfsize2),rlbs(1:3,1:mrec,1:mic)
+  double precision :: xfn(:,:),cmv(1:3,1:mic)
+! rlbs - 
+  double precision :: rlbs(:,:,:)
+  double precision :: my_ellipa(:), my_ellipb(:), my_ellipc(:)
+  double precision :: my_cap_center(:)
+  double precision :: x, y, z
 
 !     Load positions of microvilli. These are on a sphere of radius 1. They 
 !     don't seem to match the exact positions of membrane nodes.
-  open(25,file='icos252.sph',status='unknown')
+  open(25,file='../../mv-coordinates.txt',status='unknown')
+
   xc1 = 0.0
   yc1 = 0.0
   zc1 = 0.0
@@ -33,8 +43,6 @@ subroutine inmv(my_ellipa, my_ellipb, my_ellipc, lcube,radx,h,xfn,elmnew, &
      read(25,21) cmv(1,i),cmv(2,i),cmv(3,i)
   end do
   
-
-!todo add my_ellip*, my_cap_center to call line for inmv
   do i = 1, mic
      x = cmv(1,i)
      y = cmv(2,i)
@@ -55,20 +63,22 @@ subroutine inmv(my_ellipa, my_ellipb, my_ellipc, lcube,radx,h,xfn,elmnew, &
 !      cmv(2,i) = (cmv(2,i) + 0.38*lcube/h)
 !      cmv(3,i) = (cmv(3,i )+ 0.375*lcube/h)
 !  end do
-  print *, cmv(1, i), cmv(2, i), cmv(3, i)
+!  print *, cmv(1, i), cmv(2, i), cmv(3, i)
 21 format(4x, e20.13, 3x, e20.13, 3x, e20.13)
-
 !     Zero arrays. In Fortran 90, these could be single lines.
-  do j = 1, mic
-     imic(j)=0
-     do i = 1, mrec
-        irec(i, j) = 0
-        rlbs(1, i, j) = 0.
-        rlbs(2, i, j) = 0.
-        rlbs(3, i, j) = 0.
-     end do
-  end do
+!   do j = 1, mic
+!      imic(j)=0
+!      do i = 1, mrec
+!         irec(i, j) = 0
+!         rlbs(1, i, j) = 0.
+!         rlbs(2, i, j) = 0.
+!         rlbs(3, i, j) = 0.
+!      end do
+!   end do
 
+  imic = 0
+  irec = 0
+  rlbs = 0.
 !     Zero ltb
   ltb=0
 
@@ -95,7 +105,7 @@ subroutine inmv(my_ellipa, my_ellipb, my_ellipc, lcube,radx,h,xfn,elmnew, &
         xc2= (x1+x2+x3)/3.
         yc2= (y1+y2+y3)/3.
         zc2= (z1+z2+z3)/3.
-        dist=sqrt((xc1-xc2)**2+(yc1-yc2)**2+(zc1-zc2)**2)
+        dist=dsqrt((xc1-xc2)**2+(yc1-yc2)**2+(zc1-zc2)**2)
         if(dist <= distm) then
            distm=dist
            elmv(1,k)=j1
@@ -105,9 +115,9 @@ subroutine inmv(my_ellipa, my_ellipb, my_ellipc, lcube,radx,h,xfn,elmnew, &
      end do
   end do
 
-  print *, dist, distm
-  print *, xfn(:, 1)
-  print *, cmv(:, 1)
+!  print *, dist, distm
+!  print *, xfn(:, 1)
+!  print *, cmv(:, 1)
 !     Looping over all elements near microvilli and over all elements, period.
 !     This seems to make elmv hold the element nearest a given microvilli,
 !     as well as the three elements touching that element.
@@ -222,6 +232,8 @@ subroutine inmv(my_ellipa, my_ellipb, my_ellipc, lcube,radx,h,xfn,elmnew, &
      end do
   end do
 
+  call saveallsolid(cmv, 'mv-xyz-start.txt')
+
 !       do i = 1,12
 !          print *, ev(i)
 !       end do
@@ -236,36 +248,54 @@ subroutine fmv(klok,mass,length,time,xfn,frc,elmv, &
 
   integer, parameter :: nfsize=10242
   integer, parameter :: mic=252, mrec=50
-  real mass,length,time
-  real xfn(1:3,1:nfsize),frc(1:3,1:nfsize),rlbf(1:mrec,1:mic)
-  real rlbs(1:3,1:mrec,1:mic),cmv(1:3,1:mic),frm(1:3,1:mic)
-  integer imic(1:mic),irec(1:mrec,1:mic),elmv(1:12,1:mic),ev(1:12)
-  integer ihist(0:50),ltb(1:2,1:mrec,1:mic)
-  real a1,a2,a3,b1,b2,b3,c1,c2,c3,d1,d2,d3,nlig,blig
-  real rmv,tmx,tmy,tmz,cmx,cmy,cmz,ft1,fx1,fy1,fz1,fhist
-  real dms,dism,pb,pran,rm,rl,rk,rk0,fk,fk0,bt,f0
-  real sigb,sigt,sige,dt,sub,fx,fy,fz
+  double precision :: mass,length,time
+  double precision :: xfn(:,:),frc(:,:),rlbf(:,:)
+  double precision :: rlbs(:,:,:),frm(3,mic)
+  integer imic(:),irec(:,:),elmv(:,:),ev(1:12)
+  integer ihist(0:),ltb(:,:,:)
+  double precision :: a1,a2,a3,b1,b2,b3,c1,c2,c3,d1,d2,d3,nlig,blig
+  double precision :: rmv,tmx,tmy,tmz,cmx,cmy,cmz,ft1,fx1,fy1,fz1,fhist
+  double precision :: dms,dism,pb,pran,rm,rl,rk,rk0,fk,fk0,bt,f0
+  double precision :: sigb,sigt,sige,dt,sub,fx,fy,fz
   integer i,j,j1,j2,j3,imictemp,irectemp,klok,icount,jcount,m
+  !     Handy string array for making file names.
+  character*19 strfname
 
+! This appears to correlate to 18/(micrometer)^2
   nlig=10.0
 ! height of the substrate?
-  sub=length*08.
+  sub=$planey$*length
   dt=time
-  rmv=0.35
-  rl=0.1
-  bt=310.*.013807
-  fk0=1.0
-  rk0=1.0
-  sigt=0.99e06
-  sigb=1.0e06
+! Microvillus radius 0.35 micrometers
+  rmv=0.35d0
+! Equilibrium bond length, 0.1 microns
+  rl=0.1d0
+! T*k_B, T=310 K, Boltzmann's constant in cgs units
+  bt=310.d0*.013807d0
+! Unstressed on rate, 1/s
+  fk0=1.0d0
+! Unstressed off rate, 1/s
+  rk0=1.0d0
+! Transition spring constant, dyn/cm
+  sigt=0.99d06
+! Bond strength constant, dyn/cm
+  sigb=1.0d06
+
   sige=sigb
-  dism=0.5
+  dism=1.d0
   ft1=0.
   fx1=0.
   fy1=0.
   fz1=0.
   ihist=0
   rlbf=0.
+
+  if ((klok/$smalldumpint$)*$smalldumpint$==klok) then
+     call makefilename('mv-xyz----',KLOK,'.txt',strfname)
+     open(25,file=strfname,status='unknown')
+     call makefilename('mv-bonds--',KLOK,'.txt',strfname)
+     open(26,file=strfname,status='unknown')
+  end if
 
   do j=1,mic
      j1=elmv(1,j)
@@ -278,6 +308,10 @@ subroutine fmv(klok,mass,length,time,xfn,frc,elmv, &
      cmx=length*(xfn(1,j1)+xfn(1,j2)+xfn(1,j3))/3.
      cmy=length*(xfn(2,j1)+xfn(2,j2)+xfn(2,j3))/3.
      cmz=length*(xfn(3,j1)+xfn(3,j2)+xfn(3,j3))/3.
+     if ((klok/$smalldumpint$)*$smalldumpint$==klok) then
+        write(25,'(es24.17,2(x,es24.17))') cmx, cmy, cmz
+     end if
+     
      a1=length*(xfn(1,j2)-xfn(1,j1))
      a2=length*(xfn(2,j2)-xfn(2,j1))
      a3=length*(xfn(3,j2)-xfn(3,j1))
@@ -288,9 +322,9 @@ subroutine fmv(klok,mass,length,time,xfn,frc,elmv, &
      c2=b1*a3-a1*b3
      c3=a1*b2-b1*a2
 ! d_i is the normal to the element closest to microvillus j
-     d1=c1/sqrt(c1**2+c2**2+c3**2)
-     d2=c2/sqrt(c1**2+c2**2+c3**2)
-     d3=c3/sqrt(c1**2+c2**2+c3**2)
+     d1=c1/dsqrt(c1**2+c2**2+c3**2)
+     d2=c2/dsqrt(c1**2+c2**2+c3**2)
+     d3=c3/dsqrt(c1**2+c2**2+c3**2)
 ! tm_i is the tip of the microvillus.
      tmx=d1*rmv+cmx
      tmy=d2*rmv+cmy
@@ -320,7 +354,7 @@ subroutine fmv(klok,mass,length,time,xfn,frc,elmv, &
            do i=1,mrec
 ! Probabilistic binding
               call random_number(pran)
-              rm=sqrt((tmy-sub)**2)
+              rm=dsqrt((tmy-sub)**2)
 ! If the actual distance between the receptor and ligand is less than the
 ! unstressed length, the binding constant is k_0 for a single bond, so fk is
 ! flig*fk0, where flig is the number of free ligands, nlig-blig
@@ -336,6 +370,10 @@ subroutine fmv(klok,mass,length,time,xfn,frc,elmv, &
               endif
 ! The probability of breaking in a single timestep is given by this exponential
               pb=1.-exp(-fk*dt)
+              if ((klok/$smalldumpint$)*$smalldumpint$==klok) then
+                 write(26, '(A7,es24.17,A3,es24.17,A5,es24.17)') 'l385 rm', rm, ' pb', pb, ' pran', pran
+              end if
+              
               if(pb.gt.pran) then
                  imictemp=3
                  irectemp=1
@@ -367,11 +405,15 @@ subroutine fmv(klok,mass,length,time,xfn,frc,elmv, &
                  irectemp=1
 !     check probabilistic unbinding
                  call random_number(pran)
-                 rm=sqrt((tmx-rlbs(1,i,j))**2+(tmy-rlbs(2,i,j))**2+ &
+                 rm=dsqrt((tmx-rlbs(1,i,j))**2+(tmy-rlbs(2,i,j))**2+ &
                       (tmz-rlbs(3,i,j))**2)
                  if(rm <= rl) rk=rk0
                  if(rm > rl) rk=rk0*exp((sige-sigt)*(rm-rl)**2/(2.*bt))
                  pb=1.-exp(-rk*dt)
+                 if ((klok/$smalldumpint$)*$smalldumpint$==klok) then
+                    write(26, '(A7,es24.17,A3,es24.17,A5,es24.17)') 'l422 rm', rm, ' pb', pb, ' pran', pran
+                 end if
+                 
                  if(pb < pran) then
                     irectemp=1
                     imictemp=3
@@ -380,7 +422,7 @@ subroutine fmv(klok,mass,length,time,xfn,frc,elmv, &
                        fx=fx+sige*(rm-rl)*(rlbs(1,i,j)-tmx)/rm
                        fy=fy+sige*(rm-rl)*(rlbs(2,i,j)-tmy)/rm
                        fz=fz+sige*(rm-rl)*(rlbs(3,i,j)-tmz)/rm
-                       fhist=sqrt(fx**2+fy**2+fz**2)/10000.
+                       fhist=dsqrt(fx**2+fy**2+fz**2)/10000.
                        rlbf(i,j)=fhist*10.
                        if(fhist < 50.) ihist(int(fhist))=ihist(int(fhist))+1
                        if(fhist.ge.50.) ihist(50)=ihist(50)+1
@@ -403,13 +445,17 @@ subroutine fmv(klok,mass,length,time,xfn,frc,elmv, &
               else
 !     check probabilistic binding
                  call random_number(pran)
-                 rm=sqrt((tmy-sub)**2)
+                 rm=dsqrt((tmy-sub)**2)
                  if((rm-rl) <= 0.) then
                     fk=(nlig-blig)*fk0
                  else
                     fk=(nlig-blig)*fk0*exp(-sigt*(rm-rl)**2/(2.*bt))
                  endif
                  pb=1.-exp(-fk*dt)
+                 if ((klok/$smalldumpint$)*$smalldumpint$==klok) then
+                    write(26, '(A7,es24.17,A3,es24.17,A5,es24.17)') 'l461 rm', rm, ' pb', pb, ' pran', pran
+                 end if
+                 
                  if(pb > pran) then
                     irectemp=1
 ! I think the following line might be wrong. This statement is in the chunk for
@@ -438,11 +484,15 @@ subroutine fmv(klok,mass,length,time,xfn,frc,elmv, &
                  irectemp=1
 !     check probabilistic unbinding
                  call random_number(pran)
-                 rm=sqrt((tmx-rlbs(1,i,j))**2+(tmy-rlbs(2,i,j))**2+ &
+                 rm=dsqrt((tmx-rlbs(1,i,j))**2+(tmy-rlbs(2,i,j))**2+ &
                       (tmz-rlbs(3,i,j))**2)
                  if(rm <= rl) rk=rk0
                  if(rm > rl) rk=rk0*exp((sige-sigt)*(rm-rl)**2/(2.*bt))
                  pb=1.-exp(-rk*dt)
+                 if ((klok/$smalldumpint$)*$smalldumpint$==klok) then
+                    write(26, '(A7,es24.17,A3,es24.17,A5,es24.17)') 'l495 rm', rm, ' pb', pb, ' pran', pran
+                 end if
+                 
                  if(pb < pran) then
                     irectemp=1
                     imictemp=1
@@ -451,7 +501,7 @@ subroutine fmv(klok,mass,length,time,xfn,frc,elmv, &
                        fx=fx+sige*(rm-rl)*(rlbs(1,i,j)-tmx)/rm
                        fy=fy+sige*(rm-rl)*(rlbs(2,i,j)-tmy)/rm
                        fz=fz+sige*(rm-rl)*(rlbs(3,i,j)-tmz)/rm
-                       fhist=sqrt(fx**2+fy**2+fz**2)/10000.
+                       fhist=dsqrt(fx**2+fy**2+fz**2)/10000.
                        rlbf(i,j)=fhist*10.
                        if(fhist < 50.) ihist(int(fhist))=ihist(int(fhist))+1
                        if(fhist.ge.50.) ihist(50)=ihist(50)+1
@@ -485,13 +535,17 @@ subroutine fmv(klok,mass,length,time,xfn,frc,elmv, &
            do i=1,mrec
 !     check probabilistic binding
               call random_number(pran)
-              rm=sqrt((tmy-sub)**2)
+              rm=dsqrt((tmy-sub)**2)
               if((rm-rl) <= 0.) then
                  fk=(nlig-blig)*fk0
               else
                  fk=(nlig-blig)*fk0*exp(-sigt*(rm-rl)**2/(2.*bt))
               endif
               pb=1.-exp(-fk*dt)
+              if ((klok/$smalldumpint$)*$smalldumpint$==klok) then
+                 write(26, '(A7,es24.17,A3,es24.17,A5,es24.17)') 'l545 rm', rm, ' pb', pb, ' pran', pran
+              end if
+              
               if(pb > pran) then
                  imictemp=3
                  irectemp=1
@@ -520,11 +574,15 @@ subroutine fmv(klok,mass,length,time,xfn,frc,elmv, &
                  irectemp=1
 !     check probabilistic unbinding
                  call random_number(pran)
-                 rm=sqrt((tmx-rlbs(1,i,j))**2+(tmy-rlbs(2,i,j))**2+ &
+                 rm=dsqrt((tmx-rlbs(1,i,j))**2+(tmy-rlbs(2,i,j))**2+ &
                       (tmz-rlbs(3,i,j))**2)
                  if(rm <= rl) rk=rk0
                  if(rm > rl) rk=rk0*exp((sige-sigt)*(rm-rl)**2/(2.*bt))
                  pb=1.-exp(-rk*dt)
+                 if ((klok/$smalldumpint$)*$smalldumpint$==klok) then
+                    write(26, '(A7,es24.17,A3,es24.17,A5,es24.17)') 'l579 rm', rm, ' pb', pb, ' pran', pran
+                 end if
+                 
                  if(pb < pran) then
                     irectemp=1
                     imictemp=3
@@ -533,7 +591,7 @@ subroutine fmv(klok,mass,length,time,xfn,frc,elmv, &
                        fx=fx+sige*(rm-rl)*(rlbs(1,i,j)-tmx)/rm
                        fy=fy+sige*(rm-rl)*(rlbs(2,i,j)-tmy)/rm
                        fz=fz+sige*(rm-rl)*(rlbs(3,i,j)-tmz)/rm
-                       fhist=sqrt(fx**2+fy**2+fz**2)/10000.
+                       fhist=dsqrt(fx**2+fy**2+fz**2)/10000.
                        rlbf(i,j)=fhist*10.
                        if(fhist < 50.) ihist(int(fhist))= &
                             ihist(int(fhist))+1
@@ -557,13 +615,17 @@ subroutine fmv(klok,mass,length,time,xfn,frc,elmv, &
               else
 !     check probabilistic binding
                  call random_number(pran)
-                 rm=sqrt((tmy-sub)**2)
+                 rm=dsqrt((tmy-sub)**2)
                  if((rm-rl) <= 0.) then
                     fk=(nlig-blig)*fk0
                  else
                     fk=(nlig-blig)*fk0*exp(-sigt*(rm-rl)**2/(2.*bt))
                  endif
                  pb=1.-exp(-fk*dt)
+                 if ((klok/$smalldumpint$)*$smalldumpint$==klok) then
+                    write(26, '(A7,es24.17,A3,es24.17,A5,es24.17)') 'l619 rm', rm, ' pb', pb, ' pran', pran
+                 end if
+                 
                  if(pb > pran) then
                     irectemp=1
                     imictemp=1
@@ -588,11 +650,15 @@ subroutine fmv(klok,mass,length,time,xfn,frc,elmv, &
                  irectemp=1
 ! check probabilistic unbinding
                  call random_number(pran)
-                 rm=sqrt((tmx-rlbs(1,i,j))**2+(tmy-rlbs(2,i,j))**2+ &
+                 rm=dsqrt((tmx-rlbs(1,i,j))**2+(tmy-rlbs(2,i,j))**2+ &
                       (tmz-rlbs(3,i,j))**2)
                  if(rm <= rl) rk=rk0
                  if(rm > rl) rk=rk0*exp((sige-sigt)*(rm-rl)**2/(2.*bt))
                  pb=1.-exp(-rk*dt)
+                 if ((klok/$smalldumpint$)*$smalldumpint$==klok) then
+                    write(26, '(A7,es24.17,A3,es24.17,A5,es24.17)') 'l649 rm', rm, ' pb', pb, ' pran', pran
+                 end if
+                 
                  if(pb < pran) then
                     irectemp=1
                     imictemp=1
@@ -601,7 +667,7 @@ subroutine fmv(klok,mass,length,time,xfn,frc,elmv, &
                        fx=fx+sige*(rm-rl)*(rlbs(1,i,j)-tmx)/rm
                        fy=fy+sige*(rm-rl)*(rlbs(2,i,j)-tmy)/rm
                        fz=fz+sige*(rm-rl)*(rlbs(3,i,j)-tmz)/rm
-                       fhist=sqrt(fx**2+fy**2+fz**2)/10000.
+                       fhist=dsqrt(fx**2+fy**2+fz**2)/10000.
                        rlbf(i,j)=fhist*10.
                        if(fhist < 50.) ihist(int(fhist))= &
                             ihist(int(fhist))+1
@@ -633,7 +699,7 @@ subroutine fmv(klok,mass,length,time,xfn,frc,elmv, &
      fx1=fx1+fx/1000.
      fy1=fy1+fy/1000.
      fz1=fz1+fz/1000.
-     ft1=ft1+sqrt(fx**2+fy**2+fz**2)/1000.
+     ft1=ft1+dsqrt(fx**2+fy**2+fz**2)/1000.
      ! Scales force back to program units; fostar could be used instead of the
      ! (mass*length/time**2) group.
      frm(1,j)=fx/(mass*length/time**2)
@@ -658,6 +724,10 @@ subroutine fmv(klok,mass,length,time,xfn,frc,elmv, &
   write(210,251)klok,icount,jcount,ft1,fx1,fy1,fz1
 251 format(i9,x,i5,x,i5,f10.3,x,f10.3,x,f10.3,x,f10.3)
 252 format(i9,x,i9,x,f15.5)
+  if ((klok/$smalldumpint$)*$smalldumpint$==klok) then
+     close(25)
+     close(26)
+  end if
   return
 end subroutine fmv
 !************************************************************
