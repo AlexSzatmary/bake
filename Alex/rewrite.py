@@ -4,7 +4,7 @@
 
 import os, re
 
-pattern = re.compile('^\$nscale\$')
+#pattern = re.compile('^\$nscale\$')
 
 for root, dirs, files in os.walk('./bp'):
     if '.svn' in dirs:
@@ -22,6 +22,6 @@ for root, dirs, files in os.walk('./bp'):
         hout = open(os.path.join(root, fname), 'w')
         for line in lines:
             hout.write(line)
-            if (re.search(pattern, line)):
-                hout.write('$nend$;$nscale$\n')
+        hout.write('# Disable adhesion code\n')
+        hout.write('$adhesion$;.false.\n')
         hout.close()
