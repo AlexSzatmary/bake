@@ -28,12 +28,12 @@ $lcube$;($radx$*$b$)
 $rho$;1.025d0
 $td$;($t_end$/$nscale$)
 $dpdz$;0.d0
-$t_end$;1.d-1
+$t_end$;1.d-3
 $Eh$;1.d0
 $radx$;3.338d-4
 # Viscosity of plasma (poise), Eggleton & Popel 1998
 $mu$;1.20d-2
-$nscale$;1000
+$nscale$;10
 $nend$;$nscale$
 $nstep$;$nend$
 $nm$;1.33d0
