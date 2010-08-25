@@ -20,25 +20,22 @@ $lngx$;5
 $FVS$;1
 $b$;10
 $mix$;0
-$smalldumpint$;1
-$bigdumpint$;5
+$smalldumpint$;10
+$bigdumpint$;500
 $nu$;($mu$/$rho$)
 $lcube$;($radx$*$b$)
 # Density of plasma (g/(cm^3)), Neofytou 2004
 $rho$;1.025d0
-$td$;($gamma_dot_p$/$gamma_dot$)
-$gamma_dot$;($Eh$*$capillary_no$/($radx$*$mu$))
+$td$;($t_end$/$nscale$)
 $dpdz$;0.d0
-$gamma_dot_p$;($t_end$/$nscale$)
-$t_end$;1.d-4
+$t_end$;1.d-1
 $Eh$;1.d0
-$capillary_no$;1.d-1
 $radx$;3.338d-4
 # Viscosity of plasma (poise), Eggleton & Popel 1998
 $mu$;1.20d-2
-$nscale$;10
+$nscale$;1000
 $nend$;$nscale$
-$nstep$;10
+$nstep$;$nend$
 $nm$;1.33d0
 $np$;1.37d0
 $omega_zero$;1.5d-6
