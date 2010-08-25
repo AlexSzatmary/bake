@@ -84,9 +84,9 @@ PROGRAM cell
        integer firstn(:,:),number(:,:),nextn(:)
      end subroutine move
 
-     subroutine shape(h64, klok, cap_i, xfn, nnode, elmnew, nelm)
+     subroutine shape(klok, cap_i, xfn, nnode, elmnew, nelm)
        implicit none
-       double precision :: h64, xfn(:,:)
+       double precision :: xfn(:,:)
        integer :: klok, nnode, elmnew(:,:), nelm, cap_i
      end subroutine shape
 
@@ -249,7 +249,7 @@ PROGRAM cell
   integer nrectnodes
   double precision fnrectnodes
   INTEGER KLOK,KLOK1,KLOKEND,NSTEP
-  double precision :: T,H,h64,TD,VSC,TIME,RHO,PI,RADX,FOSTAR
+  double precision :: T,H,TD,VSC,TIME,RHO,PI,RADX,FOSTAR
   double precision, allocatable :: rad(:), a_prestress(:)
   ! The lengths of the semi-axes of all the capsules
   double precision, allocatable :: ellipa(:), ellipb(:), ellipc(:)
@@ -455,9 +455,6 @@ PROGRAM cell
 
   ! vsc is viscosity in program units, h^2/td
   vsc = nu/((h**2)/td)
-  !     h64 is used in converting from length in program units to
-  !     non-dimensional units; currently, only used in shape.
-  h64 = h/radx
   !     Characteristic force; divide by this to get force in program units.
   fostar = (mass*h/td**2)
 
@@ -555,7 +552,7 @@ PROGRAM cell
         ! to the six tracer points.
         call dumpnvec(klok, xfn(:,cap_n_start(i):cap_n_end(i)), xcenter(i), &
              ycenter(i), zcenter(i), nvec_i(:, i), i)
-        call shape(h64,klok, i, xfn(1:3, cap_n_start(i): &
+        call shape(klok, i, xfn(1:3, cap_n_start(i): &
              cap_n_end(i)), &
              nnode(i), elmnew(1:3, cap_e_start(i):cap_e_end(i)), &
              nelm(i))
@@ -792,7 +789,7 @@ PROGRAM cell
         ! to the six tracer points.
         call dumpnvec(klok, xfn(:,cap_n_start(i):cap_n_end(i)), xcenter(i), &
              ycenter(i), zcenter(i), nvec_i(:, i), i)
-        call shape(h64,klok, i, xfn(1:3, cap_n_start(i): &
+        call shape(klok, i, xfn(1:3, cap_n_start(i): &
              cap_n_end(i)), &
              nnode(i), elmnew(1:3, cap_e_start(i):cap_e_end(i)), &
              nelm(i))

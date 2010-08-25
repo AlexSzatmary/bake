@@ -29,14 +29,14 @@ subroutine profile(cap_i, xfn, clock)
   close(25)
 end subroutine profile
 !**********************************************************
-SUBROUTINE SHAPE(H64,KLOK, cap_i, xfn,nnode,elmnew,nelm)
+SUBROUTINE SHAPE(KLOK, cap_i, xfn,nnode,elmnew,nelm)
   implicit none
   integer, parameter :: lxng=$lngx$,lyng=lxng,lzng=lxng
   integer, parameter :: ngx=2**lxng,ngy=2**lyng,ngz=2**lzng
   integer, parameter :: fngx=ngx,fngy=ngy,fngz=ngz
   double precision :: XFN(:,:)
   INTEGER elmnew(:,:)
-  double precision :: h64, ra, cgx, cgy, cgz, xo, ro, xa, ya, za
+  double precision :: ra, cgx, cgy, cgz, xo, xa, ya, za
   double precision ::  xb, yb, zb, xc, yc, zc, check2, check3
   integer :: klok, nnode, nelm, i, icount, k, j1, j2, j3
   double precision, allocatable :: xfp(:, :), zy(:, :)
@@ -65,7 +65,6 @@ SUBROUTINE SHAPE(H64,KLOK, cap_i, xfn,nnode,elmnew,nelm)
   enddo
 
   xo = 0.0d0
-  ro =  ra/H64
   icount = 0
 
   do k = 1, nelm
