@@ -20,8 +20,8 @@ $lngx$;5
 $FVS$;1
 $b$;10
 $mix$;0
-$smalldumpint$;10
-$bigdumpint$;500
+$smalldumpint$;1
+$bigdumpint$;5
 $nu$;($mu$/$rho$)
 $lcube$;($radx$*$b$)
 # Density of plasma (g/(cm^3)), Neofytou 2004
@@ -35,7 +35,7 @@ $radx$;3.338d-4
 $mu$;1.20d-2
 $nscale$;10
 $nend$;$nscale$
-$nstep$;$nend$
+$nstep$;10
 $nm$;1.33d0
 $np$;1.37d0
 $omega_zero$;1.5d-6
