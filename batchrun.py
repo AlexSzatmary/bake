@@ -53,6 +53,14 @@ optparser.add_option('--clone', '-c',
                      help="""Copies one file from each specified directory to
                      a clone in Alex/clone.
                      """)
+optparser.add_option('--backup', '-b', action='store_true',
+                     help="""Backs up selected runs to Alex/backup. This is
+                     helpful to do between runs, after checking to make sure
+                     that the checkpoint and data files are saved safely.
+                     """)
+optparser.add_option('--restore', '-t', action='store_true',
+                     help="""Brings back runs backed up by the backup option.
+                     """)
 options, arguments = optparser.parse_args()
 
 #print options
@@ -126,6 +134,16 @@ try:
       raise Exception('Multiple tasks requested')
     task = 'clone'
     clonefile = options.clone
+
+  if options.backup:
+    if 'task' in dir():
+      raise Exception('Multiple tasks requested')
+    task = 'backup'
+
+  if options.restore:
+    if 'task' in dir():
+      raise Exception('Multiple tasks requested')
+    task = 'restore'
 
   myfile = arguments[0]
 #  print task
@@ -354,6 +372,22 @@ for values in listruns.ItRunValues(list_values, tokens, n_values, N_values, m,
     os.system('cp ' + clonefile + ' ' +
               os.path.join('..', '..', 'Alex', 'clone', cd))
     os.chdir(os.path.join('..', '..'))
+  elif task == 'backup':
+    print cd
+    if os.path.exists(os.path.join('Alex', 'backup', cd)):
+      os.remove(os.path.join('Alex', 'backup', cd))
+    os.system('cp -R ' + os.path.join('batch', cd) + ' ' +
+              os.path.join('Alex', 'backup'))
+  elif task == 'restore':
+    print cd
+    if not os.path.exists(os.path.join('batch', cd)):
+      os.system('cp -R ' + os.path.join('Alex', 'backup', cd) + ' ' +
+                os.path.join('batch', cd))
+    else:
+      print 'Error: batch directory ' + cd
+      print 'already exists, and will not be overwritten by the backup.'
+      print 'Manually remove ' + os.path.join('batch', cd)
+      print 'and try again.'
 
 if task == 'extract' or task == 'plot':
   hout.close()
