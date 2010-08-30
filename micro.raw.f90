@@ -34,9 +34,9 @@ subroutine inmv(my_ellipa, my_ellipb, my_ellipc, my_cap_center, h, &
 !     don't seem to match the exact positions of membrane nodes.
   open(25,file='../../mv-coordinates.txt',status='unknown')
 
-  xc1 = 0.0
-  yc1 = 0.0
-  zc1 = 0.0
+  xc1 = 0.0d0
+  yc1 = 0.0d0
+  zc1 = 0.0d0
 !     Scale the microvilli coordinates
 
   do i = 1, mic
@@ -78,7 +78,7 @@ subroutine inmv(my_ellipa, my_ellipb, my_ellipc, my_cap_center, h, &
 
   imic = 0
   irec = 0
-  rlbs = 0.
+  rlbs = 0.d0
 !     Zero ltb
   ltb=0
 
@@ -262,33 +262,40 @@ subroutine fmv(klok,mass,length,time,xfn,frc,elmv, &
   character*19 strfname
 
 ! This appears to correlate to 18/(micrometer)^2
-  nlig=10.0
+!  nlig=10.0d0
+  nlig=100.d0
 ! height of the substrate?
   sub=$planey$*length
   dt=time
 ! Microvillus radius 0.35 micrometers
   rmv=0.35d0
+!  rmv=0.35d-4
 ! Equilibrium bond length, 0.1 microns
   rl=0.1d0
+!  rl=0.1d-4
+! Fake bond length for testing purposes
+!  rl=1.0d0
 ! T*k_B, T=310 K, Boltzmann's constant in cgs units
   bt=310.d0*.013807d0
 ! Unstressed on rate, 1/s
   fk0=1.0d0
+  ! Fake unstressed on rate
+  !  fk0=1.0d2
 ! Unstressed off rate, 1/s
   rk0=1.0d0
-! Transition spring constant, dyn/cm
+! Transition spring constant, fN/micron
   sigt=0.99d06
-! Bond strength constant, dyn/cm
+! Bond strength constant, fN/micron
   sigb=1.0d06
 
   sige=sigb
   dism=1.d0
-  ft1=0.
-  fx1=0.
-  fy1=0.
-  fz1=0.
+  ft1=0.d0
+  fx1=0.d0
+  fy1=0.d0
+  fz1=0.d0
   ihist=0
-  rlbf=0.
+  rlbf=0.d0
 
   if ((klok/$smalldumpint$)*$smalldumpint$==klok) then
      call makefilename('mv-xyz----',KLOK,'.txt',strfname)
@@ -305,9 +312,9 @@ subroutine fmv(klok,mass,length,time,xfn,frc,elmv, &
         ev(m)=elmv(m,j)
      end do
 ! Centroid of element
-     cmx=length*(xfn(1,j1)+xfn(1,j2)+xfn(1,j3))/3.
-     cmy=length*(xfn(2,j1)+xfn(2,j2)+xfn(2,j3))/3.
-     cmz=length*(xfn(3,j1)+xfn(3,j2)+xfn(3,j3))/3.
+     cmx=length*(xfn(1,j1)+xfn(1,j2)+xfn(1,j3))/3.d0
+     cmy=length*(xfn(2,j1)+xfn(2,j2)+xfn(2,j3))/3.d0
+     cmz=length*(xfn(3,j1)+xfn(3,j2)+xfn(3,j3))/3.d0
      if ((klok/$smalldumpint$)*$smalldumpint$==klok) then
         write(25,'(es24.17,2(x,es24.17))') cmx, cmy, cmz
      end if
@@ -329,18 +336,18 @@ subroutine fmv(klok,mass,length,time,xfn,frc,elmv, &
      tmx=d1*rmv+cmx
      tmy=d2*rmv+cmy
      tmz=d3*rmv+cmz
-     fx=0.
-     fy=0.
-     fz=0.
-     frm(1,j)=0.
-     frm(2,j)=0.
-     frm(3,j)=0.
+     fx=0.d0
+     fy=0.d0
+     fz=0.d0
+     frm(1,j)=0.d0
+     frm(2,j)=0.d0
+     frm(3,j)=0.d0
 
 !count number of bound receptors on microvillus j
-     blig=0.
+     blig=0.d0
      do i=1,mrec
         if(irec(i,j) == 1) then
-           blig=blig+1.
+           blig=blig+1.d0
         endif
      end do
 
@@ -358,7 +365,7 @@ subroutine fmv(klok,mass,length,time,xfn,frc,elmv, &
 ! If the actual distance between the receptor and ligand is less than the
 ! unstressed length, the binding constant is k_0 for a single bond, so fk is
 ! flig*fk0, where flig is the number of free ligands, nlig-blig
-              if((rm-rl) <= 0.) then
+              if((rm-rl) <= 0.d0) then
                  fk=(nlig-blig)*fk0
 ! If the distance between the receptor and ligand is greater than the
 ! unstressed length, use the dembo model:
@@ -366,12 +373,12 @@ subroutine fmv(klok,mass,length,time,xfn,frc,elmv, &
 ! series: Lectures on Mathematics in the Life Sciences, Some mathematical 
 ! problems in biology. American Mathematical Society, Providence, RI. 51–77.
               else
-                 fk=(nlig-blig)*fk0*exp(-sigt*(rm-rl)**2/(2.*bt))
+                 fk=(nlig-blig)*fk0*exp(-sigt*(rm-rl)**2/(2.d0*bt))
               endif
 ! The probability of breaking in a single timestep is given by this exponential
-              pb=1.-exp(-fk*dt)
+              pb=1.d0-exp(-fk*dt)
               if ((klok/$smalldumpint$)*$smalldumpint$==klok) then
-                 write(26, '(A7,es24.17,A3,es24.17,A5,es24.17)') 'l385 rm', rm, ' pb', pb, ' pran', pran
+                 write(26, '(A7,es24.17,A4,es24.17,A5,es24.17)') 'l385 rm', rm, ' pb ', pb, ' pran', pran
               end if
               
               if(pb.gt.pran) then
@@ -386,6 +393,7 @@ subroutine fmv(klok,mass,length,time,xfn,frc,elmv, &
                  ltb(1,i,j)=1
                  ltb(2,i,j)=klok
                  write(216,*)klok,i,j,"binding"
+                 write(220,*) klok, rlbs(:,i,j)
               else
                  irectemp=0
               endif
@@ -409,9 +417,9 @@ subroutine fmv(klok,mass,length,time,xfn,frc,elmv, &
                       (tmz-rlbs(3,i,j))**2)
                  if(rm <= rl) rk=rk0
                  if(rm > rl) rk=rk0*exp((sige-sigt)*(rm-rl)**2/(2.*bt))
-                 pb=1.-exp(-rk*dt)
+                 pb=1.d0-exp(-rk*dt)
                  if ((klok/$smalldumpint$)*$smalldumpint$==klok) then
-                    write(26, '(A7,es24.17,A3,es24.17,A5,es24.17)') 'l422 rm', rm, ' pb', pb, ' pran', pran
+                    write(26, '(A7,es24.17,A4,es24.17,A5,es24.17)') 'l422 rm', rm, ' pb ', pb, ' pran', pran
                  end if
                  
                  if(pb < pran) then
@@ -437,6 +445,7 @@ subroutine fmv(klok,mass,length,time,xfn,frc,elmv, &
                     ltb(1,i,j)=0
                     ltb(2,i,j)=0
                     irectemp=0
+                    write(221,*) klok, rlbs(:,i,j)
                     rlbs(1,i,j)=0.
                     rlbs(2,i,j)=0.
                     rlbs(3,i,j)=0.
@@ -451,9 +460,9 @@ subroutine fmv(klok,mass,length,time,xfn,frc,elmv, &
                  else
                     fk=(nlig-blig)*fk0*exp(-sigt*(rm-rl)**2/(2.*bt))
                  endif
-                 pb=1.-exp(-fk*dt)
+                 pb=1.d0-exp(-fk*dt)
                  if ((klok/$smalldumpint$)*$smalldumpint$==klok) then
-                    write(26, '(A7,es24.17,A3,es24.17,A5,es24.17)') 'l461 rm', rm, ' pb', pb, ' pran', pran
+                    write(26, '(A7,es24.17,A4,es24.17,A5,es24.17)') 'l461 rm', rm, ' pb ', pb, ' pran', pran
                  end if
                  
                  if(pb > pran) then
@@ -469,6 +478,7 @@ subroutine fmv(klok,mass,length,time,xfn,frc,elmv, &
                     ltb(1,i,j)=1
                     ltb(2,i,j)=klok
                     write(216,*)klok,i,j,"binding"
+                    write(220,*) klok, rlbs(:,i,j)
                  else
                     irectemp=0
                  endif
@@ -488,9 +498,9 @@ subroutine fmv(klok,mass,length,time,xfn,frc,elmv, &
                       (tmz-rlbs(3,i,j))**2)
                  if(rm <= rl) rk=rk0
                  if(rm > rl) rk=rk0*exp((sige-sigt)*(rm-rl)**2/(2.*bt))
-                 pb=1.-exp(-rk*dt)
+                 pb=1.d0-exp(-rk*dt)
                  if ((klok/$smalldumpint$)*$smalldumpint$==klok) then
-                    write(26, '(A7,es24.17,A3,es24.17,A5,es24.17)') 'l495 rm', rm, ' pb', pb, ' pran', pran
+                    write(26, '(A7,es24.17,A4,es24.17,A5,es24.17)') 'l495 rm', rm, ' pb ', pb, ' pran', pran
                  end if
                  
                  if(pb < pran) then
@@ -516,6 +526,7 @@ subroutine fmv(klok,mass,length,time,xfn,frc,elmv, &
                     ltb(1,i,j)=0
                     ltb(2,i,j)=0
                     irectemp=0
+                    write(221,*) klok, rlbs(:,i,j)
                     rlbs(1,i,j)=0.
                     rlbs(2,i,j)=0.
                     rlbs(3,i,j)=0.
@@ -541,9 +552,9 @@ subroutine fmv(klok,mass,length,time,xfn,frc,elmv, &
               else
                  fk=(nlig-blig)*fk0*exp(-sigt*(rm-rl)**2/(2.*bt))
               endif
-              pb=1.-exp(-fk*dt)
+              pb=1.d0-exp(-fk*dt)
               if ((klok/$smalldumpint$)*$smalldumpint$==klok) then
-                 write(26, '(A7,es24.17,A3,es24.17,A5,es24.17)') 'l545 rm', rm, ' pb', pb, ' pran', pran
+                 write(26, '(A7,es24.17,A4,es24.17,A5,es24.17)') 'l545 rm', rm, ' pb ', pb, ' pran', pran
               end if
               
               if(pb > pran) then
@@ -555,6 +566,7 @@ subroutine fmv(klok,mass,length,time,xfn,frc,elmv, &
                  ltb(1,i,j)=1
                  ltb(2,i,j)=klok
                  write(216,*)klok,i,j,"binding"
+                 write(220,*) klok, rlbs(:,i,j)
               else
                  irectemp=0
               endif
@@ -578,9 +590,9 @@ subroutine fmv(klok,mass,length,time,xfn,frc,elmv, &
                       (tmz-rlbs(3,i,j))**2)
                  if(rm <= rl) rk=rk0
                  if(rm > rl) rk=rk0*exp((sige-sigt)*(rm-rl)**2/(2.*bt))
-                 pb=1.-exp(-rk*dt)
+                 pb=1.d0-exp(-rk*dt)
                  if ((klok/$smalldumpint$)*$smalldumpint$==klok) then
-                    write(26, '(A7,es24.17,A3,es24.17,A5,es24.17)') 'l579 rm', rm, ' pb', pb, ' pran', pran
+                    write(26, '(A7,es24.17,A4,es24.17,A5,es24.17)') 'l579 rm', rm, ' pb ', pb, ' pran', pran
                  end if
                  
                  if(pb < pran) then
@@ -607,6 +619,7 @@ subroutine fmv(klok,mass,length,time,xfn,frc,elmv, &
                     ltb(1,i,j)=0
                     ltb(2,i,j)=0
                     irectemp=0
+                    write(221,*) klok, rlbs(:,i,j)
                     rlbs(1,i,j)=0.
                     rlbs(2,i,j)=0.
                     rlbs(3,i,j)=0.
@@ -621,9 +634,9 @@ subroutine fmv(klok,mass,length,time,xfn,frc,elmv, &
                  else
                     fk=(nlig-blig)*fk0*exp(-sigt*(rm-rl)**2/(2.*bt))
                  endif
-                 pb=1.-exp(-fk*dt)
+                 pb=1.d0-exp(-fk*dt)
                  if ((klok/$smalldumpint$)*$smalldumpint$==klok) then
-                    write(26, '(A7,es24.17,A3,es24.17,A5,es24.17)') 'l619 rm', rm, ' pb', pb, ' pran', pran
+                    write(26, '(A7,es24.17,A4,es24.17,A5,es24.17)') 'l619 rm', rm, ' pb ', pb, ' pran', pran
                  end if
                  
                  if(pb > pran) then
@@ -635,6 +648,7 @@ subroutine fmv(klok,mass,length,time,xfn,frc,elmv, &
                     ltb(1,i,j)=1
                     ltb(2,i,j)=klok
                     write(216,*)klok,i,j,"binding"
+                    write(220,*) klok, rlbs(:,i,j)
                  else
                     irectemp=0
                  endif
@@ -654,9 +668,9 @@ subroutine fmv(klok,mass,length,time,xfn,frc,elmv, &
                       (tmz-rlbs(3,i,j))**2)
                  if(rm <= rl) rk=rk0
                  if(rm > rl) rk=rk0*exp((sige-sigt)*(rm-rl)**2/(2.*bt))
-                 pb=1.-exp(-rk*dt)
+                 pb=1.d0-exp(-rk*dt)
                  if ((klok/$smalldumpint$)*$smalldumpint$==klok) then
-                    write(26, '(A7,es24.17,A3,es24.17,A5,es24.17)') 'l649 rm', rm, ' pb', pb, ' pran', pran
+                    write(26, '(A7,es24.17,A4,es24.17,A5,es24.17)') 'l649 rm', rm, ' pb ', pb, ' pran', pran
                  end if
                  
                  if(pb < pran) then
@@ -683,6 +697,7 @@ subroutine fmv(klok,mass,length,time,xfn,frc,elmv, &
                     ltb(1,i,j)=0
                     ltb(2,i,j)=0
                     irectemp=0
+                    write(221,*) klok, rlbs(:,i,j)
                     rlbs(1,i,j)=0.
                     rlbs(2,i,j)=0.
                     rlbs(3,i,j)=0.
