@@ -117,7 +117,7 @@ PROGRAM cell
      subroutine restart(lcube,nu,rho,td,ur,vr,wr,pr, &
           xfn,xpi,firstn,number,nextn,elmnew,shpint,shpfs, &
           xcenterold, ycenterold, zcenterold, nsph, nellip, ellipa, ellipb, &
-          ellipc, a_prestress, nvec_i)
+          ellipc, a_prestress, nvec_i, elmv,imic,irec, rlbs, ltb, seed)
        implicit none
        double precision :: lcube,nu,td,rho
        double COMPLEX :: UR(:,:,:)
@@ -133,12 +133,17 @@ PROGRAM cell
        integer nsph, nellip
        double precision :: ellipa(:), ellipb(:), ellipc(:), a_prestress(:)
        integer :: nvec_i(:,:)
+       integer elmv(:,:)
+       integer imic(:),irec(:,:)
+       double precision :: rlbs(:,:,:)
+       integer ltb(:,:,:)
+       integer :: seed(:)
      end subroutine restart
 
      subroutine wrstart(lcube,nu,rho,td,klok,ur,vr,wr,pr, &
           xfn,xpi,firstn,number,nextn,elmnew,shpint,shpfs, &
           xcenterold, ycenterold, zcenterold, nsph, nellip, ellipa, ellipb, &
-          ellipc, a_prestress, nvec_i)
+          ellipc, a_prestress, nvec_i, elmv,imic,irec, rlbs, ltb, seed)
        implicit none
        double precision :: lcube,nu,td,rho
        integer klok
@@ -155,6 +160,11 @@ PROGRAM cell
        integer nsph, nellip
        double precision :: ellipa(:), ellipb(:), ellipc(:), a_prestress(:)
        integer :: nvec_i(:,:)
+       integer elmv(:,:)
+       integer imic(:),irec(:,:)
+       double precision :: rlbs(:,:,:)
+       integer ltb(:,:,:)
+       integer :: seed(:)
      end subroutine wrstart
 
      subroutine saveallsolid(xfn, strfname)
@@ -210,7 +220,7 @@ PROGRAM cell
        double precision :: rlbs(:,:,:)
        integer :: ltb(:,:,:)
      end subroutine inmv
-     
+
      subroutine fmv(klok,mass,length,time,xfn,frc,elmv, &
           imic,irec,rlbs,rlbf,ihist,ltb)
        implicit none
@@ -337,7 +347,7 @@ PROGRAM cell
   double precision, parameter :: lambda= $lambda$ , opticalPower = $opticalPower$, lightSpeed = $lightSpeed$ 
   integer, parameter ::  numberOfMaxReflections = $numberOfMaxReflections$, index = $index$
 
-! Adhesion variables
+  ! Adhesion variables
   integer, parameter :: mic=252,mrec=50
   integer, allocatable :: imic(:),irec(:,:),elmv(:,:),ihist(:)
   double precision,allocatable :: rlbs(:,:,:),rlbf(:,:)
@@ -346,6 +356,13 @@ PROGRAM cell
   double precision :: disp  , z0
   integer numberOfRays
   !  integer sysclockstart, sysclockend, rate
+
+  ! Variable to manage random number generation
+  integer, allocatable :: seed(:)
+  call random_seed(size=i)
+  print *, i
+  allocate(seed(i))
+
 
   !**********************************************************************
   !     End variable declaration, start real code
@@ -424,6 +441,11 @@ PROGRAM cell
   ALLOCATE(shpint(1:3,1:NFSIZE2),shpfs(1:7,1:NFSIZE2))
   allocate(lambda1(nfsize2),lambda2(nfsize2))
   allocate(xpi(3,nrectnodes))
+  if ($adhesion$) then
+     allocate(ltb(1:2,1:mrec,1:mic))
+     allocate(imic(1:mic),irec(1:mrec,1:mic),elmv(1:12,1:mic),ihist(0:50))
+     allocate(rlbs(1:3,1:mrec,1:mic),rlbf(1:mrec,1:mic))
+  end if
 
   pi = 3.14159265358979323846d0 ! Taken from Wikipedia; 20 digits
   !     Physical parameters -- using cgs system
@@ -615,23 +637,19 @@ PROGRAM cell
         !             RADX, H,cap_center(:,1),z0,disp,numberOfrays)
      end if
      if ($adhesion$) then
-        allocate(ltb(1:2,1:mrec,1:mic))
-        allocate(imic(1:mic),irec(1:mrec,1:mic),elmv(1:12,1:mic),ihist(0:50))
-        allocate(rlbs(1:3,1:mrec,1:mic),rlbf(1:mrec,1:mic))
-
-! This call to inmv currently only works with one capsule. To adapt it to use
-! multiple capsules, a method for describing microvilli on different capsules
-! in one array will need to be developed.
+        ! This call to inmv currently only works with one capsule. To adapt it to use
+        ! multiple capsules, a method for describing microvilli on different capsules
+        ! in one array will need to be developed.
         do i = 1,ncap
            call inmv(ellipa((i-1)*3+1:(i-1)*3+3), &
-             ellipb((i-1)*3+1:(i-1)*3+3), &
-             ellipc((i-1)*3+1:(i-1)*3+3), &
-             cap_center(:,i), &
-             h, &
-             xfn(1:3,cap_n_start(i):cap_n_end(i)), &
-             elmnew(1:3,cap_e_start(i):cap_e_end(i)), &
-             elmv, & 
-             imic,irec, rlbs,ltb)
+                ellipb((i-1)*3+1:(i-1)*3+3), &
+                ellipc((i-1)*3+1:(i-1)*3+3), &
+                cap_center(:,i), &
+                h, &
+                xfn(1:3,cap_n_start(i):cap_n_end(i)), &
+                elmnew(1:3,cap_e_start(i):cap_e_end(i)), &
+                elmv, & 
+                imic,irec, rlbs,ltb)
         end do
      end if
 
@@ -640,7 +658,10 @@ PROGRAM cell
      write(*,*) 'cell l367 Restarting'
      call restart(lcube, nu, rho,td,ur,vr,wr, pr, &
           xfn,xpi,firstn,number,nextn,elmnew,shpint,shpfs, xcenterold, ycenterold, zcenterold, nsph, nellip, ellipa, ellipb, &
-          ellipc, a_prestress, nvec_i)
+          ellipc, a_prestress, nvec_i, elmv,imic,irec, rlbs, ltb, seed)
+     print *, 'cell l660 random seed'
+     call random_seed(put=seed)
+     print *, 'cell l662 random seed'
      T=klok*time
   end if
 
@@ -663,9 +684,13 @@ PROGRAM cell
              lambda1(cap_e_start(i):cap_e_end(i)), &
              lambda2(cap_e_start(i):cap_e_end(i)))
         if ($adhesion$) then
+           message = 'cell l686'
+           call dumpstatus(klok, message, 'status.txt')
            call fmv(klok,mass,length,time,xfn(:,cap_n_start(i):cap_n_end(i)), &
                 frc(:,cap_n_start(i):cap_n_end(i)), elmv, &
                 imic,irec,rlbs,rlbf,ihist,ltb)
+           message = 'cell l691'
+           call dumpstatus(klok, message, 'status.txt')
         end if
      end do
 
@@ -830,9 +855,10 @@ PROGRAM cell
      message = 'cell l266'
      call dumpstatus(klok, message, 'status.txt')
 
+     call random_seed(get=seed)
      call wrstart(lcube, nu, rho,td,klok,ur,vr,wr, pr, &
           xfn,xpi,firstn,number,nextn,elmnew,shpint,shpfs, xcenterold, ycenterold, zcenterold, nsph, nellip, ellipa, ellipb, &
-          ellipc, a_prestress, nvec_i)
+          ellipc, a_prestress, nvec_i, elmv,imic,irec, rlbs, ltb, seed)
      message = 'cell l270'
 
      call dumpstatus(klok, message, 'status.txt')
@@ -942,7 +968,7 @@ PROGRAM cell
      deallocate(ltb)
   end if
 
-  
+
 
   deallocate(xpi)
   deallocate(lambda1,lambda2)
@@ -961,5 +987,6 @@ PROGRAM cell
      deallocate(ellipa, ellipb, ellipc)
      if (nsph > 0) deallocate(rad) 
   end if
+  deallocate(seed)
 END PROGRAM cell
 !**********************************************************************

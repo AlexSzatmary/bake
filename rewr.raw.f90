@@ -1,7 +1,7 @@
 SUBROUTINE RESTART(LCUBE,NU,RHO,TD,UR,VR,WR, pr, &
      XFN,xpi,FIRSTN,NUMBER,NEXTN,elmnew,shpint,shpfs, xcenterold, ycenterold, &
      zcenterold, nsph, nellip, ellipa, ellipb, &
-          ellipc, a_prestress, nvec_i)
+          ellipc, a_prestress, nvec_i, elmv,imic,irec, rlbs, ltb, seed)
   IMPLICIT NONE
   INTEGER LXNG,LYNG,LZNG,NGX,NGY,NGZ
   INTEGER NGXM1,NGYM1,NGZM1,NBX,NBY,NBZ
@@ -25,6 +25,11 @@ SUBROUTINE RESTART(LCUBE,NU,RHO,TD,UR,VR,WR, pr, &
   integer nsph, nellip
   double precision :: ellipa(:), ellipb(:), ellipc(:), a_prestress(:)
   integer :: nvec_i(:,:)
+  integer elmv(:,:)
+  integer imic(:),irec(:,:)
+  double precision :: rlbs(:,:,:)
+  integer ltb(:,:,:)
+  integer :: seed(:)
 
   READ(101)LCUBE,NU,RHO,TD
   REWIND(101)
@@ -62,12 +67,24 @@ SUBROUTINE RESTART(LCUBE,NU,RHO,TD,UR,VR,WR, pr, &
   rewind(117)
   read(118) nvec_i
   rewind(118)
+  read(119) elmv
+  rewind(119)
+  read(120) imic
+  rewind(120)
+  read(121) irec
+  rewind(121)
+  read(122) rlbs
+  rewind(122)
+  read(123) ltb
+  rewind(123)
+  read(124) seed
+  rewind(124)
 END SUBROUTINE RESTART
 !**********************************************************************
 SUBROUTINE WRSTART(LCUBE,NU,RHO,TD,KLOK,UR,VR,WR, pr, &
      XFN,xpi,FIRSTN,NUMBER,NEXTN,elmnew,shpint,shpfs, xcenterold, ycenterold, &
      zcenterold, nsph, nellip, ellipa, ellipb, &
-          ellipc, a_prestress, nvec_i)
+     ellipc, a_prestress, nvec_i, elmv,imic,irec, rlbs, ltb, seed)
   IMPLICIT NONE
 !todo Get rid of these magic parameters, they're not used.
   INTEGER LXNG,LYNG,LZNG,NGX,NGY,NGZ
@@ -93,6 +110,11 @@ SUBROUTINE WRSTART(LCUBE,NU,RHO,TD,KLOK,UR,VR,WR, pr, &
   integer nsph, nellip
   double precision :: ellipa(:), ellipb(:), ellipc(:), a_prestress(:)
   integer :: nvec_i(:,:)
+  integer elmv(:,:)
+  integer imic(:),irec(:,:)
+  double precision :: rlbs(:,:,:)
+  integer ltb(:,:,:)
+  integer :: seed(:)
 
   open(100, position='rewind', form='unformatted')
   write(100) klok
@@ -134,6 +156,17 @@ SUBROUTINE WRSTART(LCUBE,NU,RHO,TD,KLOK,UR,VR,WR, pr, &
   rewind(117)
   write(118) nvec_i
   rewind(118)
+  write(119) elmv
+  rewind(119)
+  write(120) imic
+  rewind(120)
+  write(121) irec
+  rewind(121)
+  write(122) rlbs
+  rewind(122)
+  write(123) ltb
+  rewind(123)
+  write(124) seed
+  rewind(124)
 END SUBROUTINE WRSTART
 !**********************************************************************
-
