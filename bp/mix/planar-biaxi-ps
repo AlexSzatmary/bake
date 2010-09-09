@@ -21,6 +21,8 @@ $pl_n2$;0
 $recty$;2.5d0
 $planey$;2.5d0
 $lngx$;5
+$lngy$;($lngx$)
+$lngz$;($lngx$)
 $FVS$;1
 $gapratio$;0.00d0
 $b$;6.d0

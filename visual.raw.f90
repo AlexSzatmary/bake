@@ -6,7 +6,7 @@
 ! that plots zy in shape should be used.
 subroutine profile(cap_i, xfn, clock)
   implicit none
-  integer, parameter :: lngz = $lngx$
+  integer, parameter :: lngz = $lngz$
   integer, parameter :: ngz = 2**lngz - 1
   double precision, parameter :: fngz = ngz
   character*21 strfname
@@ -31,7 +31,7 @@ end subroutine profile
 !**********************************************************
 SUBROUTINE SHAPE(KLOK, cap_i, xfn,nnode,elmnew,nelm)
   implicit none
-  integer, parameter :: lxng=$lngx$,lyng=lxng,lzng=lxng
+  integer, parameter :: lxng=$lngx$,lyng=$lngy$,lzng=$lngz$
   integer, parameter :: ngx=2**lxng,ngy=2**lyng,ngz=2**lzng
   integer, parameter :: fngx=ngx,fngy=ngy,fngz=ngz
   double precision :: XFN(:,:)
@@ -310,8 +310,8 @@ end subroutine makefilename
 !**********************************************************************
 subroutine wprofile(wr,clock)
   implicit none
-  integer, parameter :: lngx=$lngx$,lngy=lngx,lngz=lngx
-  integer, parameter :: ngx=2**lngx,ngy=2**lngy,ngz=2**lngz
+  integer, parameter :: lxng=$lngx$,lyng=$lngy$,lzng=$lngz$
+  integer, parameter :: ngx=2**lxng,ngy=2**lyng,ngz=2**lzng
   integer i, j, k, clock
   double complex :: wr(0:ngx+2,0:ngy+2,0:ngz-1)
   character*19 wprofname
@@ -335,8 +335,8 @@ end subroutine wprofile
 !**********************************************************************
 subroutine wdump(wr,clock)
   implicit none
-  integer, parameter :: lngx=$lngx$,lngy=lngx,lngz=lngx
-  integer, parameter :: ngx=2**lngx,ngy=2**lngy,ngz=2**lngz
+  integer, parameter :: lxng=$lngx$,lyng=$lngy$,lzng=$lngz$
+  integer, parameter :: ngx=2**lxng,ngy=2**lyng,ngz=2**lzng
   integer i, j, k, clock
   double complex :: wr(0:ngx+2,0:ngy+2,0:ngz-1)
   character*11 wdumpname
@@ -373,8 +373,8 @@ end subroutine wdump
 !**********************************************************************
 subroutine uvwpdump(ur, vr, wr, pr, clock)
   implicit none
-  integer, parameter :: lngx=$lngx$,lngy=lngx,lngz=lngx
-  integer, parameter :: ngx=2**lngx,ngy=2**lngy,ngz=2**lngz
+  integer, parameter :: lxng=$lngx$,lyng=$lngy$,lzng=$lngz$
+  integer, parameter :: ngx=2**lxng,ngy=2**lyng,ngz=2**lzng
   integer i, j, k, clock
   double complex :: ur(0:ngx+2,0:ngy+2,0:ngz-1)
   double complex :: vr(0:ngx+2,0:ngy+2,0:ngz-1)
@@ -401,8 +401,8 @@ end subroutine uvwpdump
 !**********************************************************************
 subroutine wlindump(wlin,clock)
   implicit none
-  integer, parameter :: lngx=$lngx$,lngy=lngx,lngz=lngx
-  integer, parameter :: ngx=2**lngx,ngy=2**lngy,ngz=2**lngz
+  integer, parameter :: lxng=$lngx$,lyng=$lngy$,lzng=$lngz$
+  integer, parameter :: ngx=2**lxng,ngy=2**lyng,ngz=2**lzng
   integer i, clock
   double precision :: wlin(-15:16*(ngz+2))
   character*11 wlindumpname
@@ -497,8 +497,8 @@ subroutine dumpstatus(clock, message, fname)
 end subroutine dumpstatus
 !**********************************************************
 subroutine meanfluidvelocity(ur, meanstablev)
-  integer, parameter :: lngx=$lngx$,lngy=lngx,lngz=lngx
-  integer, parameter :: ngx=2**lngx,ngy=2**lngy,ngz=2**lngz
+  integer, parameter :: lxng=$lngx$,lyng=$lngy$,lzng=$lngz$
+  integer, parameter :: ngx=2**lxng,ngy=2**lyng,ngz=2**lzng
   double complex :: ur(0:ngx+2,0:ngy+2,0:ngz-1)
   integer i, j, k
   double complex :: meanstablev

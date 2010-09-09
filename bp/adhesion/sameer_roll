@@ -20,6 +20,8 @@ $recty$;$planey$
 # I precomputed $planey$; this is 8*length=8*h=8*lcube/ngx=8*15/64
 $planey$;1.875d0
 $lngx$;6
+$lngy$;($lngx$)
+$lngz$;($lngx$)
 $FVS$;1
 $mix$;0
 $smalldumpint$;100

@@ -6,7 +6,7 @@ import os, re
 
 #pattern = re.compile('^\$nscale\$')
 
-for root, dirs, files in os.walk('./bp/test'):
+for root, dirs, files in os.walk('./bp'):
     if '.svn' in dirs:
 	dirs.remove('.svn')
     for fname in files:
@@ -21,8 +21,10 @@ for root, dirs, files in os.walk('./bp/test'):
         hin.close()
         hout = open(os.path.join(root, fname), 'w')
         for line in lines:
-            if '$nstep$;10' in line:
-                hout.write('$nstep$;5\n')
+            if '$lngx$;' in line[0:7]:
+                hout.write(line)
+                hout.write('$lngy$;($lngx$)\n')
+                hout.write('$lngz$;($lngx$)\n')
             else:
                 hout.write(line)
         hout.close()

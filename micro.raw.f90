@@ -275,7 +275,7 @@ subroutine fmv(klok,mass,length,time,xfn,frc,elmv, &
 !  rl=0.1d-4
 ! Fake bond length for testing purposes
 !  rl=1.0d0
-! T*k_B, T=310 K, Boltzmann's constant in cgs units
+! T*k_B, T=310 K, Boltzmann's constant in zN/K (1E-21 N/K)
   bt=310.d0*.013807d0
 ! Unstressed on rate, 1/s
   fk0=1.0d0

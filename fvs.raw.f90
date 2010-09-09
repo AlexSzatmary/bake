@@ -1,7 +1,7 @@
 subroutine fvssub(ur, vr, wr, bfs, umean)
   !     Subtracts out the imposed linear flow
   implicit none
-  integer, parameter :: lxng=$lngx$,lyng=lxng,lzng=lxng
+  integer, parameter :: lxng=$lngx$,lyng=$lngy$,lzng=$lngz$
   integer, parameter :: ngx=2**lxng,ngy=2**lyng,ngz=2**lzng
   double precision, parameter :: flngx=ngx, flngy=ngy, flngz=ngz
   double complex :: ur(0:ngx+2, 0:ngy+2,0:ngz-1), & 
@@ -31,7 +31,7 @@ end subroutine fvssub
 subroutine poiseuille(wr, pr, dpdz, vsc)
   !     Imposes Poiseuille flow
   implicit none
-  integer, parameter :: lxng=$lngx$,lyng=lxng,lzng=lxng
+  integer, parameter :: lxng=$lngx$,lyng=$lngy$,lzng=$lngz$
   integer, parameter :: ngx=2**lxng,ngy=2**lyng,ngz=2**lzng
   double precision, parameter :: flngx=ngx, flngy=ngy, flngz=ngz
   double complex :: wr(0:ngx+2, 0:ngy+2, 0:ngz-1), &

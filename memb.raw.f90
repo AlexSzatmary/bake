@@ -4,7 +4,7 @@ SUBROUTINE INHIST(XFN,FIRSTN,NUMBER,NEXTN)
   INTEGER LXNG,LYNG,LZNG,NGX,NGY,NGZ,NFSIZE
   INTEGER NGXM1,NGYM1,NGZM1,NBX,NBY,NBZ
   double precision :: FLNGX,FLNGY,FLNGZ
-  PARAMETER(LXNG=$lngx$,LYNG=LXNG,LZNG=LXNG)
+  PARAMETER(LXNG=$lngx$,LYNG=$lngy$,LZNG=$lngz$)
   PARAMETER(NGX=2**LXNG,NGY=2**LYNG,NGZ=2**LZNG)
   PARAMETER(NBX=NGX+2,NBY=NGY+2,NBZ=NGZ+2)
   PARAMETER(NGXM1=NGX-1,NGYM1=NGY-1,NGZM1=NGZ-1)
@@ -52,7 +52,7 @@ subroutine generatecapsule(my_ellipa, my_ellipb, my_ellipc, H,XFN, elmnew, &
      end subroutine sf
   end interface
 
-  integer, parameter :: lxng=$lngx$,lyng=lxng,lzng=lxng
+  integer, parameter :: lxng=$lngx$,lyng=$lngy$,lzng=$lngz$
   integer, parameter :: ngx=2**lxng,ngy=2**lyng,ngz=2**lzng
   double precision, parameter :: flngx=ngx,flngy=ngy,flngz=ngz
   INTEGER i 

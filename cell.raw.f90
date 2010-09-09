@@ -242,7 +242,7 @@ PROGRAM cell
   ! This is only really useful for the z-direction.
   ! nbx_i is ngx_i+2, which is only really useful in the x and y directions.
   ! lx_ing is the log_2(ngx_i)
-  integer, parameter :: lxng=$lngx$, lyng=lxng, lzng=lxng
+  integer, parameter :: lxng=$lngx$, lyng=$lngy$, lzng=$lngz$
   ! ngx_i is the number of fluid grid nodes in the i-direction
   integer, parameter :: NGX=2**LXNG,NGY=2**LYNG,NGZ=2**LZNG
   integer, parameter :: nbx=ngx+2,nby=ngy+2,nbz=ngz+2

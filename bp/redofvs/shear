@@ -18,6 +18,8 @@ $recty$;$planey$
 $pl_n1$;$sqrtnpl$
 $pl_n2$;$sqrtnpl$
 $lngx$;5
+$lngy$;($lngx$)
+$lngz$;($lngx$)
 $FVS$;0;1
 $gapratio$;0.00d0
 $b$;4.d0

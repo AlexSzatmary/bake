@@ -3,14 +3,6 @@ SUBROUTINE RESTART(LCUBE,NU,RHO,TD,UR,VR,WR, pr, &
      zcenterold, nsph, nellip, ellipa, ellipb, &
           ellipc, a_prestress, nvec_i, elmv,imic,irec, rlbs, ltb, seed)
   IMPLICIT NONE
-  INTEGER LXNG,LYNG,LZNG,NGX,NGY,NGZ
-  INTEGER NGXM1,NGYM1,NGZM1,NBX,NBY,NBZ
-  double precision :: FLNGX,FLNGY,FLNGZ
-  parameter(lxng=$lngx$,lyng=lxng,lzng=lxng)
-  PARAMETER(NGX=2**LXNG,NGY=2**LYNG,NGZ=2**LZNG)
-  PARAMETER(NBX=NGX+2,NBY=NGY+2,NBZ=NGZ+2)
-  PARAMETER(NGXM1=NGX-1,NGYM1=NGY-1,NGZM1=NGZ-1)
-  PARAMETER(FLNGX=NGX,FLNGY=NGY,FLNGZ=NGZ)
   double precision :: lcube,nu,td,rho
   double complex :: ur(0:,0:,0:)
   double complex :: vr(0:,0:,0:)
@@ -86,15 +78,6 @@ SUBROUTINE WRSTART(LCUBE,NU,RHO,TD,KLOK,UR,VR,WR, pr, &
      zcenterold, nsph, nellip, ellipa, ellipb, &
      ellipc, a_prestress, nvec_i, elmv,imic,irec, rlbs, ltb, seed)
   IMPLICIT NONE
-!todo Get rid of these magic parameters, they're not used.
-  INTEGER LXNG,LYNG,LZNG,NGX,NGY,NGZ
-  INTEGER NGXM1,NGYM1,NGZM1,NBX,NBY,NBZ
-  double precision :: FLNGX,FLNGY,FLNGZ
-  parameter(lxng=$lngx$,lyng=lxng,lzng=lxng)
-  PARAMETER(NGX=2**LXNG,NGY=2**LYNG,NGZ=2**LZNG)
-  PARAMETER(NBX=NGX+2,NBY=NGY+2,NBZ=NGZ+2)
-  PARAMETER(NGXM1=NGX-1,NGYM1=NGY-1,NGZM1=NGZ-1)
-  PARAMETER(FLNGX=NGX,FLNGY=NGY,FLNGZ=NGZ)
   double precision :: LCUBE,NU,TD,RHO
   INTEGER KLOK
   double COMPLEX :: UR(0:,0:,0:)

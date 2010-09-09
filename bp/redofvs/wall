@@ -18,6 +18,8 @@ $recty$;$planey$
 $pl_n1$;$sqrtnpl$
 $pl_n2$;$sqrtnpl$
 $lngx$;5
+$lngy$;($lngx$)
+$lngz$;($lngx$)
 $FVS$;0;1
 $b$;2*(1+2*$gapratio$)*ngy/(ngy-3)
 $gapratio$;0.00d0;0.02d0;0.04d0;0.05d0;0.06d0;0.08d0;0.10d0;0.15d0;0.20d0;0.25d0;0.50d0;0.75d0;1.00d0;1.25d0;1.50d0;1.75d0;2.00d0
