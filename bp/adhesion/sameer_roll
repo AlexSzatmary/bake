@@ -17,8 +17,7 @@ $npls$;1
 $pl_n2$;$pl_n1$
 $pl_n1$;64
 $recty$;$planey$
-# I precomputed $planey$; this is 8*length=8*h=8*lcube/ngx=8*15/64
-$planey$;1.875d0
+$planey$;8d0
 $lngx$;6
 $lngy$;($lngx$)
 $lngz$;($lngx$)
@@ -29,8 +28,8 @@ $bigdumpint$;5000
 $nu$;($mu$/$rho$)
 $lcube$;15.d0
 $rho$;1d-6
-$td$;1d-5
-$gamma_dot$;100d0
+$td$;1d-6
+$gamma_dot$;400d0
 #$gamma_dot$;0d0
 $dpdz$;0.d0
 $Eh$;3.d6
