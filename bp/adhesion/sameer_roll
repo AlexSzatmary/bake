@@ -1,32 +1,32 @@
 # Units are in the micrometer-microgram-second system, with force in
 # femtonewtons
 $label$;roll$lngx$
-$umean$;(/0.d0, 0.d0, $gamma_dot$*h*((flngy+1.d0)/2.d0-$planey$)/)
-$bfs1$;(/0.d0, 0.d0, 0.d0/)
+$umean$;(/$gamma_dot$*h*((flngy+1.d0)/2.d0-$planey$), 0.d0, 0.d0/)
+$bfs1$;(/0.d0, $gamma_dot$, 0.d0/)
 $bfs2$;(/0.d0, 0.d0, 0.d0/)
-$bfs3$;(/0.d0, $gamma_dot$, 0.d0/)
+$bfs3$;(/0.d0, 0.d0, 0.d0/)
 $nsph$;1
 $ncap$;($nsph$+$nellip$)
 $nellip$;0
 $rad$;(/$radx$/)
-$xc_cap$;(/0.5d0*flngx/)
+$xc_cap$;(/0.145d0*flngx/)
 $yc_cap$;(/0.38d0*flngy/)
-$zc_cap$;(/0.375d0*flngz/)
+$zc_cap$;(/0.5d0*flngz/)
 $fineness$;(/5/)
 $npls$;1
-$pl_n2$;$pl_n1$
-$pl_n1$;64
+$pl_n1$;128
+$pl_n2$;64
 $recty$;$planey$
 $planey$;8d0
-$lngx$;6
-$lngy$;($lngx$)
-$lngz$;($lngx$)
+$lngx$;7
+$lngy$;6
+$lngz$;$lngy$
 $FVS$;1
 $mix$;0
 $smalldumpint$;100
 $bigdumpint$;5000
 $nu$;($mu$/$rho$)
-$lcube$;15.d0
+$lcube$;30.d0
 $rho$;1d-6
 $td$;1d-6
 $gamma_dot$;400d0
@@ -37,7 +37,7 @@ $radx$;3.75d0
 $mu$;8d5
 $nscale$;$nend$
 $nend$;100000
-$nstep$;1000
+$nstep$;4000
 $nm$;1.33d0
 $np$;1.37d0
 $omega_zero$;1.5d-6
