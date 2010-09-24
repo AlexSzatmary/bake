@@ -46,6 +46,8 @@ SUBROUTINE SHAPE(KLOK, cap_i, xfn,nnode,elmnew,nelm)
   ALLOCATE (zy(2,8000))
 
   !     define GROUP and Point parameters
+  ! Make xfp. If xfn represents a set of nodes, xfp is those nodes, but
+  ! translated so that their center is at the origin.
   ra = 1.0d0
   cgx = 0.0d0
   cgy = 0.0d0
@@ -67,6 +69,11 @@ SUBROUTINE SHAPE(KLOK, cap_i, xfn,nnode,elmnew,nelm)
   xo = 0.0d0
   icount = 0
 
+  ! This loop picks out each element and looks at each edge; if the edge
+  ! crosses the y-z plane (cutting through the center of the nodes) then
+  ! the point on the edge that has x=0 has its coordinates recorded.
+  ! This way, rather than getting just a ring of nodes near the center, the
+  ! precise nodes that pass through x=0 are selected.
   do k = 1, nelm
      j1 = elmnew(1,k)
      j2 = elmnew(2,k)
@@ -129,6 +136,8 @@ SUBROUTINE SHAPE(KLOK, cap_i, xfn,nnode,elmnew,nelm)
      endif
   enddo
   !     printout theta and DF based on dzy
+  ! The points on x=0 are passed to dzy, which does some output on the DF
+  ! seen in the y-z plane, and the angle of inclination from the z-axis
   call dzy(zy,icount,klok, cap_i)
   DEALLOCATE (zy,XFP)
   return 
@@ -136,6 +145,9 @@ end subroutine SHAPE
 !********************************************************
 subroutine dzy(zy,icount,klok, cap_i)
   implicit none
+  ! This subroutine outputs the DF
+  ! seen in the y-z plane, and the angle of inclination from the z-axis
+  ! Points in dzy are from shape, which picks nodes in the y-z plane.
   double precision :: zy(2,8000)
   double precision :: rmax, rmin, pi, r, r2, theta, ddzy
   integer icount, klok
@@ -176,6 +188,10 @@ end subroutine Dzy
 subroutine calculateDF(clock, cap_i, xfn, my_nnode, lambda1, lambda2, &
      xcenter, ycenter, zcenter)
   implicit none
+  ! This subroutine calculates the DF based on the points nearest to and
+  ! farthest from the centroid.
+  ! It also does other interesting things, like giving the stretch ratios
+  ! at those points, and recording the directions to those points as mvec
   integer my_nnode
   double precision :: xfn(:, :)
   integer cap_i, i
@@ -254,7 +270,7 @@ subroutine saveallsolid(xfn,strfname)
   !     Alex Szatmary
   !     8-24-06
   !     Records the coordinates of each solid node
-  !     !? Is this the actual output format?
+  ! It's since been stretched to output the force on each solid node.
   !     Format: x, y, z
 
   implicit none
@@ -269,6 +285,8 @@ subroutine saveallsolid(xfn,strfname)
 end subroutine saveallsolid
 !**********************************************************************
 subroutine makefilename(str1, clock, str2, strfname)
+  ! This subroutine should be deemed obsolescent; idioms seen in, say,
+  ! dumpnvec, using padzeros, are simpler.
   !     makefilename
   !     Alex Szatmary
   !     8-24-06
@@ -310,6 +328,7 @@ end subroutine makefilename
 !**********************************************************************
 subroutine wprofile(wr,clock)
   implicit none
+  ! Gives the w velocity profile along i=ngx/2, y = ngz/2-1
   integer, parameter :: lxng=$lngx$,lyng=$lngy$,lzng=$lngz$
   integer, parameter :: ngx=2**lxng,ngy=2**lyng,ngz=2**lzng
   integer i, j, k, clock
@@ -335,6 +354,7 @@ end subroutine wprofile
 !**********************************************************************
 subroutine wdump(wr,clock)
   implicit none
+  ! Saves the w velocity at all nodes; deprecated and unused.
   integer, parameter :: lxng=$lngx$,lyng=$lngy$,lzng=$lngz$
   integer, parameter :: ngx=2**lxng,ngy=2**lyng,ngz=2**lzng
   integer i, j, k, clock
@@ -373,6 +393,7 @@ end subroutine wdump
 !**********************************************************************
 subroutine uvwpdump(ur, vr, wr, pr, clock)
   implicit none
+  ! Saves the velocity and pressure at every fluid node
   integer, parameter :: lxng=$lngx$,lyng=$lngy$,lzng=$lngz$
   integer, parameter :: ngx=2**lxng,ngy=2**lyng,ngz=2**lzng
   integer i, j, k, clock
@@ -401,6 +422,7 @@ end subroutine uvwpdump
 !**********************************************************************
 subroutine wlindump(wlin,clock)
   implicit none
+  ! Saves wlin velocities, deprecated and unused
   integer, parameter :: lxng=$lngx$,lyng=$lngy$,lzng=$lngz$
   integer, parameter :: ngx=2**lxng,ngy=2**lyng,ngz=2**lzng
   integer i, clock
@@ -434,8 +456,7 @@ end subroutine wlindump
 !**********************************************************
 subroutine meanforce(clock, frc)
   implicit none
-  !     !! Watch out; this gives mean force including the plane.
-  !! Also, this isn't a mean, it's a total!
+  !     !! Watch out; this gives mean force on all nodes, including in walls
   integer i, clock
   double precision :: frc(:,:)
   double precision :: forcex, forcey, forcez
@@ -459,6 +480,7 @@ end subroutine meanforce
 subroutine cellcenter(klok, xfn, my_nnode, cap_i, xcenter, &
      ycenter, zcenter)
   implicit none
+  ! Calculates the center of a given capsule and saves these coordinates
   integer cap_i
   double precision :: xcenter, ycenter, zcenter
   double precision :: xfn(:,:)
@@ -488,6 +510,7 @@ end subroutine cellcenter
 !**********************************************************
 subroutine dumpstatus(clock, message, fname)
   integer clock
+  ! Quick and dirty way to dump a string to disk, normally used for debugging.
   character(len=*) fname
   character(len=*) message
   open(500,file=fname,status='unknown', access='append')
@@ -497,6 +520,8 @@ subroutine dumpstatus(clock, message, fname)
 end subroutine dumpstatus
 !**********************************************************
 subroutine meanfluidvelocity(ur, meanstablev)
+  ! Calculates the mean fluid velocity; this is applied through separate calls
+  ! on u, v, and w. 
   integer, parameter :: lxng=$lngx$,lyng=$lngy$,lzng=$lngz$
   integer, parameter :: ngx=2**lxng,ngy=2**lyng,ngz=2**lzng
   double complex :: ur(0:ngx+2,0:ngy+2,0:ngz-1)
@@ -516,6 +541,7 @@ end subroutine meanfluidvelocity
 !**********************************************************************
 subroutine padzeros(str)
   implicit none
+  ! Takes a string and replaces any space characters in it with zeros.
   integer i
   character(len=*) str
   do i=1,len(str)
@@ -525,6 +551,8 @@ end subroutine padzeros
 !**********************************************************************
 subroutine minmaxxfn(clock, xfn, cap_i)
   implicit none
+  ! Outputs the coordinates for a rectanguloid that would bound a given 
+  ! capsule 
   double precision :: xfn(:,:)
   integer :: cap_i
   character*19 strfname
@@ -552,6 +580,7 @@ end subroutine minmaxxfn
 !**********************************************************************
 SUBROUTINE volume_area(KLOK,XFN,elmnew, cap_i)
   IMPLICIT NONE
+  ! Calculates and outputs the volume and surface area of a given capsule.
   INTEGER NFSIZE,NFSIZE2
   INTEGER i,KLOK, cap_i
   integer j1,j2,j3
@@ -619,13 +648,7 @@ SUBROUTINE volume_area(KLOK,XFN,elmnew, cap_i)
 end subroutine volume_area
 !**********************************************************************
 subroutine dumplambdas(lambda1, lambda2, strfname)
-  !     saveallsolid
-  !     Alex Szatmary
-  !     8-24-06
-  !     Records the coordinates of each solid node
-  !     !? Is this the actual output format?
-  !     Format: x, y, z
-
+  !     Records the stretch ratio, lambda, on each element.
   implicit none
   character(len=*) strfname
   double precision :: lambda1(:), lambda2(:)
@@ -639,6 +662,7 @@ end subroutine dumplambdas
 !**********************************************************************
 subroutine dumpnvec(clock, xfn, xcenter, ycenter, zcenter, my_nvec_i, cap_i)
   implicit none
+  ! Saves the orientation, the n vectors, of the capsule
   integer clock
   double precision :: xfn(:,:), xcenter, ycenter, zcenter
   integer my_nvec_i(:)
