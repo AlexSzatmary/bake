@@ -3,6 +3,10 @@ SUBROUTINE RESTART(LCUBE,NU,RHO,TD,UR,VR,WR, pr, &
      zcenterold, nsph, nellip, ellipa, ellipb, &
           ellipc, a_prestress, nvec_i, elmv,imic,irec, rlbs, ltb, seed)
   IMPLICIT NONE
+! Restores data from backup made in wrstart
+! As the code is improved and expanded, new variables should be added to
+! restart and wrstart to make sure that the simulation proceeds normally when
+! a job is shut down and restarted.
   double precision :: lcube,nu,td,rho
   double complex :: ur(0:,0:,0:)
   double complex :: vr(0:,0:,0:)
@@ -99,6 +103,9 @@ SUBROUTINE WRSTART(LCUBE,NU,RHO,TD,KLOK,UR,VR,WR, pr, &
   integer ltb(:,:,:)
   integer :: seed(:)
 
+! The funny code wrapped around fort.100 here is to make sure that the klok
+! variable is stored properly; this is necessary for the code to determine if
+! it's restarting.
   open(100, position='rewind', form='unformatted')
   write(100) klok
   rewind(100)
