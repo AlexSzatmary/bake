@@ -1,7 +1,7 @@
 subroutine inmv(my_ellipa, my_ellipb, my_ellipc, my_cap_center, h, &
      xfn,elmnew, elmv,imic,irec, rlbs,ltb)
-!     Initialize microvilli
   implicit none
+!     Initialize microvilli
   interface
      subroutine saveallsolid(xfn, strfname)
        character(len=*) strfname
@@ -42,7 +42,9 @@ subroutine inmv(my_ellipa, my_ellipb, my_ellipc, my_cap_center, h, &
   do i = 1, mic
      read(25,21) cmv(1,i),cmv(2,i),cmv(3,i)
   end do
+  close(25)
   
+  ! Position roots of microvilli
   do i = 1, mic
      x = cmv(1,i)
      y = cmv(2,i)
@@ -232,6 +234,7 @@ subroutine inmv(my_ellipa, my_ellipb, my_ellipc, my_cap_center, h, &
      end do
   end do
 
+  ! Record the actual microvillus root positions
   call saveallsolid(cmv, 'mv-xyz-start.txt')
 
 !       do i = 1,12
@@ -245,7 +248,7 @@ end subroutine inmv
 subroutine fmv(klok,mass,length,time,xfn,frc,elmv, &
      imic,irec,rlbs,rlbf,ihist,ltb)
   implicit none
-
+  ! Determine force due to microvillus/bond physics
   integer, parameter :: nfsize=10242
   integer, parameter :: mic=252, mrec=50
   double precision :: mass,length,time
