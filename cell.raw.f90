@@ -360,7 +360,6 @@ PROGRAM cell
   ! Variable to manage random number generation
   integer, allocatable :: seed(:)
   call random_seed(size=i)
-  print *, i
   allocate(seed(i))
 
 
@@ -525,6 +524,8 @@ PROGRAM cell
 
   !     This is the mean fluid velocity vector. For unbounded flows, this is
   !     typically zero, so that a capsule in the center is immobilized.
+  ! If umean = 0, the velocity at the center of the flow field,
+  ! (ngx/2 + 1/2, ngy/2 + 1/2, ngz/2 - 1/2) is zero.
   !     In program units for velocity (unitless)
   umean(:)= $umean$*td/h
 
@@ -614,6 +615,10 @@ PROGRAM cell
      close(206)
      !     Initialize velocity
      !     Throughout, u is in program units (normalized by h/td)
+     ur = 0.d0
+     vr = 0.d0
+     wr = 0.d0
+     pr = 0.d0
      if (fvs /= 0) then
         call fvssub(ur, vr, wr, -bfs, -umean)
         call poiseuille(wr, pr, $dpdz$, vsc)
@@ -669,6 +674,37 @@ PROGRAM cell
   !     Initialize the fluid solver
   call influidu(vsc,qrfact, dsq,dx,dy,dz)
 
+  ! Check that nodes are in domain
+  if (minval(xfn(1,:)) < 0.5d0) then
+     message = 'Nodes exited box in -x direction, terminating job.'
+     call dumpstatus(klok, message, 'status.txt')
+     stop
+  end if
+  if (maxval(xfn(1,:)) > flngx + 0.5d0) then
+     message = 'Nodes exited box in +x direction, terminating job.'
+     call dumpstatus(klok, message, 'status.txt')
+     stop
+  end if
+  if (minval(xfn(2,:)) < 0.5d0) then
+     message = 'Nodes exited box in -y direction, terminating job.'
+     call dumpstatus(klok, message, 'status.txt')
+     stop
+  end if
+  if (maxval(xfn(2,:)) > flngy + 0.5d0) then
+     message = 'Nodes exited box in +y direction, terminating job.'
+     call dumpstatus(klok, message, 'status.txt')
+     stop
+  end if
+  if (minval(xfn(3,:)) < -0.5d0) then
+     message = 'Nodes exited box in -z direction, terminating job.'
+     call dumpstatus(klok, message, 'status.txt')
+     stop
+  end if
+  if (maxval(xfn(3,:)) > flngz - 0.5d0) then
+     message = 'Nodes exited box in +z direction, terminating job.'
+     call dumpstatus(klok, message, 'status.txt')
+     stop
+  end if
 
   !     MAIN LOOP --
   DO KLOK=KLOK1,KLOKEND
@@ -700,6 +736,8 @@ PROGRAM cell
         call pmhist(xpi,xfn(:,rect_n_start(i):rect_n_end(i)), &
              frc(:,rect_n_start(i):rect_n_end(i)),10240.d0/fnrectnodes)
      end do
+     message = 'cell l222'
+     call dumpstatus(klok, message, 'status.txt')
      if (nrects > 0) call inhist(xfn, firstn, number, nextn)
 
      write(message, *) 'frc(1,1)',frc(1,1)
@@ -782,6 +820,8 @@ PROGRAM cell
      message = 'cell l255'
      call dumpstatus(klok, message, 'status.txt')
      CALL MOVE(UR,VR,WR,XFN,FIRSTN,NUMBER,NEXTN)
+     if (any(isnan(xfn))) print *, 'cell l870 There is a NaN in XFN. Clock:', klok
+
      if ($centerstable$ == 1) then
         xfn(1,:) = xfn(1,:) - sum(xfn(1,:))/size(xfn,2) + cap_center(1,1)
         xfn(2,:) = xfn(2,:) - sum(xfn(2,:))/size(xfn,2) + cap_center(2,1)

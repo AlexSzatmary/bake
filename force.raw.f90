@@ -135,11 +135,11 @@
       double precision :: my_recty
       do i=0,my_rect_n1-1
          do j=0,my_rect_n2-1
-            xpi(1,i*my_rect_n1+j+1)=(fngx-2*fngx/dble(my_rect_n1))*i/ &
-                (dble(my_rect_n1)-1)+fngx/dble(my_rect_n1)+1.d0
-            xpi(2,i*my_rect_n1+j+1)=my_recty
-            xpi(3,i*my_rect_n1+j+1)=(fngz-2*fngz/dble(my_rect_n1))*j/ &
-                (dble(my_rect_n1)-1)+fngz/dble(my_rect_n1)
+            xpi(1,i*my_rect_n2+j+1)=(fngx-2*fngx/dble(my_rect_n1))*i/ &
+                 (dble(my_rect_n1)-1)+fngx/dble(my_rect_n1) + 0.5d0
+            xpi(2,i*my_rect_n2+j+1)=my_recty
+            xpi(3,i*my_rect_n2+j+1)=(fngz-2*fngz/dble(my_rect_n2))*j/ &
+                 (dble(my_rect_n2)-1)+fngz/dble(my_rect_n2) - 0.5d0
          end do
       end do
 
@@ -237,9 +237,6 @@
 !     W(I,J,K) = W(I,J,K) + D * FRC(3,L)
 !
 !     WHERE D WAS DEFINED ABOVE.
-!
-
-!      write(*,*) 'force l143'
 
       DO 89 IZERO=1,4
       DO 89 JZERO=1,4
@@ -247,8 +244,10 @@
 !!$OMP& SHARED(FIRSTN, NEXTN, NUMBER, IZERO, JZERO, XFN) &
 !!$OMP& PRIVATE(II, IJ, IN, JJ, JN, N, NEXTNOLD, NPREV)
       DO 85 IJ=0,NGXB4*NGYB4-1
-      JJ   = JZERO + (IJ/NGYB4)*4
-      II   = IZERO + (MOD(IJ,NGXB4))*4
+      JJ   = JZERO + (IJ/ngxb4)*4
+      II   = IZERO + (MOD(IJ,ngxb4))*4
+      if (ii > ngx .or. ii < 1) print *, "ii", ii
+      if (jj > ngy .or. jj < 1) print *, "jj", jj
       IF (NUMBER(II,JJ) .EQ. 0) GO TO 85
       NPREV = 0
       N     = FIRSTN(II,JJ)
@@ -259,6 +258,8 @@
 !       remember the pointer to the next one in the present linked list
         NEXTNOLD      = NEXTN(N)
 !       add point N to the correct linked list
+        if (in > ngx .or. in < 1) print *, "in", in
+        if (jn > ngx .or. jn < 1) print *, "jn", jn
         NEXTN(N)      = FIRSTN(IN,JN)
         FIRSTN(IN,JN) = N
         NUMBER(IN,JN) = NUMBER(IN,JN) + 1
@@ -291,8 +292,6 @@
 ! ETC.
 ! IF FIRSTN(I,J) CONTAINS THE VALUE 0, THERE ARE NO SUCH POINTS.
 
-!      write(*,*) 'force l179'
-
       MSHIFT = 16*NGZ
       DO 25 JZERO=1,4
       DO 25 IZERO=1,4
@@ -304,8 +303,8 @@
 !!$OMP&        LINDX,M,MZERO,NPOINTS,NPT,NUMREM,RAD1,RAD2,RAD3,&
 !!$OMP&        ULIN,VLIN,WLIN,XFN1OLD,XFN2OLD,XFN3OLD)
       DO 20 IJ=0,NGXB4*NGYB4-1
-      JJ = JZERO + (IJ/NGYB4)*4
-      II = IZERO + (MOD(IJ,NGXB4))*4
+      JJ = JZERO + (IJ/NGxB4)*4
+      II = IZERO + (MOD(IJ,NGxB4))*4
       L = FIRSTN(II,JJ)
       IF (L.EQ.0) GO TO 20
       ALLOCATE  (ULIN(-15:16*NGZP2))
@@ -317,7 +316,7 @@
       ALLOCATE (XFN1OLD(NPTMAX),XFN2OLD(NPTMAX),XFN3OLD(NPTMAX))
       ALLOCATE   ( D1(NPTMAX,0:3),   D2(NPTMAX,0:3),   D3(NPTMAX,0:3))
       ALLOCATE   (D12(NPTMAX,0:3,0:3))
-      ALLOCATE    (DELTA(0:64,NPTMAX))
+      ALLOCATE    (DELTA(64,NPTMAX))
       ALLOCATE (FLKZP1(NPTMAX))
       ALLOCATE  (lindx(NPTMAX))
       ALLOCATE  (ID(1:3,-15:16*NGZP2))
@@ -336,31 +335,25 @@
       ID(2,I0+I)=J3D
       ID(3,I0+I)=K
     4 CONTINUE
-!      write(*,*) 'force l219'
       DO 41 M=-15,0
       ULIN(M) = 0.0d0
       VLIN(M) = 0.0d0
       WLIN(M) = 0.0d0
    41 CONTINUE
-!      write(*,*) 'force l225', izero, jzero
       DO 42 IR=1,16*NGZ
-!         write(*,*) 'force l227', ir, id(1,ir), id(2,ir), id(3,ir)
       I3D=ID(1,IR)
       J3D=ID(2,IR)
       K3D=ID(3,IR)
-!      write(*,*) 'force l231', ur(i3d, j3d, k3d), ur(i3d, j3d, k3d),
 !     &     wr(i3d, j3d, k3d)
       ULIN(IR)=UR(I3D,J3D,K3D)
       VLIN(IR)=VR(I3D,J3D,K3D)
       WLIN(IR)=WR(I3D,J3D,K3D)
    42 CONTINUE
-!      write(*,*) 'force l234'
       DO 43 M=16*NGZ+1,16*NGZP2
       ULIN(M) = 0.0d0
       VLIN(M) = 0.0d0
       WLIN(M) = 0.0d0
    43 CONTINUE
-!      write(*,*) 'force l240'
       NUMREM = NUMBER(II,JJ)
     5 IF (NUMREM .GE. NPTMAX) THEN
         NPOINTS       = NPTMAX
@@ -370,12 +363,11 @@
         NUMREM        = 0
       END IF
 
-!      write(*,*) 'force l250'
       DO 601 NPT=1,NPOINTS
       LINDX(NPT) = L
       L          = NEXTN(L)
   601 CONTINUE
-!      write(*,*) 'force l255'
+
       DO 6 NPT=1,NPOINTS
       XFN1OLD(NPT)=XFN(1,LINDX(NPT))
       XFN2OLD(NPT)=XFN(2,LINDX(NPT))
@@ -412,7 +404,7 @@
       D2(NPT,0) = (3.d0-2.d0*ARG2-RAD2)/8.d0
       D1(NPT,0) = (3.d0-2.d0*ARG1-RAD1)/8.d0
     8 CONTINUE
-!      write(*,*) 'force l292'
+
       DO   9   J=0,3
       DO   9   I=0,3
       DO   9 NPT=1,NPOINTS
@@ -433,7 +425,7 @@
       WLIN(M+MZERO) = WLIN(M+MZERO) + DELTA(M,NPT)*FORCE3(NPT)
   711 CONTINUE
   712 CONTINUE
-!      write(*,*) 'force l313'
+
       IF (NUMREM .NE. 0) GO TO 5
       DO 14 M=1,32
       ULIN(M) = ULIN(M) + ULIN(M+MSHIFT)
@@ -445,7 +437,7 @@
       VLIN(M) = VLIN(M) + VLIN(M-MSHIFT)
       WLIN(M) = WLIN(M) + WLIN(M-MSHIFT)
    15 CONTINUE
-!      write(*,*) 'force l325'
+
       DO 16 IR=1,16*NGZ
       I3D=ID(1,IR)
       J3D=ID(2,IR)
@@ -454,7 +446,7 @@
       VR(I3D,J3D,K3D)=VLIN(IR)
       WR(I3D,J3D,K3D)=WLIN(IR)
    16 CONTINUE
-!      write(*,*) 'force l334'
+
       DEALLOCATE (XFN1OLD,XFN2OLD,XFN3OLD)
       DEALLOCATE (D1,D2,D3)
       DEALLOCATE (D12,DELTA)
@@ -466,7 +458,7 @@
 20    CONTINUE
 !!$OMP END PARALLEL DO
 25    CONTINUE
-!      write(*,*) 'force l336'
+
       RETURN
       END SUBROUTINE pushup
 !********************************************************************
@@ -556,14 +548,14 @@
 !!$OMP&        LINDX,M,MZERO,NPOINTS,NUMREM,NPT,RAD1,RAD2,RAD3,&
 !!$OMP&        UINT,ULIN,VLIN,VINT,WLIN,WINT,XFN1OLD,XFN2OLD,XFN3OLD)
       DO 20 IJ=0,NGX*NGY-1
-      JJ = 1 + IJ/NGY
+      JJ = 1 + IJ/NGx
       II = 1 + MOD(IJ,NGX)
       L = FIRSTN(II,JJ)
       IF (L.EQ.0) GO TO 20
       ALLOCATE (XFN1OLD(NPTMAX),XFN2OLD(NPTMAX),XFN3OLD(NPTMAX))
       ALLOCATE   ( D1(NPTMAX,0:3),   D2(NPTMAX,0:3),   D3(NPTMAX,0:3))
       ALLOCATE   (D12(NPTMAX,0:3,0:3))
-      ALLOCATE    (DELTA(0:64,NPTMAX))
+      ALLOCATE    (DELTA(64,NPTMAX))
       ALLOCATE (FLKZP1(NPTMAX))
       ALLOCATE  (lindx(NPTMAX))
       ALLOCATE (ULIN(-15:16*NGZP2),VLIN(-15:16*NGZP2), &
@@ -651,18 +643,12 @@
       XFN1OLD(NPT) = XFN1OLD(NPT) + UINT(M,NPT)
       XFN2OLD(NPT) = XFN2OLD(NPT) + VINT(M,NPT)
       XFN3OLD(NPT) = XFN3OLD(NPT) + WINT(M,NPT)
-!      if (wint(m, npt) /= 0.0d0) write(*,*) 'force l461', m, npt, 
-!     &     wint(m, npt), xfn3oldold(npt), xfn3old(npt)
   123 CONTINUE
   124 CONTINUE
       DO 17 NPT=1,NPOINTS
       XFN(1,LINDX(NPT))=XFN1OLD(NPT)
       XFN(2,LINDX(NPT))=XFN2OLD(NPT)
       XFN(3,LINDX(NPT))=XFN3OLD(NPT)
-!      if (dabs(xfn3old(npt) - xfn3oldold(npt)) > 1.d-13) then
-!         write(*,*) 'force l468',npt, xfn3old(npt), xfn3oldold(npt), 
-!     &        xfn(3,lindx(npt)), xfn3fullold(lindx(npt))
-!      end if
 17    CONTINUE
       IF (NUMREM .NE. 0) GO TO 5
       DEALLOCATE (XFN1OLD,XFN2OLD,XFN3OLD)
