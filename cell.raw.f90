@@ -820,7 +820,7 @@ PROGRAM cell
      message = 'cell l255'
      call dumpstatus(klok, message, 'status.txt')
      CALL MOVE(UR,VR,WR,XFN,FIRSTN,NUMBER,NEXTN)
-     if (any(isnan(xfn))) print *, 'cell l870 There is a NaN in XFN. Clock:', klok
+     if (xfn /= xfn) print *, 'cell l870 There is a NaN in XFN. Clock:', klok
 
      if ($centerstable$ == 1) then
         xfn(1,:) = xfn(1,:) - sum(xfn(1,:))/size(xfn,2) + cap_center(1,1)
