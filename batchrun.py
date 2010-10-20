@@ -6,7 +6,7 @@
 # having token codes like '$lngx$' present instead of an actual value, like 6.)
 # and translates each token to a value set in this file. It does 
 
-import os, time, os.path, sys, re, listruns, optparse
+import os, os.path, sys, re, listruns, optparse
 
 optparser = optparse.OptionParser()
 optparser.add_option('--plot', '-p',
@@ -60,6 +60,9 @@ optparser.add_option('--backup', '-b', action='store_true',
                      """)
 optparser.add_option('--restore', '-t', action='store_true',
                      help="""Brings back runs backed up by the backup option.
+                     """)
+optparser.add_option('--timeseries', '-i', action='store_true',
+                     help="""Make time-series DF plots for selected runs
                      """)
 options, arguments = optparser.parse_args()
 
@@ -145,6 +148,11 @@ try:
       raise Exception('Multiple tasks requested')
     task = 'restore'
 
+  if options.timeseries:
+    if 'task' in dir():
+      raise Exception('Multiple tasks requested')
+    task = 'timeseries'
+
   myfile = arguments[0]
 #  print task
 
@@ -225,6 +233,9 @@ if task == 'fit':
 # instead of a d, when called by re.sub.
   def convert_d_to_e(matchobj):
     return matchobj.group().replace('d','e')
+
+if task == 'timeseries':
+  gnuplotcmd = "plot "
 
 # This is the main loop, setting up each of the runs
 for values in listruns.ItRunValues(list_values, tokens, n_values, N_values, m, 
@@ -388,6 +399,8 @@ for values in listruns.ItRunValues(list_values, tokens, n_values, N_values, m,
       print 'already exists, and will not be overwritten by the backup.'
       print 'Manually remove ' + os.path.join('batch', cd)
       print 'and try again.'
+  elif task == 'timeseries':
+    gnuplotcmd += "'" + os.path.join(wd, 'TaylorDF__00001.txt') + "' w l, "
 
 if task == 'extract' or task == 'plot':
   hout.close()
@@ -398,3 +411,11 @@ if task == 'extract' or task == 'plot':
 if task == 'fit':
   hout.close()
   os.system('gnuplot gnuplot_scripts/fitTaylorDF.run.plt')
+
+if task == 'timeseries':
+#  hout = open('gnuplot_scripts/timeseries-temp-' + myfile + '.txt', 'w')
+  hout = open('gnuplot_scripts/timeseries-temp.txt', 'w')
+  hout.write(gnuplotcmd[:-2] + '\n')
+  hout.write("pause -1 'Hit return to continue'")
+  hout.close()
+  os.system('gnuplot gnuplot_scripts/timeseries-temp.txt')
