@@ -216,6 +216,12 @@ visual_files = ['profilemovie']
 visual_file_in_suffix = '_raw.m'
 visual_file_out_suffix = '_run.m'
 
+if task == 'timeseries':
+  timeseries_files = ['TaylorDF__00001.txt', 'TaylorDF__00001.txt',
+                      'lambda1___00001.txt', 'meanfluidv.txt']
+  timeseries_usings = ['u 1:2 ', 'u 1:4 ', '',
+                       'u 1:(sqrt($2**2 + $3**2 + $4**2))']
+
 pattern = re.compile('\$.+?\$')
 
 # tokendict = {}
@@ -400,7 +406,9 @@ for values in listruns.ItRunValues(list_values, tokens, n_values, N_values, m,
       print 'Manually remove ' + os.path.join('batch', cd)
       print 'and try again.'
   elif task == 'timeseries':
-    gnuplotcmd += "'" + os.path.join(wd, 'TaylorDF__00001.txt') + "' w l, "
+    gnuplotcmd += "'" + os.path.join(wd, '$file$') + "' $using$ w l t '" + \
+                  cd + "', "
+    
 
 if task == 'extract' or task == 'plot':
   hout.close()
@@ -413,9 +421,27 @@ if task == 'fit':
   os.system('gnuplot gnuplot_scripts/fitTaylorDF.run.plt')
 
 if task == 'timeseries':
-#  hout = open('gnuplot_scripts/timeseries-temp-' + myfile + '.txt', 'w')
   hout = open('gnuplot_scripts/timeseries-temp.txt', 'w')
-  hout.write(gnuplotcmd[:-2] + '\n')
-  hout.write("pause -1 'Hit return to continue'")
+  hout.write('set t x11 enhanced\n')
+  hout.write('set multiplot\n')
+  hout.write('set size 1, 0.25\n')
+  hout.write('set origin 0., 0.75\n')
+  hout.write("set ylabel 'D'\n")
+  hout.write(gnuplotcmd.replace('$file$', timeseries_files[0]).
+             replace('$using$', timeseries_usings[0])[:-2] + '\n')
+  hout.write('set origin 0., 0.5\n')
+  hout.write("set ylabel 'rmax'\n")
+  hout.write(gnuplotcmd.replace('$file$', timeseries_files[1]).
+             replace('$using$', timeseries_usings[1])[:-2] + '\n')
+  hout.write('set origin 0., 0.25\n')
+  hout.write("set ylabel '{/Symbol l} max'\n")
+  hout.write(gnuplotcmd.replace('$file$', timeseries_files[2]).
+             replace('$using$', timeseries_usings[2])[:-2] + '\n')
+  hout.write('set origin 0., 0.\n')
+  hout.write("set ylabel 'umean'\n")
+  hout.write(gnuplotcmd.replace('$file$', timeseries_files[3]).
+             replace('$using$', timeseries_usings[3])[:-2] + '\n')
+  hout.write('set nomultiplot\n')
+  hout.write("pause -1 'Hit return to continue'\n")
   hout.close()
   os.system('gnuplot gnuplot_scripts/timeseries-temp.txt')
