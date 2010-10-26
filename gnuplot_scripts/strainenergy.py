@@ -7,7 +7,7 @@
 #for argument in arguments:
 #    print argument
 
-hinstretches = open('stretches_04000.txt', 'r')
+hinstretches = open('stretches_01000.txt', 'r')
 hinshpa = open('shpa0001.txt', 'r')
 W = 0.
 area = 0.
