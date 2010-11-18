@@ -42,7 +42,7 @@ $radx$;3.338d-4
 $mu$;1.20d-2
 $nscale$;4000
 $nend$;$nscale$*10
-$nstep$;1000
+$nstep$;2000
 $nm$;1.33d0
 $np$;1.37d0
 $omega_zero$;1.5d-6
@@ -71,6 +71,6 @@ $cmag$;($radx$/2.d0/0.65368179876683d0)
 $theta$;(pi*$thetaf$)
 $phi$;(pi*$phif$)
 $thetaf$;0.00d0
-$phif$;0.00d0
+$phif$;0.00d0;0.25d0;0.50d0
 # Disable adhesion code
 $adhesion$;.false.

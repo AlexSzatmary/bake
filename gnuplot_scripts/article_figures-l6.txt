@@ -4,32 +4,32 @@ set ytics ("0" 0, "{/Symbol p}/4" pi*0.25, "{/Symbol p}/2" pi*0.5)
 
 set xlabel "time"
 set ylabel "{/Symbol f}"
-set terminal postscript eps enhanced color font "helvetica"
+set terminal postscript eps enhanced color #font "helvetica"
 set output "Figure_3_uniaxial_prolate_phi.eps"
 set title "Figure 3 uniaxial prolate phi"
-plot "./batch/up-pr-l5r0.0d0g1.d-2t0.00d0p0.00d0/nvec1_0001.txt"  u ($1/100.-82):(pi/2-atan(sqrt($3**2+$4**2)/abs($2))) every ::::15150 w l t "{/Symbol f}_0=0", "./batch/up-pr-l5r0.0d0g1.d-2t0.00d0p0.25d0/nvec1_0001.txt"  u ($1/100.):(pi/2-atan(sqrt($3**2+$4**2)/abs($2))) every ::::4200 w l t "{/Symbol f}_0={/Symbol p}/4", "./batch/up-pr-l5r0.0d0g1.d-2t0.00d0p0.50d0/nvec1_0001.txt"  u ($1/100.):(pi/2-atan(sqrt($3**2+$4**2)/abs($2))) every ::::5200 w l t "{/Symbol f}_0={/Symbol p}/2"
+plot "./batch/up-pr-l6r0.0d0g4.d-2t0.00d0p0.00d0/nvec1_0001.txt"  u ($1/100.):(pi/2-atan(sqrt($3**2+$4**2)/abs($2))) every ::::15150 w l t "{/Symbol f}_0=0", "./batch/up-pr-l6r0.0d0g4.d-2t0.00d0p0.25d0/nvec1_0001.txt"  u ($1/100.):(pi/2-atan(sqrt($3**2+$4**2)/abs($2))) every ::::4200 w l t "{/Symbol f}_0={/Symbol p}/4", "./batch/up-pr-l6r0.0d0g4.d-2t0.00d0p0.50d0/nvec1_0001.txt"  u ($1/100.):(pi/2-atan(sqrt($3**2+$4**2)/abs($2))) every ::::5200 w l t "{/Symbol f}_0={/Symbol p}/2"
 unset output
 
 set xlabel "time"
 set ylabel "{/Symbol f}"
-set terminal postscript eps enhanced color font "helvetica"
+set terminal postscript eps enhanced color #font "helvetica"
 set output "Figure_4_compare_alignment.eps"
 set title "Figure 4 compare alignment"
-plot './batch/up-pr-l5r0.0d0g1.d-2t0.00d0p0.00d0/nvec1_0001.txt' u ($1/100.-82):(pi/2-atan(sqrt($3**2+$4**2)/abs($2))) every ::::15150 w l t 'Uniaxial-prolate', './batch/up-ob-l5r0.0d0g1.d-2t0.00d0p0.50d0/nvec1_0001.txt' u ($1/100.):(pi/2-atan(sqrt($3**2+$4**2)/abs($2))) every ::::18900 w l t 'Uniaxial-oblate', './batch/bp-pr-l5r0.0d0g1.d-2t0.00d0p0.50d0/nvec1_0001.txt' u ($1/100.):(pi/2-atan(sqrt($3**2+$4**2)/abs($2))) every ::::16500 w l t 'Biaxial-prolate', './batch/bp-ob-l5r0.0d0g1.d-2t0.00d0p0.00d0/nvec1_0001.txt' u ($1/100.-108):(pi/2-atan(sqrt($3**2+$4**2)/abs($2))) every ::::12800 w l t 'Biaxial-oblate', './batch/up-pr-l5r1.0d0g1.d-2t0.00d0p0.00d0/nvec1_0001.txt' u ($1/100.):(pi/2-atan(sqrt($3**2+$4**2)/abs($2))) every ::::9100 w l t 'Planar-prolate', './batch/up-ob-l5r1.0d0g1.d-2t0.00d0p0.50d0/nvec1_0001.txt' u ($1/100.):(pi/2-atan(sqrt($3**2+$4**2)/abs($2))) every ::::11470 w l t 'Planar-oblate'
+plot './batch/up-pr-l6r0.0d0g4.d-2t0.00d0p0.00d0/nvec1_0001.txt' u ($1/100.):(pi/2-atan(sqrt($3**2+$4**2)/abs($2))) every ::::15150 w l t 'Uniaxial-prolate', './batch/up-ob-l6r0.0d0g4.d-2t0.00d0p0.50d0/nvec1_0001.txt' u ($1/100.):(pi/2-atan(sqrt($3**2+$4**2)/abs($2))) every ::::18900 w l t 'Uniaxial-oblate', './batch/bp-pr-l6r0.0d0g4.d-2t0.00d0p0.50d0/nvec1_0001.txt' u ($1/100.):(pi/2-atan(sqrt($3**2+$4**2)/abs($2))) every ::::16500 w l t 'Biaxial-prolate', './batch/bp-ob-l6r0.0d0g4.d-2t0.00d0p0.00d0/nvec1_0001.txt' u ($1/100.):(pi/2-atan(sqrt($3**2+$4**2)/abs($2))) every ::::12800 w l t 'Biaxial-oblate', './batch/up-pr-l6r1.0d0g4.d-2t0.00d0p0.00d0/nvec1_0001.txt' u ($1/100.):(pi/2-atan(sqrt($3**2+$4**2)/abs($2))) every ::::9100 w l t 'Planar-prolate', './batch/up-ob-l6r1.0d0g4.d-2t0.00d0p0.50d0/nvec1_0001.txt' u ($1/100.):(pi/2-atan(sqrt($3**2+$4**2)/abs($2))) every ::::11470 w l t 'Planar-oblate'
 unset output
 
 set xlabel "time"
 set ylabel "{/Symbol f}"
-set terminal postscript eps enhanced color font "helvetica"
+set terminal postscript eps enhanced color #font "helvetica"
 set output "Figure_5_planar_prolate_phi.eps"
 set title "Figure 5 planar prolate phi"
-plot './batch/up-pr-l5r1.0d0g1.d-2t0.00d0p0.00d0/nvec1_0001.txt' u ($1/100.):(pi/2-atan(sqrt($3**2+$4**2)/abs($2))) every ::::9066 w l t '{/Symbol q}_0=0', './batch/up-pr-l5r1.0d0g1.d-2t0.25d0p0.00d0/nvec1_0001.txt' u ($1/100.):(pi/2-atan(sqrt($3**2+$4**2)/abs($2))) every ::::14800 w l t '{/Symbol q}_0={/Symbol p}/4', './batch/up-pr-l5r1.0d0g1.d-2t0.50d0p0.00d0/nvec1_0001.txt' u ($1/100.):(pi/2-atan(sqrt($3**2+$4**2)/abs($2))) every ::::15350 w l t '{/Symbol q}_0={/Symbol p}/2'
+plot './batch/up-pr-l6r1.0d0g4.d-2t0.00d0p0.00d0/nvec1_0001.txt' u ($1/100.):(pi/2-atan(sqrt($3**2+$4**2)/abs($2))) every ::::9066 w l t '{/Symbol q}_0=0', './batch/up-pr-l6r1.0d0g4.d-2t0.25d0p0.00d0/nvec1_0001.txt' u ($1/100.):(pi/2-atan(sqrt($3**2+$4**2)/abs($2))) every ::::14800 w l t '{/Symbol q}_0={/Symbol p}/4', './batch/up-pr-l6r1.0d0g4.d-2t0.50d0p0.00d0/nvec1_0001.txt' u ($1/100.):(pi/2-atan(sqrt($3**2+$4**2)/abs($2))) every ::::15350 w l t '{/Symbol q}_0={/Symbol p}/2'
 unset output
 
 set xlabel "time"
 set ylabel "{/Symbol q}"
-set terminal postscript eps enhanced color font "helvetica"
+set terminal postscript eps enhanced color #font "helvetica"
 set output "Figure_6_planar_oblate_theta.eps"
 set title "Figure 6 planar oblate theta"
-plot './batch/up-ob-l5r1.0d0g1.d-2t0.00d0p0.00d0/nvec1_0001.txt' u ($1/100.):(abs((atan($4/$3)))) every ::::5000 w l t "{/Symbol q}_0=0", './batch/up-ob-l5r1.0d0g1.d-2t0.25d0p0.00d0/nvec1_0001.txt' u ($1/100.):(atan($4/$3)) every ::::6928 w l t "{/Symbol q}_0={/Symbol p}/4", './batch/up-ob-l5r1.0d0g1.d-2t0.50d0p0.00d0/nvec1_0001.txt' u ($1/100.-101):(abs(atan($4/$3))) every ::::15973 w l t "{/Symbol q}_0={/Symbol p}/2"
+plot './batch/up-ob-l6r1.0d0g4.d-2t0.00d0p0.00d0/nvec1_0001.txt' u ($1/100.):(abs((atan($4/$3)))) every ::::5000 w l t "{/Symbol q}_0=0", './batch/up-ob-l6r1.0d0g4.d-2t0.25d0p0.00d0/nvec1_0001.txt' u ($1/100.):(atan($4/$3)) every ::::6928 w l t "{/Symbol q}_0={/Symbol p}/4", './batch/up-ob-l6r1.0d0g4.d-2t0.50d0p0.00d0/nvec1_0001.txt' u ($1/100.):(abs(atan($4/$3))) every ::::15973 w l t "{/Symbol q}_0={/Symbol p}/2"
 unset output
