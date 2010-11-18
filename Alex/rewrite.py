@@ -6,7 +6,7 @@ import os, re
 
 #pattern = re.compile('^\$nscale\$')
 
-for root, dirs, files in os.walk('./bp'):
+for root, dirs, files in os.walk('./bp/mix'):
     if '.svn' in dirs:
 	dirs.remove('.svn')
     for fname in files:
@@ -16,15 +16,18 @@ for root, dirs, files in os.walk('./bp'):
         files.remove('parameters.txt')
     print root, dirs, files
     for fname in files:
-        hin = open(os.path.join(root, fname))
-        lines = hin.readlines()
-        hin.close()
-        hout = open(os.path.join(root, fname), 'w')
-        for line in lines:
-            if '$lngx$;' in line[0:7]:
+        if 'prolate' in fname:
+            hin = open(os.path.join(root, fname))
+            lines = hin.readlines()
+            hin.close()
+            hout = open(os.path.join(root, fname), 'w')
+            for line in lines:
+                # prolate
+                if 'dsqrt(0.5d0)' in line:
+                    line = line.replace('dsqrt(0.5d0)', 
+                                        '0.65368179876683d0')
+                if 'dsqrt(0.75d0)' in line:
+                    line = line.replace('dsqrt(0.5d0)', 
+                                        '0.83071445098496d0')
                 hout.write(line)
-                hout.write('$lngy$;($lngx$)\n')
-                hout.write('$lngz$;($lngx$)\n')
-            else:
-                hout.write(line)
-        hout.close()
+            hout.close()
