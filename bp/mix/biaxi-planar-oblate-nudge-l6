@@ -22,7 +22,7 @@ $lngy$;($lngx$)
 $lngz$;($lngx$)
 $FVS$;1
 $gapratio$;0.00d0
-$b$;6.d0
+$b$;12.d0
 $r$;0.0d0
 $smalldumpint$;100
 $bigdumpint$;1000
@@ -36,7 +36,7 @@ $dpdz$;0.d0
 $gamma_dot_p$;($t_end$/$nscale$)
 $t_end$;2.d0*($capillary_no$/1.d-2)
 $Eh$;1.d0
-$capillary_no$;1.d-2
+$capillary_no$;4.d-2
 $radx$;3.338d-4
 # Viscosity of plasma (poise), Eggleton & Popel 1998
 $mu$;1.20d-2
@@ -71,6 +71,6 @@ $cmag$;($radx$/0.83071445098496d0)
 $theta$;(pi*$thetaf$)
 $phi$;(pi*$phif$)
 $thetaf$;0.00d0
-$phif$;0.05d0
+$phif$;0.01d0
 # Disable adhesion code
 $adhesion$;.false.
