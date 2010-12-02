@@ -196,7 +196,8 @@ hin.close()
 #print list_values
 # print n_values
 # print m
-print 'Number of runs in file ', N_values
+if task != 'foreach':
+  print 'Number of runs in file ', N_values
 
 if 'slice_start' not in dir():
   slice_start = 0
@@ -365,7 +366,7 @@ for values in listruns.ItRunValues(list_values, tokens, n_values, N_values, m,
   elif task == 'list':
     print cd
   elif task == 'foreach':
-    print cd
+    #print cd
     os.chdir(wd)
     os.system(options.foreach)
     os.chdir(os.path.join('..', '..'))
