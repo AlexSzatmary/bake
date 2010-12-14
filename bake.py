@@ -1,18 +1,21 @@
 #!/usr/bin/python
-# batchrun.py
+# bake.py
 # Alex Szatmary
-# September 8, 2009
-# This script takes a raw Fortran file (By raw, I mean not ready to compile,
-# having token codes like '$lngx$' present instead of an actual value, like 6.)
-# and translates each token to a value set in this file. It does 
+# This script takes bake parameter files, which are lists of tags and values,
+# then does something for each combination of values.
+# Okay, that's pretty vague and broad.
+# It's useful, honest, for doing repetitive find-and-replace operations,
+# wrangling data out of oodles of really-similar-but-sublty-different-in-two-
+# variables-but-not-the-other-five sets of data, doing the accounting on
+# submitting jobs to all of the different kinds of supercomputers in your life,
+# and making plots of y vs x for a given z, but then b vs t for a given y.
+#
+# It's like a little robot that does repetitive things for you so you don't get
+# carpal tunnel.
 
-import os, os.path, sys, re, listruns, optparse
+import os, os.path, sys, re, mix, optparse, projectPrefs
 
 optparser = optparse.OptionParser()
-optparser.add_option('--plot', '-p',
-                     help="Makes a datafile for a DF-m plot. "
-                     "This is only useful right now for Alex's research, but "
-                     "if you want code for something like this, let him know.")
 optparser.add_option('--run', '-r',
                      help="""Start a run; specify a system to run on.
                      eg, "-r foo" asks to run the code on system foo.
@@ -22,14 +25,6 @@ optparser.add_option('--rerun', '-R',
                      help="""Like -r, but restarts a stopped run.
                      The only difference between this and -r is that new
                      directories are not made.""",)
-optparser.add_option('--extract', '-e',
-                     help="""Extracts last line of the data file specified
-                     here, for each run, prints these lines, and saves them.
-                     """)
-optparser.add_option('--slice', '-s',
-                     help="""Selects a subset of the runs specified in the
-                     file, eg, -s 5:9 does runs 5, 6, 7, and 8 out of however
-                     many runs would be referred to in the given file.""")
 optparser.add_option('--list', '-l', action='store_true',
                      help="""Lists the jobs that would be operated on with the
                      given parameter file and options.""")
@@ -42,16 +37,17 @@ optparser.add_option('--overwrite', '-o', action='append',
                      the new line will simply be added to the options in the
                      file, it won't overwrite anything.)
                      """)
-optparser.add_option('--foreach', '-E',
-                     help="""Execute a command in each job specified, eg, "tail
-                     TaylorDF__0001.txt"
-                     """)
-optparser.add_option('--fit', '-f', action='store_true',
-                     help="""Does a curve fit to 1-exp(t) using gnuplot for
-                     Taylor DF.""")
+optparser.add_option('--slice', '-s',
+                     help="""Selects a subset of the runs specified in the
+                     file, eg, -s 5:9 does runs 5, 6, 7, and 8 out of however
+                     many runs would be referred to in the given file.""")
 optparser.add_option('--clone', '-c', 
                      help="""Copies one file from each specified directory to
                      a clone in Alex/clone.
+                     """)
+optparser.add_option('--foreach', '-E',
+                     help="""Execute a command in each job specified, eg, "tail
+                     TaylorDF__0001.txt"
                      """)
 optparser.add_option('--backup', '-b', action='store_true',
                      help="""Backs up selected runs to Alex/backup. This is
@@ -61,14 +57,10 @@ optparser.add_option('--backup', '-b', action='store_true',
 optparser.add_option('--restore', '-t', action='store_true',
                      help="""Brings back runs backed up by the backup option.
                      """)
-optparser.add_option('--timeseries', '-i', action='store_true',
-                     help="""Make time-series DF plots for selected runs
-                     """)
+projectPrefs.setoptparser(optparser)
 options, arguments = optparser.parse_args()
 
-#print options
-#print arguments
-
+#todo Separate out the core from the prefs
 try:
   if options.extract:
     if 'task' in dir():
@@ -175,29 +167,22 @@ except Exception, data:
     exit(-100)
 
 
-###############################################################################
-# End processing of command line parameters
-###############################################################################
+## End processing of command line parameters
+## Prepare for big loop
 
 if options.overwrite:
   lines = options.overwrite
 else:
   lines = []
 
-# print lines
+pattern = re.compile('\$.+?\$')
+
 hin = open(myfile,'r')
 lines += hin.readlines()
 hin.close()
 
 (tokens, list_values, n_values, N_values, tokendict, m) = \
-    listruns.parseBPlines(lines)
-
-#print tokens
-#print list_values
-# print n_values
-# print m
-if task != 'foreach':
-  print 'Number of runs in file ', N_values
+    mix.parseBPlines(lines)
 
 if 'slice_start' not in dir():
   slice_start = 0
@@ -206,13 +191,17 @@ if 'slice_end' not in dir() or slice_end == 0:
   slice_end = N_values
 
 
-#Define which files need tweaking
+## Prefs
+if task != 'foreach':
+  print 'Number of runs in file ', N_values
+
+# Define which files need tweaking
 code_files = ['cell', 'fluid', 'force', 'memb', 'rewr', 'visual', 'fvs',
          'math', 'meshgen', 'micro']
 file_in_suffix = '.raw.f90'
 file_out_suffix = '.run.f90'
 
-#These files are intended to make visualization with Matlab easier.
+# These files are intended to make visualization with Matlab easier.
 visual_files = ['profilemovie']
 visual_file_in_suffix = '_raw.m'
 visual_file_out_suffix = '_run.m'
@@ -222,13 +211,6 @@ if task == 'timeseries':
                       'lambda1___00001.txt', 'meanfluidv.txt']
   timeseries_usings = ['u 1:2 ', 'u 1:4 ', '',
                        'u 1:(sqrt($2**2 + $3**2 + $4**2))']
-
-pattern = re.compile('\$.+?\$')
-
-# tokendict = {}
-# for i in range(m):
-#     tokendict[tokens[i]] = i
-
 
 if task == 'extract' or task == 'plot':
   hout = open('extract' + extractfile, 'w')
@@ -244,8 +226,9 @@ if task == 'fit':
 if task == 'timeseries':
   gnuplotcmd = "plot "
 
-# This is the main loop, setting up each of the runs
-for values in listruns.ItRunValues(list_values, tokens, n_values, N_values, m, 
+## This is the main loop, iterating over each set of values
+#todo Separate out the core from the prefs
+for values in mix.ItRunValues(list_values, tokens, n_values, N_values, m, 
                               pattern, tokendict, slice_start, slice_end):
 # Do the string replace operations on the values themselves
   cd = values[tokendict['$label$']]
@@ -410,6 +393,8 @@ for values in listruns.ItRunValues(list_values, tokens, n_values, N_values, m,
     gnuplotcmd += "'" + os.path.join(wd, '$file$') + "' $using$ w l t '" + \
                   cd + "', "
     
+## Post-loop
+#todo Separate out the core from the prefs
 
 if task == 'extract' or task == 'plot':
   hout.close()
