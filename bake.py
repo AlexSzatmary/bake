@@ -47,10 +47,6 @@ def bake():
                        many runs would be referred to in the given file.""")
 
   # Cultural tasks
-  optparser.add_option('--clone', '-c', 
-                       help="""Copies one file from each specified directory to
-                       a clone in Alex/clone.
-                       """)
   optparser.add_option('--foreach', '-E',
                        help="""Execute a command in each job specified, eg, "tail
                        TaylorDF__0001.txt"
@@ -118,29 +114,10 @@ def bake():
         raise Exception('Multiple tasks requested')
       task = 'list'
 
-    if options.plot:
-      if 'task' in dir():
-        raise Exception('Multiple tasks requested')
-      task = 'plot'
-      extractfile = options.plot
-      if extractfile == 'DF':
-        extractfile = 'TaylorDF__00001.txt'
-
-    if options.fit:
-      if 'task' in dir():
-        raise Exception('Multiple tasks requested')
-      task = 'fit'
-
     if options.foreach:
       if 'task' in dir():
         raise Exception('Multiple tasks requested')
       task = 'foreach'
-
-    if options.clone:
-      if 'task' in dir():
-        raise Exception('Multiple tasks requested')
-      task = 'clone'
-      clonefile = options.clone
 
     if options.backup:
       if 'task' in dir():
@@ -151,11 +128,6 @@ def bake():
       if 'task' in dir():
         raise Exception('Multiple tasks requested')
       task = 'restore'
-
-    if options.timeseries:
-      if 'task' in dir():
-        raise Exception('Multiple tasks requested')
-      task = 'timeseries'
 
     myfile = arguments[0]
   #  print task
@@ -208,26 +180,6 @@ def bake():
   opts = projectPrefs.InitializeOptions
 
 
-  if task == 'timeseries':
-    timeseries_files = ['TaylorDF__00001.txt', 'TaylorDF__00001.txt',
-                        'lambda1___00001.txt', 'meanfluidv.txt']
-    timeseries_usings = ['u 1:2 ', 'u 1:4 ', '',
-                         'u 1:(sqrt($2**2 + $3**2 + $4**2))']
-
-  if task == 'extract' or task == 'plot':
-    hout = open('extract' + extractfile, 'w')
-
-  if task == 'fit':
-    hout = open('gnuplot_scripts/fitTaylorDF.run.plt', 'w')
-  # Fortran uses d to indicate double precision in scientific notation:
-  # eg, 3.14d0. This converts these floating point numbers to using an e
-  # instead of a d, when called by re.sub.
-    def convert_d_to_e(matchobj):
-      return matchobj.group().replace('d','e')
-
-  if task == 'timeseries':
-    gnuplotcmd = "plot "
-
   ## This is the main loop, iterating over each set of values
   #todo Separate out the core from the prefs
   for values in mix.ItRunValues(list_values, tokens, n_values, N_values, m, 
@@ -250,131 +202,12 @@ def bake():
               houtcode.write(line)
           hin.close()
           houtcode.close()
-      for f in opts.visual_files:
-          hin = open(f + opts.visual_file_in_suffix,'r')
-          houtcode = open(os.path.join(wd, f + opts.visual_file_out_suffix), 'w')
-          for line in hin.readlines():
-              for j in range(0,len(tokens)):
-                  line = line.replace(tokens[j], values[j])
-              houtcode.write(line)
-          hin.close()
-          houtcode.close()
-      if task == 'run' or task == 'rerun':
-        if system == 'hpc':
-          hin = open('qsub_script.raw','r')
-          houtcode = open(os.path.join(wd, 'qsub_script.run'), 'w')
-          for line in hin.readlines():
-            for j in range(0,len(tokens)):
-              line = line.replace(tokens[j], values[j])
-            line = line.replace('$cd$', cd)
-            houtcode.write(line)
-          hin.close()
-          houtcode.close()
-        if system == 'tara':
-          hin = open('tara.serial.raw.slurm','r')
-          houtcode = open(os.path.join(wd, 'tara.serial.run.slurm'), 'w')
-          for line in hin.readlines():
-            for j in range(0,len(tokens)):
-              line = line.replace(tokens[j], values[j])
-            line = line.replace('$cd$', cd)
-            houtcode.write(line)
-          hin.close()
-          houtcode.close()
-        if system == 'pople':
-          hin = open('qsub_pople.raw','r')
-          houtcode = open(os.path.join(wd, 'qsub_pople.run'), 'w')
-          for line in hin.readlines():
-            for j in range(0,len(tokens)):
-              line = line.replace(tokens[j], values[j])
-            line = line.replace('$cd$', cd)
-            houtcode.write(line)
-          hin.close()
-          houtcode.close()
-
-        if system == 'popledebug':
-          hin = open('qsub_pople_debug.raw','r')
-          houtcode = open(os.path.join(wd, 'qsub_pople_debug.run'), 'w')
-          for line in hin.readlines():
-            for j in range(0,len(tokens)):
-              line = line.replace(tokens[j], values[j])
-            line = line.replace('$cd$', cd)
-            houtcode.write(line)
-          hin.close()
-          houtcode.close()
-
-        os.chdir(wd)
-        # Insert compile command here  
-        if system == 'gfortran':
-          fortran_command = 'gfortran -Wall -g -m64 -o cell' + cd
-        elif system == 'gfortranopenmp':
-          fortran_command = 'gfortran -Wall -fopenmp -g -o cell' + cd
-        elif system == 'sun':
-          fortran_command = 'f95 -o cell' + cd
-        elif system == 'ifort':
-          fortran_command = 'ifort -o cell' + cd
-        elif system == 'hpc':
-          fortran_command = 'mpif90 -o cell' + cd
-        elif system == 'tara':
-          fortran_command = 'gfortran -o cell' + cd
-        elif system == 'pople' or system == 'popledebug':
-          fortran_command = 'ifort -o cell' + cd
-        for f in opts.code_files:
-            fortran_command = fortran_command + ' ' + f + opts.file_out_suffix
-        os.system(fortran_command)
-        if system == 'gfortran' or system == 'gfortranopenmp' or \
-              system == 'ifort' or system == 'sun':
-          os.system('./cell' + cd)
-        elif system == 'hpc':
-          os.system('qsub qsub_script.run')
-        elif system == 'tara':
-          os.system('sbatch tara.serial.run.slurm')
-        elif system == 'pople':
-          os.system('qsub qsub_pople.run')
-        elif system == 'popledebug':
-          os.system('qsub qsub_pople_debug.run')
-        os.chdir(os.path.join('..', '..'))
-
-    elif task == 'extract':
-      print os.path.join(wd, extractfile)
-      if os.path.exists(os.path.join(wd, extractfile)):
-        hin = open(os.path.join(wd, extractfile),'r')
-        hout.write(wd + ' ' + hin.readlines()[-1])
-        hin.close()
-    elif task == 'plot':
-      print os.path.join(wd, extractfile)
-      if os.path.exists(os.path.join(wd, extractfile)):
-        hin = open(os.path.join(wd, extractfile),'r')
-        r = values[tokendict['$r$']]
-        capillary_no = values[tokendict['$capillary_no$']]
-        line = r + ' ' + capillary_no + hin.readlines()[-1]
-        hout.write(wd + ' ' + line)
-        hin.close()
     elif task == 'list':
       print cd
     elif task == 'foreach':
       #print cd
       os.chdir(wd)
       os.system(options.foreach)
-      os.chdir(os.path.join('..', '..'))
-    elif task == 'fit':
-      print cd
-      hin = open('gnuplot_scripts/fitTaylorDF.raw.plt')
-      for line in hin.readlines():
-        for j in range(0,len(tokens)):
-          line = line.replace(tokens[j], values[j])
-        line = re.sub(r'\d.?d-?\d', convert_d_to_e, line)
-  # 
-        line = line.replace('$cd$', cd)
-        line = line.replace('$wd$', wd)
-        hout.write(line)
-      hin.close()
-    elif task == 'clone':
-      print cd
-      if not os.path.exists(os.path.join('Alex', 'clone', cd)):
-        os.mkdir(os.path.join('Alex', 'clone', cd))
-      os.chdir(wd)
-      os.system('cp ' + clonefile + ' ' +
-                os.path.join('..', '..', 'Alex', 'clone', cd))
       os.chdir(os.path.join('..', '..'))
     elif task == 'backup':
       print cd
@@ -392,48 +225,15 @@ def bake():
         print 'already exists, and will not be overwritten by the backup.'
         print 'Manually remove ' + os.path.join('batch', cd)
         print 'and try again.'
-    elif task == 'timeseries':
-      gnuplotcmd += "'" + os.path.join(wd, '$file$') + "' $using$ w l t '" + \
-                    cd + "', "
 
   ## Post-loop
   #todo Separate out the core from the prefs
 
-  if task == 'extract' or task == 'plot':
+  if task == 'extract':
     hout.close()
     hin = open('extract' + extractfile, 'r')
     print hin.read()
     hin.close()
-
-  if task == 'fit':
-    hout.close()
-    os.system('gnuplot gnuplot_scripts/fitTaylorDF.run.plt')
-
-  if task == 'timeseries':
-    hout = open('gnuplot_scripts/timeseries-temp.txt', 'w')
-    hout.write('set t x11 enhanced\n')
-    hout.write('set multiplot\n')
-    hout.write('set size 1, 0.25\n')
-    hout.write('set origin 0., 0.75\n')
-    hout.write("set ylabel 'D'\n")
-    hout.write(gnuplotcmd.replace('$file$', timeseries_files[0]).
-               replace('$using$', timeseries_usings[0])[:-2] + '\n')
-    hout.write('set origin 0., 0.5\n')
-    hout.write("set ylabel 'rmax'\n")
-    hout.write(gnuplotcmd.replace('$file$', timeseries_files[1]).
-               replace('$using$', timeseries_usings[1])[:-2] + '\n')
-    hout.write('set origin 0., 0.25\n')
-    hout.write("set ylabel '{/Symbol l} max'\n")
-    hout.write(gnuplotcmd.replace('$file$', timeseries_files[2]).
-               replace('$using$', timeseries_usings[2])[:-2] + '\n')
-    hout.write('set origin 0., 0.\n')
-    hout.write("set ylabel 'umean'\n")
-    hout.write(gnuplotcmd.replace('$file$', timeseries_files[3]).
-               replace('$using$', timeseries_usings[3])[:-2] + '\n')
-    hout.write('set nomultiplot\n')
-    hout.write("pause -1 'Hit return to continue'\n")
-    hout.close()
-    os.system('gnuplot gnuplot_scripts/timeseries-temp.txt')
 
 if __name__ == '__main__':
   bake()
