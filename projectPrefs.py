@@ -1,6 +1,17 @@
 #!/usr/bin/python
 
-def setoptparser(optparser):
+import re
+
+def set_opt_parser(optparser):
+    optparser.add_option('--run', '-r',
+                         help="""Start a run; specify a system to run on.
+                         eg, "-r foo" asks to run the code on system foo.
+                         A system must be specified. Currently used systems
+                         include "hpc", "pople", "tara", and "sun".""")
+    optparser.add_option('--rerun', '-R',
+                         help="""Like -r, but restarts a stopped run.
+                         The only difference between this and -r is that new
+                         directories are not made.""",)
     optparser.add_option('--extract', '-e',
 			 help="""Extracts last line of the data file specified
 			 here, for each run, prints these lines, and saves
@@ -17,3 +28,17 @@ def setoptparser(optparser):
     optparser.add_option('--timeseries', '-i', action='store_true',
 			 help="""Make time-series DF plots for selected runs
 			 """)
+
+class InitializeOptions:
+    # Define which files need tweaking
+    code_files = ['cell', 'fluid', 'force', 'memb', 'rewr', 'visual', 'fvs',
+                  'math', 'meshgen', 'micro']
+    file_in_suffix = '.raw.f90'
+    file_out_suffix = '.run.f90'
+    label_tag = '$label$'
+    pattern = re.compile('\$.+?\$')
+
+    # These files are intended to make visualization with Matlab easier.
+    visual_files = ['profilemovie']
+    visual_file_in_suffix = '_raw.m'
+    visual_file_out_suffix = '_run.m'
