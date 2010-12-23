@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-import re
+import re, ConfigParser
 
 def set_opt_parser(optparser):
     optparser.add_option('--run', '-r',
@@ -12,7 +12,7 @@ def set_opt_parser(optparser):
                          help="""Like -r, but restarts a stopped run.
                          The only difference between this and -r is that new
                          directories are not made.""",)
-    optparser.add_option('--extract', '-e',
+    optparser.add_option('--extract', '-E',
 			 help="""Extracts last line of the data file specified
 			 here, for each run, prints these lines, and saves
                          them.

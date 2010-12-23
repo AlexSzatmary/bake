@@ -25,6 +25,8 @@ import projectPrefs
 def bake():
   optparser = optparse.OptionParser()
   # Core tasks 
+  optparser.add_option('--file', '-f',
+                       help="""Bake parameter file to operate from""")
   optparser.add_option('--mix', '-m',
                        help="""Mix parameters into code files.""", 
                        action='store_true')
@@ -43,14 +45,14 @@ def bake():
                        """)
   optparser.add_option('--slice', '-s',
                        help="""Selects a subset of the runs specified in the
-                       file, eg, -s 5:9 does runs 5, 6, 7, and 8 out of however
+                       file, eg, -s 5-9 does runs 5, 6, 7, and 8 out of however
                        many runs would be referred to in the given file.""")
-
-  # Cultural tasks
-  optparser.add_option('--foreach', '-E',
+  optparser.add_option('--foreach', '-e',
                        help="""Execute a command in each job specified, eg, "tail
                        TaylorDF__0001.txt"
                        """)
+
+  # Cultural tasks
   optparser.add_option('--backup', '-b', action='store_true',
                        help="""Backs up selected runs to Alex/backup. This is
                        helpful to do between runs, after checking to make sure
@@ -64,36 +66,13 @@ def bake():
 
   #todo Separate out the core from the prefs
   try:
+    if not options.file:
+      raise Exception('No batch parameter file specified')
     if options.mix:
       if 'task' in dir():
         raise Exception('Multiple tasks requested')
       if options.mix:
         task = 'mix'
-
-    if options.extract:
-      if 'task' in dir():
-        raise Exception('Multiple tasks requested')
-      task = 'extract'
-      extractfile = options.extract
-      if extractfile == 'DF':
-        extractfile = 'TaylorDF__00001.txt'
-
-    if options.run or options.rerun:
-      if 'task' in dir() or (options.run and options.rerun):
-        raise Exception('Multiple tasks requested')
-      if options.run:
-        task = 'run'
-        system = options.run
-      elif options.rerun:
-        task = 'rerun'
-        system = options.rerun
-      # Figure out what system I'm running on; make a lot of select cases for this
-      # Make sure it's a system that has been scripted for, otherwise bad things
-      # could happen
-      system_list = ['gfortran', 'gfortranopenmp', 'ifort' ,'hpc', 'pople',
-                     'tara', 'sun', 'popledebug']
-      if system not in system_list:
-        raise Exception('Invalid system specified')
 
     # Perform operation on a Slice of the runs      
     if options.slice:
@@ -129,7 +108,7 @@ def bake():
         raise Exception('Multiple tasks requested')
       task = 'restore'
 
-    myfile = arguments[0]
+      #    myfile = arguments[0]
   #  print task
 
   except Exception, data:
@@ -159,7 +138,7 @@ def bake():
   else:
     lines = []
 
-  hin = open(myfile,'r')
+  hin = open(options.file,'r')
   lines += hin.readlines()
   hin.close()
 
