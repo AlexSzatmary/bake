@@ -17,10 +17,26 @@ import sys
 sys.path.insert(0, '.')
 import os
 import os.path
-import re
 import mix
 import optparse
 import projectPrefs
+import re
+
+def load_config(opts):
+  import ConfigParser
+  c = ConfigParser.SafeConfigParser()
+  c.read('bake.cfg')
+  opts.label_tag = c.get('label', 'label_tag')
+  opts.pattern = c.get('label', 'pattern')
+
+  opts.code_files = c.get('filenames', 'code_files').split(',')
+#  print(opts.code_files)
+  opts.file_in_suffix = c.get('filenames', 'file_in_suffix')
+#  print(opts.file_in_suffix)
+  opts.file_out_suffix = c.get('filenames', 'file_out_suffix')
+  opts.visual_files = c.get('filenames', 'visual_files')
+  opts.visual_file_in_suffix = c.get('filenames', 'visual_file_in_suffix')
+  opts.visual_file_out_suffix = c.get('filenames', 'visual_file_out_suffix')
 
 def bake():
   optparser = optparse.OptionParser()
@@ -47,7 +63,7 @@ def bake():
                        help="""Selects a subset of the runs specified in the
                        file, eg, -s 5-9 does runs 5, 6, 7, and 8 out of however
                        many runs would be referred to in the given file.""")
-  optparser.add_option('--foreach', '-e',
+  optparser.add_option('--execute', '-e',
                        help="""Execute a command in each job specified, eg, "tail
                        TaylorDF__0001.txt"
                        """)
@@ -68,12 +84,6 @@ def bake():
   try:
     if not options.file:
       raise Exception('No batch parameter file specified')
-    if options.mix:
-      if 'task' in dir():
-        raise Exception('Multiple tasks requested')
-      if options.mix:
-        task = 'mix'
-
     # Perform operation on a Slice of the runs      
     if options.slice:
       if '-' in options.slice:
@@ -88,36 +98,10 @@ def bake():
       slice_start = int(slice_start)
       slice_end = int(slice_end)
 
-    if options.list:
-      if 'task' in dir():
-        raise Exception('Multiple tasks requested')
-      task = 'list'
-
-    if options.foreach:
-      if 'task' in dir():
-        raise Exception('Multiple tasks requested')
-      task = 'foreach'
-
-    if options.backup:
-      if 'task' in dir():
-        raise Exception('Multiple tasks requested')
-      task = 'backup'
-
-    if options.restore:
-      if 'task' in dir():
-        raise Exception('Multiple tasks requested')
-      task = 'restore'
-
-      #    myfile = arguments[0]
-  #  print task
-
   except Exception, data:
     if data[0] == 'Invalid system specified':
       print data[0]
       exit(-1)
-    elif data[0] == 'Multiple tasks requested':
-      print data[0]
-      exit(-2)
     elif data[0] == 'Batch parameter file already specified':
       print data[0]
       exit(-3)
@@ -153,49 +137,43 @@ def bake():
 
 
   ## Prefs
-  if task != 'foreach':
-    print 'Number of runs in file ', N_values
-
   opts = projectPrefs.InitializeOptions
-
+  load_config(opts)
+#  print(opts)
 
   ## This is the main loop, iterating over each set of values
   #todo Separate out the core from the prefs
   for values in mix.ItRunValues(list_values, tokens, n_values, N_values, m, 
-                                opts.pattern, tokendict, slice_start, slice_end):
+                                re.compile(opts.pattern), tokendict, 
+                                slice_start, slice_end):
   # Do the string replace operations on the values themselves
     cd = values[tokendict[opts.label_tag]]
     wd = os.path.join('.', 'batch', cd)
 
-    if task == 'run' or task == 'rerun' or task == 'mix':
-      print cd
-      if task == 'run' or task == 'mix':
-        os.mkdir(wd)
-    # String replace the tokens for the values
+    if options.list:
+      print(cd)
+    if options.mix:
+      os.mkdir(wd)
+      # String replace the tokens for the values
       for f in opts.code_files:
-          hin = open(f + opts.file_in_suffix,'r')
-          houtcode = open(os.path.join(wd, f + opts.file_out_suffix), 'w')
-          for line in hin.readlines():
-              for j in range(0,len(tokens)):
-                  line = line.replace(tokens[j], values[j])
-              houtcode.write(line)
-          hin.close()
-          houtcode.close()
-    elif task == 'list':
-      print cd
-    elif task == 'foreach':
-      #print cd
+        hin = open(f + opts.file_in_suffix,'r')
+        houtcode = open(os.path.join(wd, f + opts.file_out_suffix), 'w')
+        for line in hin.readlines():
+          for j in range(0,len(tokens)):
+            line = line.replace(tokens[j], values[j])
+          houtcode.write(line)
+        hin.close()
+        houtcode.close()
+    if options.execute:
       os.chdir(wd)
-      os.system(options.foreach)
+      os.system(options.execute)
       os.chdir(os.path.join('..', '..'))
-    elif task == 'backup':
-      print cd
+    if options.backup:
       if os.path.exists(os.path.join('Alex', 'backup', cd)):
         os.remove(os.path.join('Alex', 'backup', cd))
       os.system('cp -R ' + os.path.join('batch', cd) + ' ' +
                 os.path.join('Alex', 'backup'))
-    elif task == 'restore':
-      print cd
+    elif options.restore:
       if not os.path.exists(os.path.join('batch', cd)):
         os.system('cp -R ' + os.path.join('Alex', 'backup', cd) + ' ' +
                   os.path.join('batch', cd))
@@ -204,15 +182,6 @@ def bake():
         print 'already exists, and will not be overwritten by the backup.'
         print 'Manually remove ' + os.path.join('batch', cd)
         print 'and try again.'
-
-  ## Post-loop
-  #todo Separate out the core from the prefs
-
-  if task == 'extract':
-    hout.close()
-    hin = open('extract' + extractfile, 'r')
-    print hin.read()
-    hin.close()
 
 if __name__ == '__main__':
   bake()
