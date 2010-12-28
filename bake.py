@@ -38,7 +38,7 @@ def load_config(opts):
   opts.visual_file_in_suffix = c.get('filenames', 'visual_file_in_suffix')
   opts.visual_file_out_suffix = c.get('filenames', 'visual_file_out_suffix')
 
-def bake():
+def bake_make_optparser():
   optparser = optparse.OptionParser()
   # Core tasks 
   optparser.add_option('--file', '-f',
@@ -47,25 +47,25 @@ def bake():
                        help="""Mix parameters into code files.""", 
                        action='store_true')
   optparser.add_option('--list', '-l', action='store_true',
-                       help="""Lists the jobs that would be operated on with the
-                       given parameter file and options.""")
+                       help="""Lists the jobs that would be operated on with
+                       the given parameter file and options.""")
   # Modifiers
   optparser.add_option('--overwrite', '-o', action='append',
-                       help="""Overwrite a line in a batch parameter file,
-                       eg, "-o '\$foo\$;bar;baz'" replaces a parameter line
-                       starting with "$foo$" with "$foo$;bar;baz".
-                       This option can be used repeatedly.
-                       (Note: if the parameter specified is absent from the file,
-                       the new line will simply be added to the options in the
-                       file, it won't overwrite anything.)
+                       help="""Overwrite a line in a batch parameter file, eg,
+                       "-o '\$foo\$;bar;baz'" replaces a parameter line
+                       starting with "$foo$" with "$foo$;bar;baz".  This option
+                       can be used repeatedly.  (Note: if the parameter
+                       specified is absent from the file, the new line will
+                       simply be added to the options in the file, it won't
+                       overwrite anything.)
                        """)
   optparser.add_option('--slice', '-s',
                        help="""Selects a subset of the runs specified in the
                        file, eg, -s 5-9 does runs 5, 6, 7, and 8 out of however
                        many runs would be referred to in the given file.""")
   optparser.add_option('--execute', '-e',
-                       help="""Execute a command in each job specified, eg, "tail
-                       TaylorDF__0001.txt"
+                       help="""Execute a command in each job specified, eg,
+                       "tail TaylorDF__0001.txt"
                        """)
 
   # Cultural tasks
@@ -77,29 +77,28 @@ def bake():
   optparser.add_option('--restore', '-t', action='store_true',
                        help="""Brings back runs backed up by the backup option.
                        """)
-  projectPrefs.set_opt_parser(optparser)
-  options, arguments = optparser.parse_args()
+  return optparser
 
-  #todo Separate out the core from the prefs
+def bake_process_options(options):
   try:
     if not options.file:
       raise Exception('No batch parameter file specified')
     # Perform operation on a Slice of the runs      
     if options.slice:
       if '-' in options.slice:
-        (slice_start, slice_end) = options.slice.split('-')
+        (options.slice_start, options.slice_end) = options.slice.split('-')
       else:
-        slice_start = 0
-        slice_end = int(options.slice)
-      if slice_start == '':
-        slice_start = 0
-      if slice_end == '':
-        slice_end = 0
-      slice_start = int(slice_start)
-      slice_end = int(slice_end)
+        options.slice_start = 0
+        options.slice_end = int(options.slice)
+      if options.slice_start == '':
+        options.slice_start = 0
+      if options.slice_end == '':
+        options.slice_end = 0
+      options.slice_start = int(options.slice_start)
+      options.slice_end = int(options.slice_end)
     else:
-      slice_start = 0
-      slice_end = 0
+      options.slice_start = 0
+      options.slice_end = 0
 
   except Exception, data:
     if data[0] == 'Invalid system specified':
@@ -116,6 +115,14 @@ def bake():
       raise
       exit(-100)
 
+def bake():
+  optparser = bake_make_optparser()
+  projectPrefs.set_opt_parser(optparser)
+  options, arguments = optparser.parse_args()
+
+  bake_process_options(options)
+
+  # def bake_make_iterator(options):
 
   ## End processing of command line parameters
   ## Prepare for big loop
@@ -136,11 +143,15 @@ def bake():
   opts = projectPrefs.InitializeOptions
   load_config(opts)
 
+  # end bake_make_iterator
+  # return iterator
+
+  # def bake_default_loop(options, iterator):
   ## This is the main loop, iterating over each set of values
   #todo Separate out the core from the prefs
   for values in mix.ItRunValues(list_values, tokens, n_values, N_values, m, 
                                 re.compile(opts.pattern), tokendict, 
-                                slice_start, slice_end):
+                                options.slice_start, options.slice_end):
   # Do the string replace operations on the values themselves
     cd = values[tokendict[opts.label_tag]]
     wd = os.path.join('.', 'batch', cd)
@@ -177,6 +188,7 @@ def bake():
         print 'already exists, and will not be overwritten by the backup.'
         print 'Manually remove ' + os.path.join('batch', cd)
         print 'and try again.'
+  # end bake_default_loop
 
 if __name__ == '__main__':
   bake()
