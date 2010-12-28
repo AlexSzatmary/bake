@@ -97,6 +97,9 @@ def bake():
         slice_end = 0
       slice_start = int(slice_start)
       slice_end = int(slice_end)
+    else:
+      slice_start = 0
+      slice_end = 0
 
   except Exception, data:
     if data[0] == 'Invalid system specified':
@@ -129,17 +132,9 @@ def bake():
   (tokens, list_values, n_values, N_values, tokendict, m) = \
       mix.parseBPlines(lines)
 
-  if 'slice_start' not in dir():
-    slice_start = 0
-
-  if 'slice_end' not in dir() or slice_end == 0:
-    slice_end = N_values
-
-
   ## Prefs
   opts = projectPrefs.InitializeOptions
   load_config(opts)
-#  print(opts)
 
   ## This is the main loop, iterating over each set of values
   #todo Separate out the core from the prefs
