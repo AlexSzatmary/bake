@@ -115,6 +115,13 @@ def bake_process_options(options):
       raise
       exit(-100)
 
+def bake_make_iterator(label_tag, pattern, lines, slice_start, slice_end):
+  (tokens, list_values, n_values, N_values, tokendict) = \
+      mix.parseBPlines(lines)
+  mixIterator = mix.ItRunValues(list_values, tokens, n_values, N_values, 
+                                pattern, tokendict, slice_start, slice_end)
+  return (tokendict[label_tag], tokens, mixIterator)
+
 def bake():
   optparser = bake_make_optparser()
   projectPrefs.set_opt_parser(optparser)
@@ -122,7 +129,10 @@ def bake():
 
   bake_process_options(options)
 
-  # def bake_make_iterator(options):
+  ## Prefs
+  opts = projectPrefs.InitializeOptions
+  load_config(opts)
+
 
   ## End processing of command line parameters
   ## Prepare for big loop
@@ -132,28 +142,22 @@ def bake():
   else:
     lines = []
 
+  # in lines
   hin = open(options.file,'r')
   lines += hin.readlines()
   hin.close()
 
-  (tokens, list_values, n_values, N_values, tokendict, m) = \
-      mix.parseBPlines(lines)
-
-  ## Prefs
-  opts = projectPrefs.InitializeOptions
-  load_config(opts)
-
-  # end bake_make_iterator
-  # return iterator
+  (label, tokens, 
+   mixIterator) = bake_make_iterator(opts.label_tag, re.compile(opts.pattern), 
+                                     lines, options.slice_start, 
+                                     options.slice_end)
 
   # def bake_default_loop(options, iterator):
   ## This is the main loop, iterating over each set of values
   #todo Separate out the core from the prefs
-  for values in mix.ItRunValues(list_values, tokens, n_values, N_values, m, 
-                                re.compile(opts.pattern), tokendict, 
-                                options.slice_start, options.slice_end):
+  for values in mixIterator:
   # Do the string replace operations on the values themselves
-    cd = values[tokendict[opts.label_tag]]
+    cd = values[label]
     wd = os.path.join('.', 'batch', cd)
 
     if options.list:

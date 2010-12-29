@@ -11,7 +11,7 @@ def TokenValueSubValue(values, tokendict, pattern):
       foundtoken = re.search(pattern, values[j])
   return None
 
-def ItRunValues(list_values, tokens, n_values, N_values, m, pattern, tokendict,
+def ItRunValues(list_values, tokens, n_values, N_values, pattern, tokendict,
                 slice_start=0, slice_end=0):
   if slice_end == 0:
     slice_end = N_values
@@ -19,7 +19,7 @@ def ItRunValues(list_values, tokens, n_values, N_values, m, pattern, tokendict,
   values = [0 for i in xrange(len(tokens))]
   for list_i in ItList_i(n_values, slice_start, slice_end):
     # Pick the values to be used in this run
-    for j in range(m):
+    for j in range(len(tokens)):
       values[j] = list_values[j][list_i[j]]
     # Do the string replace operations on the values themselves
     TokenValueSubValue(values, tokendict, pattern)
@@ -70,4 +70,4 @@ def parseBPlines(lines):
     N_values = 1
     for i in n_values:
       N_values = N_values*i
-    return (tokens, list_values, n_values, N_values, tokendict, m)
+    return (tokens, list_values, n_values, N_values, tokendict)
