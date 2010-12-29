@@ -122,6 +122,31 @@ def bake_make_iterator(label_tag, pattern, lines, slice_start, slice_end):
                                 pattern, tokendict, slice_start, slice_end)
   return (tokendict[label_tag], tokens, mixIterator)
 
+def bake_default_loop(label, tokens, mixIterator, opts, options):
+  for values in mixIterator:
+  # Do the string replace operations on the values themselves
+    cd = values[label]
+    wd = os.path.join('.', 'batch', cd)
+
+    if options.list:
+      print(cd)
+    if options.mix:
+      os.mkdir(wd)
+      # String replace the tokens for the values
+      for f in opts.code_files:
+        hin = open(f + opts.file_in_suffix,'r')
+        houtcode = open(os.path.join(wd, f + opts.file_out_suffix), 'w')
+        for line in hin.readlines():
+          for j in range(0,len(tokens)):
+            line = line.replace(tokens[j], values[j])
+          houtcode.write(line)
+        hin.close()
+        houtcode.close()
+    if options.execute:
+      os.chdir(wd)
+      os.system(options.execute)
+      os.chdir(os.path.join('..', '..'))
+
 def bake():
   optparser = bake_make_optparser()
   projectPrefs.set_opt_parser(optparser)
@@ -151,48 +176,24 @@ def bake():
    mixIterator) = bake_make_iterator(opts.label_tag, re.compile(opts.pattern), 
                                      lines, options.slice_start, 
                                      options.slice_end)
-
-  # def bake_default_loop(options, iterator):
+   
   ## This is the main loop, iterating over each set of values
-  #todo Separate out the core from the prefs
-  for values in mixIterator:
-  # Do the string replace operations on the values themselves
-    cd = values[label]
-    wd = os.path.join('.', 'batch', cd)
+  bake_default_loop(label, tokens, mixIterator, opts, options)
 
-    if options.list:
-      print(cd)
-    if options.mix:
-      os.mkdir(wd)
-      # String replace the tokens for the values
-      for f in opts.code_files:
-        hin = open(f + opts.file_in_suffix,'r')
-        houtcode = open(os.path.join(wd, f + opts.file_out_suffix), 'w')
-        for line in hin.readlines():
-          for j in range(0,len(tokens)):
-            line = line.replace(tokens[j], values[j])
-          houtcode.write(line)
-        hin.close()
-        houtcode.close()
-    if options.execute:
-      os.chdir(wd)
-      os.system(options.execute)
-      os.chdir(os.path.join('..', '..'))
-    if options.backup:
-      if os.path.exists(os.path.join('Alex', 'backup', cd)):
-        os.remove(os.path.join('Alex', 'backup', cd))
-      os.system('cp -R ' + os.path.join('batch', cd) + ' ' +
-                os.path.join('Alex', 'backup'))
-    elif options.restore:
-      if not os.path.exists(os.path.join('batch', cd)):
-        os.system('cp -R ' + os.path.join('Alex', 'backup', cd) + ' ' +
-                  os.path.join('batch', cd))
-      else:
-        print 'Error: batch directory ' + cd
-        print 'already exists, and will not be overwritten by the backup.'
-        print 'Manually remove ' + os.path.join('batch', cd)
-        print 'and try again.'
-  # end bake_default_loop
+#     if options.backup:
+#       if os.path.exists(os.path.join('Alex', 'backup', cd)):
+#         os.remove(os.path.join('Alex', 'backup', cd))
+#       os.system('cp -R ' + os.path.join('batch', cd) + ' ' +
+#                 os.path.join('Alex', 'backup'))
+#     elif options.restore:
+#       if not os.path.exists(os.path.join('batch', cd)):
+#         os.system('cp -R ' + os.path.join('Alex', 'backup', cd) + ' ' +
+#                   os.path.join('batch', cd))
+#       else:
+#         print 'Error: batch directory ' + cd
+#         print 'already exists, and will not be overwritten by the backup.'
+#         print 'Manually remove ' + os.path.join('batch', cd)
+#         print 'and try again.'
 
 if __name__ == '__main__':
   bake()
