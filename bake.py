@@ -22,21 +22,21 @@ import optparse
 import projectPrefs
 import re
 
-def load_config(opts):
+def load_config(config):
   import ConfigParser
   c = ConfigParser.SafeConfigParser()
   c.read('bake.cfg')
-  opts.label_tag = c.get('label', 'label_tag')
-  opts.pattern = c.get('label', 'pattern')
+  config.label_tag = c.get('label', 'label_tag')
+  config.pattern = c.get('label', 'pattern')
 
-  opts.code_files = c.get('filenames', 'code_files').split(',')
-#  print(opts.code_files)
-  opts.file_in_suffix = c.get('filenames', 'file_in_suffix')
-#  print(opts.file_in_suffix)
-  opts.file_out_suffix = c.get('filenames', 'file_out_suffix')
-  opts.visual_files = c.get('filenames', 'visual_files')
-  opts.visual_file_in_suffix = c.get('filenames', 'visual_file_in_suffix')
-  opts.visual_file_out_suffix = c.get('filenames', 'visual_file_out_suffix')
+  config.code_files = c.get('filenames', 'code_files').split(',')
+#  print(config.code_files)
+  config.file_in_suffix = c.get('filenames', 'file_in_suffix')
+#  print(config.file_in_suffix)
+  config.file_out_suffix = c.get('filenames', 'file_out_suffix')
+  config.visual_files = c.get('filenames', 'visual_files')
+  config.visual_file_in_suffix = c.get('filenames', 'visual_file_in_suffix')
+  config.visual_file_out_suffix = c.get('filenames', 'visual_file_out_suffix')
 
 def bake_make_optparser():
   optparser = optparse.OptionParser()
@@ -122,7 +122,7 @@ def bake_make_iterator(label_tag, pattern, lines, slice_start, slice_end):
                                 pattern, tokendict, slice_start, slice_end)
   return (tokendict[label_tag], tokens, mixIterator)
 
-def bake_default_loop(label, tokens, mixIterator, opts, options):
+def bake_default_loop(label, tokens, mixIterator, config, options):
   for values in mixIterator:
   # Do the string replace operations on the values themselves
     cd = values[label]
@@ -133,9 +133,9 @@ def bake_default_loop(label, tokens, mixIterator, opts, options):
     if options.mix:
       os.mkdir(wd)
       # String replace the tokens for the values
-      for f in opts.code_files:
-        hin = open(f + opts.file_in_suffix,'r')
-        houtcode = open(os.path.join(wd, f + opts.file_out_suffix), 'w')
+      for f in config.code_files:
+        hin = open(f + config.file_in_suffix,'r')
+        houtcode = open(os.path.join(wd, f + config.file_out_suffix), 'w')
         for line in hin.readlines():
           for j in range(0,len(tokens)):
             line = line.replace(tokens[j], values[j])
@@ -155,8 +155,8 @@ def bake():
   bake_process_options(options)
 
   ## Prefs
-  opts = projectPrefs.InitializeOptions
-  load_config(opts)
+  config = projectPrefs.InitializeOptions
+  load_config(config)
 
 
   ## End processing of command line parameters
@@ -173,12 +173,12 @@ def bake():
   hin.close()
 
   (label, tokens, 
-   mixIterator) = bake_make_iterator(opts.label_tag, re.compile(opts.pattern), 
+   mixIterator) = bake_make_iterator(config.label_tag, re.compile(config.pattern), 
                                      lines, options.slice_start, 
                                      options.slice_end)
    
   ## This is the main loop, iterating over each set of values
-  bake_default_loop(label, tokens, mixIterator, opts, options)
+  bake_default_loop(label, tokens, mixIterator, config, options)
 
 #     if options.backup:
 #       if os.path.exists(os.path.join('Alex', 'backup', cd)):
