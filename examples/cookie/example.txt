@@ -1,0 +1,11 @@
+cookie is a super easy example of what bake is useful for.
+
+cookie.txt is an outline for a recipe for cookies. When, in the cookie
+directory, you do:
+bake bp/plain
+bake takes cookie.txt, modifies it according to bp, and puts it in
+batch/cookie-decoration-none/cookie.txt
+
+cookie.txt has a line with a tag in it, the last line:
+decoration: @decoration@
+Here, @decoration@ is a tag. By default, tags are enclosed in matched @ signs. 

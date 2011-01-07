@@ -1,0 +1,7 @@
+Here are some examples of what bake is useful for.
+
+*cookie
+*poisson
+
+Start with cookie, it's easy, and handy for just sketching out what bake can
+do. poisson is an example of using bake to manage real numerical codes.
