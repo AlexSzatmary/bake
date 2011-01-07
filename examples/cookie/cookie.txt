@@ -1,0 +1,10 @@
+# Grannie Gilbert's Sugar Cookies from:
+# http://en.wikibooks.org/wiki/Cookbook:Grannie_Gilbert's_Sugar_Cookies
+flour: 2-3 cups of flour
+baking powder: 2 teaspoons (10 g) of baking powder
+sugar: 1 cup of sugar
+shortening/butter: 1 cup
+salt: a pinch
+vanilla
+eggs: 3
+decoration: @decoration@

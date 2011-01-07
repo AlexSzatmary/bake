@@ -1,0 +1,3 @@
+@label@;cookie-decoration-@color@-sprinkles
+@decoration@;@color@ sprinkles
+@color@;yellow;red;blue;green

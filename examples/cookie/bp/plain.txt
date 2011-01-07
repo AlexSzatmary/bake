@@ -1,0 +1,2 @@
+@label@;cookie-decoration-@decoration@
+@decoration@;none
