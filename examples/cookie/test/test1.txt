@@ -1,4 +1,3 @@
-Number of runs in file  4
 cookie-decoration-yellow-sprinkles
 cookie-decoration-red-sprinkles
 cookie-decoration-blue-sprinkles
