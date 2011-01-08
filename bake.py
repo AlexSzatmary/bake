@@ -34,11 +34,11 @@ def load_config(config):
   config.file_in_suffix = c.get('filenames', 'file_in_suffix')
 #  print(config.file_in_suffix)
   config.file_out_suffix = c.get('filenames', 'file_out_suffix')
-  config.visual_files = c.get('filenames', 'visual_files')
+  config.visual_files = c.get('filenames', 'visual_files').split(',')
   config.visual_file_in_suffix = c.get('filenames', 'visual_file_in_suffix')
   config.visual_file_out_suffix = c.get('filenames', 'visual_file_out_suffix')
 
-def bake_make_optparser():
+def make_optparser():
   optparser = optparse.OptionParser()
   # Core tasks 
   optparser.add_option('--file', '-f',
@@ -79,7 +79,7 @@ def bake_make_optparser():
                        """)
   return optparser
 
-def bake_process_options(options):
+def process_options(options):
   try:
     if not options.file:
       raise Exception('No batch parameter file specified')
@@ -115,14 +115,14 @@ def bake_process_options(options):
       raise
       exit(-100)
 
-def bake_make_iterator(label_tag, pattern, lines, slice_start, slice_end):
+def make_iterator(label_tag, pattern, lines, slice_start, slice_end):
   (tokens, list_values, n_values, N_values, tokendict) = \
       mix.parseBPlines(lines)
   mixIterator = mix.ItRunValues(list_values, tokens, n_values, N_values, 
                                 pattern, tokendict, slice_start, slice_end)
   return (tokendict[label_tag], tokens, mixIterator)
 
-def bake_default_loop(label, tokens, mixIterator, config, options):
+def default_loop(label, tokens, mixIterator, config, options):
   for values in mixIterator:
   # Do the string replace operations on the values themselves
     cd = values[label]
@@ -148,16 +148,15 @@ def bake_default_loop(label, tokens, mixIterator, config, options):
       os.chdir(os.path.join('..', '..'))
 
 def bake():
-  optparser = bake_make_optparser()
-  projectPrefs.set_opt_parser(optparser)
+  optparser = make_optparser()
+#  projectPrefs.set_opt_parser(optparser)
   options, arguments = optparser.parse_args()
 
-  bake_process_options(options)
+  process_options(options)
 
   ## Prefs
   config = projectPrefs.InitializeOptions
   load_config(config)
-
 
   ## End processing of command line parameters
   ## Prepare for big loop
@@ -173,12 +172,12 @@ def bake():
   hin.close()
 
   (label, tokens, 
-   mixIterator) = bake_make_iterator(config.label_tag, re.compile(config.pattern), 
+   mixIterator) = make_iterator(config.label_tag, re.compile(config.pattern), 
                                      lines, options.slice_start, 
                                      options.slice_end)
    
   ## This is the main loop, iterating over each set of values
-  bake_default_loop(label, tokens, mixIterator, config, options)
+  default_loop(label, tokens, mixIterator, config, options)
 
 #     if options.backup:
 #       if os.path.exists(os.path.join('Alex', 'backup', cd)):
