@@ -1,0 +1,3 @@
+type: sugar
+nuts: walnut
+decoration: none

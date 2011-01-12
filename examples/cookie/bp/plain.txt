@@ -1,2 +1,5 @@
 @label@;cookie-decoration-@decoration@
+@type@;sugar
+@nuts@;none
 @decoration@;none
+@cutter@;circle

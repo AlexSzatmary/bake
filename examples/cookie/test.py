@@ -22,10 +22,14 @@ try:
     hout.write(p.read())
     hout.close()
     p.close()
+    p = os.popen('../../bake.py -m -l -f bp/nuts.txt -e "cat cookie.txt"')
+    hout = open('batch/test5.txt', 'w')
+    hout.write(p.read())
+    hout.close()
+    p.close()
     
-
     # diff tests with reference case
-    p = os.popen('for f in `ls batch`; do echo $f; diff -r batch/$f test/$f; done')
+    p = os.popen('for f in `ls test`; do echo $f; diff -r batch/$f test/$f; done')
     print p.read()
     p.close()
 except:

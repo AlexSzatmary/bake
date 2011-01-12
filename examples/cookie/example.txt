@@ -1,11 +1,82 @@
 cookie is a super easy example of what bake is useful for.
 
+1 plain
 cookie.txt is an outline for a recipe for cookies. When, in the cookie
 directory, you do:
-bake bp/plain
-bake takes cookie.txt, modifies it according to bp, and puts it in
+$ bake bp/plain.txt
+bake takes cookie.txt, modifies it according to bp/plain, and puts it in
 batch/cookie-decoration-none/cookie.txt
 
-cookie.txt has a line with a tag in it, the last line:
+cookie.txt has lines with tags in them. In the last line:
 decoration: @decoration@
-Here, @decoration@ is a tag. By default, tags are enclosed in matched @ signs. 
+@decoration@ is a tag. By default, tags are enclosed in matched @ signs.
+Tags are one of the big ideas in bake. Bake replaces tags with values from
+other files, varying a handful of parameters systematically.
+
+Look at the file bp/plain.txt:
+@label@;cookie-decoration-@decoration@
+...
+@decoration@;none
+
+This is a bake parameter (bp) file. It describes the things to put in for each
+of the tags. The @decoration@ tag appears in cookie.txt; when bake reads
+plain.txt, it learns to replace '@decoration@' in cookie.txt with 'none'. There
+are other tags in cookie.txt that get replaced by the other tags in
+plain.txt. The tag '@label@' is the only mandatory tag for bp files.
+
+When you did 'bake bp/plain', bake made the file:
+batch/cookie-decoration-none/cookie.txt The @label@ expanded to the directory
+name cookie-decoration-none, by replacing @decoration@ for the value set on the
+line beginning with '@decoration@'. If you open the modified cookie.txt file in
+batch/cookie-decoration-none, you'll see that it's the same as the original 
+cookie.txt file, but with '@decoration@' swapped out for 'none', and with the
+other tags correspondingly swapped out for their values.
+
+2 1sprinkle
+The bp file 1sprinkle has a different '@decoration@'. When you do:
+$ bake bp/1sprinkle.txt
+bake makes a directory:
+batch/cookie-decoration-yellow-sprinkles
+In that directory is a copy of cookie.txt, with the last line:
+
+decoration: yellow sprinkles
+
+This illustrates a big idea in bake: tags can be placed inside of values so 
+that complex values can be constructed. The '@color@' tag in '@label@' was
+replaced with the value, 'yellow'. 'yellow' also gets substituted into 
+'@decoration@', which then gets plugged into the last line of cookie.txt
+
+3 many_sprinkles
+The bp file many_sprinkles has several colors listed on the '@color@' line.
+When you do:
+$ bake bp/many_sprinkles.txt
+bake makes a directory in batch for each of the colors, and each modified
+cookie.txt has a different color of sprinkles substituted in. This is a big
+idea in bake: one bp file can make a grid of different sets of files.
+
+So, the format of each line in a bp file is:
+@tag@;value1;value2;value3...
+
+4 nuts
+You can have different tags with more than one value. bake will make one copy
+of your files for each combination of these values. For example, when you do:
+$ bake bp/nuts.txt
+bake makes:
+batch/
+      chocolate-chip-macadamia
+      chocolate-chip-walnut
+      peanut-butter-macadamia
+      peanut-butter-walnut
+      sugar-macadamia
+      sugar-walnut
+because nuts.txt has two kinds of nuts and three types of cookies mentioned.
+The contents of the cookie.txt in each directory are what you would expect,
+e.g., chocolate-chip-macadamia looks like:
+type: chocolate-chip
+nuts: macadamia
+decoration: none
+
+The directory names are given by the '@label@', which, in nuts.txt, is
+@label@;@type@-@nuts@
+Each tag that has more than one value should appear somewhere in the label so 
+that each set of files that bake makes gets their own directory.

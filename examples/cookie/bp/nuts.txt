@@ -1,0 +1,5 @@
+@label@;@type@-@nuts@
+@type@;sugar;chocolate-chip;peanut-butter
+@nuts@;macadamia;walnut
+@decoration@;none
+@cutter@;circle

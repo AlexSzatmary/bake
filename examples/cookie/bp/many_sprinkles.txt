@@ -1,3 +1,6 @@
 @label@;cookie-decoration-@color@-sprinkles
+@type@;sugar
+@nuts@;none
 @decoration@;@color@ sprinkles
 @color@;yellow;red;blue;green
+@cutter@;circle
