@@ -68,15 +68,15 @@ def make_optparser():
                        "tail TaylorDF__0001.txt"
                        """)
 
-  # Cultural tasks
-  optparser.add_option('--backup', '-b', action='store_true',
-                       help="""Backs up selected runs to Alex/backup. This is
-                       helpful to do between runs, after checking to make sure
-                       that the checkpoint and data files are saved safely.
-                       """)
-  optparser.add_option('--restore', '-t', action='store_true',
-                       help="""Brings back runs backed up by the backup option.
-                       """)
+#   # Cultural tasks
+#   optparser.add_option('--backup', '-b', action='store_true',
+#                        help="""Backs up selected runs to Alex/backup. This is
+#                        helpful to do between runs, after checking to make sure
+#                        that the checkpoint and data files are saved safely.
+#                        """)
+#   optparser.add_option('--restore', '-t', action='store_true',
+#                        help="""Brings back runs backed up by the backup option.
+#                        """)
   return optparser
 
 def process_options(options):
