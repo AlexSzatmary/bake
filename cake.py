@@ -5,6 +5,8 @@
 
 import sys
 sys.path.insert(0, '.')
+sys.path.insert(0, './Alex')
+import trim_tail
 import os
 import os.path
 import re
@@ -12,7 +14,6 @@ import optparse
 import mix
 import projectPrefs
 import bake
-
 print os.getcwd()
 
 def cake():
@@ -27,6 +28,9 @@ def cake():
                        help="""Like -r, but restarts a stopped run.
                        The only difference between this and -r is that new
                        directories are not made.""",)
+  optparser.add_option('--trimtail', '-T', action='store_true',
+                       help="Deletes all datapoints after the most recent "
+                       "checkpoint.")
 
   options, arguments = optparser.parse_args()
 
@@ -35,9 +39,11 @@ def cake():
   ## Prefs
   config = projectPrefs.InitializeOptions
   bake.load_config(config)
+  task = ''
+
   try:
     if options.run or options.rerun:
-      if 'task' in dir() or (options.run and options.rerun):
+      if task:
         raise Exception('Multiple tasks requested')
       if options.run:
         task = 'run'
@@ -52,6 +58,12 @@ def cake():
                      'tara', 'sun', 'popledebug']
       if system not in system_list:
         raise Exception('Invalid system specified')
+
+    if options.trimtail:
+      if task:
+        raise Exception('Multiple tasks requested')
+      else:
+        task = 'trimtail'
 
   except Exception, data:
     if data[0] == 'Invalid system specified':
@@ -194,6 +206,12 @@ def cake():
           elif system == 'popledebug':
             os.system('qsub qsub_pople_debug.run')
           os.chdir(os.path.join('..', '..'))
+  elif task == 'trimtail':
+    for values in mixIterator:
+    # Do the string replace operations on the values themselves
+      cd = values[label]
+      wd = os.path.join('.', 'batch', cd)
+      trim_tail.trim_tail_directory(wd)
   else:
     bake.default_loop(label, tokens, mixIterator, config, options)
   
