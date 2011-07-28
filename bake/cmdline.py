@@ -34,20 +34,5 @@ def main(args=sys.argv[1:]):
   ## This is the main loop, iterating over each set of values
   bake.default_loop(label, tokens, mixIterator, config, options)
 
-#     if options.backup:
-#       if os.path.exists(os.path.join('Alex', 'backup', cd)):
-#         os.remove(os.path.join('Alex', 'backup', cd))
-#       os.system('cp -R ' + os.path.join('batch', cd) + ' ' +
-#                 os.path.join('Alex', 'backup'))
-#     elif options.restore:
-#       if not os.path.exists(os.path.join('batch', cd)):
-#         os.system('cp -R ' + os.path.join('Alex', 'backup', cd) + ' ' +
-#                   os.path.join('batch', cd))
-#       else:
-#         print 'Error: batch directory ' + cd
-#         print 'already exists, and will not be overwritten by the backup.'
-#         print 'Manually remove ' + os.path.join('batch', cd)
-#         print 'and try again.'
-
 if __name__ == '__main__':
   main()
