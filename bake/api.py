@@ -66,16 +66,6 @@ def make_optparser():
                        help="""Execute a command in each job specified, eg,
                        "tail TaylorDF__0001.txt"
                        """)
-
-#   # Cultural tasks
-#   optparser.add_option('--backup', '-b', action='store_true',
-#                        help="""Backs up selected runs to Alex/backup. This is
-#                        helpful to do between runs, after checking to make sure
-#                        that the checkpoint and data files are saved safely.
-#                        """)
-#   optparser.add_option('--restore', '-t', action='store_true',
-#                        help="""Brings back runs backed up by the backup option.
-#                        """)
   return optparser
 
 def process_options(options):
@@ -145,51 +135,3 @@ def default_loop(label, tokens, mixIterator, config, options):
       os.chdir(wd)
       os.system(options.execute)
       os.chdir(os.path.join('..', '..'))
-
-# def bake():
-#   optparser = make_optparser()
-#   options, arguments = optparser.parse_args()
-
-#   process_options(options)
-
-#   ## Prefs
-#   load_config(config)
-
-#   ## End processing of command line parameters
-#   ## Prepare for big loop
-
-#   if options.overwrite:
-#     lines = options.overwrite
-#   else:
-#     lines = []
-
-#   # in lines
-#   hin = open(options.file,'r')
-#   lines += hin.readlines()
-#   hin.close()
-
-#   (label, tokens, 
-#    mixIterator) = make_iterator(config.label_tag, re.compile(config.pattern), 
-#                                      lines, options.slice_start, 
-#                                      options.slice_end)
-   
-#   ## This is the main loop, iterating over each set of values
-#   default_loop(label, tokens, mixIterator, config, options)
-
-#     if options.backup:
-#       if os.path.exists(os.path.join('Alex', 'backup', cd)):
-#         os.remove(os.path.join('Alex', 'backup', cd))
-#       os.system('cp -R ' + os.path.join('batch', cd) + ' ' +
-#                 os.path.join('Alex', 'backup'))
-#     elif options.restore:
-#       if not os.path.exists(os.path.join('batch', cd)):
-#         os.system('cp -R ' + os.path.join('Alex', 'backup', cd) + ' ' +
-#                   os.path.join('batch', cd))
-#       else:
-#         print 'Error: batch directory ' + cd
-#         print 'already exists, and will not be overwritten by the backup.'
-#         print 'Manually remove ' + os.path.join('batch', cd)
-#         print 'and try again.'
-
-#if __name__ == '__main__':
-#  bake()
