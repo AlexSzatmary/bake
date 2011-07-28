@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 # encoding: utf-8
 
-import bake
+import api as bake
+import sys
 
-def cmdline():
+def main(args=sys.argv[1:]):
   optparser = bake.make_optparser()
   options, arguments = optparser.parse_args()
 
@@ -49,4 +50,4 @@ def cmdline():
 #         print 'and try again.'
 
 if __name__ == '__main__':
-  cmdline()
+  main()

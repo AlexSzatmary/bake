@@ -13,19 +13,20 @@
 # It's like a little robot that does repetitive things for you so you don't get
 # carpal tunnel.
 
-import sys
-sys.path.insert(0, '.')
 import os
 import os.path
-import bake.mix
+import mix
 import optparse
-import projectPrefs
 import re
 
-def load_config(config):
+class Config:
+  pass
+
+def load_config():
   import ConfigParser
   c = ConfigParser.SafeConfigParser()
   c.read('bake.cfg')
+  config = Config()
   config.label_tag = c.get('label', 'label_tag')
   config.pattern = c.get('label', 'pattern')
 
@@ -34,9 +35,7 @@ def load_config(config):
   config.file_in_suffix = c.get('filenames', 'file_in_suffix')
 #  print(config.file_in_suffix)
   config.file_out_suffix = c.get('filenames', 'file_out_suffix')
-  config.visual_files = c.get('filenames', 'visual_files').split(',')
-  config.visual_file_in_suffix = c.get('filenames', 'visual_file_in_suffix')
-  config.visual_file_out_suffix = c.get('filenames', 'visual_file_out_suffix')
+  return config
 
 def make_optparser():
   optparser = optparse.OptionParser()
@@ -147,37 +146,35 @@ def default_loop(label, tokens, mixIterator, config, options):
       os.system(options.execute)
       os.chdir(os.path.join('..', '..'))
 
-def bake():
-  optparser = make_optparser()
-#  projectPrefs.set_opt_parser(optparser)
-  options, arguments = optparser.parse_args()
+# def bake():
+#   optparser = make_optparser()
+#   options, arguments = optparser.parse_args()
 
-  process_options(options)
+#   process_options(options)
 
-  ## Prefs
-  config = projectPrefs.InitializeOptions
-  load_config(config)
+#   ## Prefs
+#   load_config(config)
 
-  ## End processing of command line parameters
-  ## Prepare for big loop
+#   ## End processing of command line parameters
+#   ## Prepare for big loop
 
-  if options.overwrite:
-    lines = options.overwrite
-  else:
-    lines = []
+#   if options.overwrite:
+#     lines = options.overwrite
+#   else:
+#     lines = []
 
-  # in lines
-  hin = open(options.file,'r')
-  lines += hin.readlines()
-  hin.close()
+#   # in lines
+#   hin = open(options.file,'r')
+#   lines += hin.readlines()
+#   hin.close()
 
-  (label, tokens, 
-   mixIterator) = make_iterator(config.label_tag, re.compile(config.pattern), 
-                                     lines, options.slice_start, 
-                                     options.slice_end)
+#   (label, tokens, 
+#    mixIterator) = make_iterator(config.label_tag, re.compile(config.pattern), 
+#                                      lines, options.slice_start, 
+#                                      options.slice_end)
    
-  ## This is the main loop, iterating over each set of values
-  default_loop(label, tokens, mixIterator, config, options)
+#   ## This is the main loop, iterating over each set of values
+#   default_loop(label, tokens, mixIterator, config, options)
 
 #     if options.backup:
 #       if os.path.exists(os.path.join('Alex', 'backup', cd)):
@@ -194,5 +191,5 @@ def bake():
 #         print 'Manually remove ' + os.path.join('batch', cd)
 #         print 'and try again.'
 
-if __name__ == '__main__':
-  bake()
+#if __name__ == '__main__':
+#  bake()
