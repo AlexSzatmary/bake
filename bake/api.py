@@ -30,7 +30,8 @@ def load_config():
   config.label_tag = c.get('label', 'label_tag')
   config.pattern = c.get('label', 'pattern')
 
-  config.code_files = c.get('filenames', 'code_files').split(',')
+  config.code_files = (c.get('filenames', 'code_files').replace('\n', '')
+                       .split(','))
 #  print(config.code_files)
   config.file_in_suffix = c.get('filenames', 'file_in_suffix')
 #  print(config.file_in_suffix)
