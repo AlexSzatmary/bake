@@ -94,6 +94,12 @@ def process_options(options):
       options.slice_start = 0
       options.slice_end = 0
 
+    if options.remix:
+      if options.mix:
+        print('You set both the mix and remix flags; to remix, you just need '
+              'to set the remix flag.')
+      options.mix = True
+
   except Exception, data:
     if data[0] == 'Invalid system specified':
       print data[0]
