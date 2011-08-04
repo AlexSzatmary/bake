@@ -46,6 +46,10 @@ def make_optparser():
   optparser.add_option('--mix', '-m',
                        help="""Mix parameters into code files.""", 
                        action='store_true')
+  optparser.add_option('--remix', '-M',
+                       help=
+                       """Like mix, but does not make new directories.""", 
+                       action='store_true')
   optparser.add_option('--list', '-l', action='store_true',
                        help="""Lists the jobs that would be operated on with
                        the given parameter file and options.""")
@@ -121,7 +125,8 @@ def default_loop(label, tokens, mixIterator, config, options):
     if options.list:
       print(cd)
     if options.mix:
-      os.mkdir(wd)
+      if not options.remix:
+        os.mkdir(wd)
       # String replace the tokens for the values
       for f in config.code_files:
         hin = open(f + config.file_in_suffix,'r')
