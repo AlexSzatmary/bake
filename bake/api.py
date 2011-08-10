@@ -1,7 +1,7 @@
 #!/usr/bin/python
-# bake.py
+# api.py
 # Alex Szatmary
-# This script takes bake parameter files, which are lists of tags and values,
+# This module takes bake parameter files, which are lists of tags and values,
 # then does something for each combination of values.
 # Okay, that's pretty vague and broad.
 # It's useful, honest, for doing repetitive find-and-replace operations,
@@ -11,7 +11,7 @@
 # and making plots of y vs x for a given z, but then b vs t for a given y.
 #
 # It's like a little robot that does repetitive things for you so you don't get
-# carpal tunnel.
+# tenosynovitis.
 
 import os
 import os.path
@@ -19,24 +19,17 @@ import mix
 import optparse
 import re
 
-class Config:
-  pass
-
+# c is a ConfigParser object, d is a dictionary
 def load_config():
   import ConfigParser
   c = ConfigParser.SafeConfigParser()
   c.read('bake.cfg')
-  config = Config()
-  config.label_tag = c.get('label', 'label_tag')
-  config.pattern = c.get('label', 'pattern')
-
-  config.code_files = (c.get('filenames', 'code_files').replace('\n', '')
-                       .split(','))
-#  print(config.code_files)
-  config.file_in_suffix = c.get('filenames', 'file_in_suffix')
-#  print(config.file_in_suffix)
-  config.file_out_suffix = c.get('filenames', 'file_out_suffix')
-  return config
+  d = {}
+  for l in c.sections():
+    d[l] = dict(c.items(l))
+  d['filenames']['code_files'] = d['filenames']['code_files']\
+      .replace('\n', '').split(',')
+  return d
 
 def make_optparser():
   optparser = optparse.OptionParser()
@@ -115,6 +108,8 @@ def process_options(options):
       raise
       exit(-100)
 
+# This is the interface between the internals of bake.mix and what people
+# would practically use.
 def make_iterator(label_tag, pattern, lines, slice_start, slice_end):
   (tokens, list_values, n_values, N_values, tokendict) = \
       mix.parseBPlines(lines)
@@ -134,9 +129,11 @@ def default_loop(label, tokens, mixIterator, config, options):
       if not options.remix:
         os.mkdir(wd)
       # String replace the tokens for the values
-      for f in config.code_files:
-        hin = open(f + config.file_in_suffix,'r')
-        houtcode = open(os.path.join(wd, f + config.file_out_suffix), 'w')
+      for f in config['filenames']['code_files']:
+        hin = open(f + config['filenames']['file_in_suffix'],'r')
+        houtcode = open(os.path.join(wd, f + 
+                                     config['filenames']['file_out_suffix']), 
+                        'w')
         for line in hin.readlines():
           for j in range(0,len(tokens)):
             line = line.replace(tokens[j], values[j])

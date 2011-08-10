@@ -27,7 +27,8 @@ def main(args=sys.argv[1:]):
   hin.close()
 
   (label, tokens, 
-   mixIterator) = bake.make_iterator(config.label_tag, config.pattern, 
+   mixIterator) = bake.make_iterator(config['label']['label_tag'],
+                                     config['label']['pattern'], 
                                      lines, options.slice_start, 
                                      options.slice_end)
    
