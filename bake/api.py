@@ -19,7 +19,7 @@ import mix
 import optparse
 import re
 
-# c is a ConfigParser object, d is a dictionary
+# c is a ConfigParser object, d is a dictionary representing that object
 def load_config():
   import ConfigParser
   c = ConfigParser.SafeConfigParser()
@@ -66,11 +66,15 @@ def make_optparser():
                        """)
   return optparser
 
+# This is used to turn the options object into something that can be used
+# better later in the code. It does error checking and massaging of the
+# command line arguments. It checks to make sure a file was input, for example.
 def process_options(options):
   try:
+    # A file must be selected to operate on
     if not options.file:
       raise Exception('No batch parameter file specified')
-    # Perform operation on a Slice of the runs      
+    # Perform operation on a Slice of the runs
     if options.slice:
       if '-' in options.slice:
         (options.slice_start, options.slice_end) = options.slice.split('-')
@@ -117,6 +121,8 @@ def make_iterator(label_tag, pattern, lines, slice_start, slice_end):
                                 pattern, tokendict, slice_start, slice_end)
   return (tokendict[label_tag], tokens, mixIterator)
 
+# This does a loop over each item in mixIterator, that is, each combination
+# of the possible values. 
 def default_loop(label, tokens, mixIterator, config, options):
   for values in mixIterator:
   # Do the string replace operations on the values themselves
@@ -125,6 +131,10 @@ def default_loop(label, tokens, mixIterator, config, options):
 
     if options.list:
       print(cd)
+    # mix is the main special thing done by this loop:
+    # it takes the files, does a wild find and replace on them to take out
+    # the tokens and swap in corresponding values, and spits the files out
+    # in ./batch/ somewhere.
     if options.mix:
       if not options.remix:
         os.mkdir(wd)
