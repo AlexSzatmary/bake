@@ -1,5 +1,11 @@
 #!/usr/bin/python
 
+# This module embeds bake values into python code.
+#
+# There are better ways to use bake to get values into code (i.e., write a
+# configuration or input file instead of raw code), but this way is easy and it
+# works..
+
 import math
 
 # x_l and x_r are the left and right bounds on the domain

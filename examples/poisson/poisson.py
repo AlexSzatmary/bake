@@ -1,5 +1,7 @@
 #!/usr/bin/python
 
+# This is the main code that runs the Poisson solver
+
 # kludgey way to get bake parameters into code
 from model import *
 import math
@@ -14,15 +16,17 @@ def tridiag_solver(b):
         x[i] = -(b[i] - x[i + 1])*(i + 1)/(i + 2)
     return x
 
-def set_up():
+def main():
     # Set up b in terms of its forcing function
     b = [f(x_l + h*i)*h*h for i in xrange(1, n - 1)]
     # Apply boundary conditions to b
     b[0] -= u_l
     b[-1] -= u_r
 
+    # Solve the system
     u = tridiag_solver(b)
 
+    # Write solution to solution.txt, including boundary conditions
     hout = open('solution.txt', 'w')
     hout.write('%21.14e %21.14e\n' % (x_l, u_l))
     for i in xrange(0, n - 2):
@@ -30,4 +34,4 @@ def set_up():
     hout.write('%21.14e %21.14e\n' % (x_r, u_r))
 
 if __name__== "__main__":
-    set_up()
+    main()
