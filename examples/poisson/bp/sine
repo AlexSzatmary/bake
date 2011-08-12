@@ -1,0 +1,8 @@
+@label@;sine
+@forcing_function@;-math.sin(x)
+@ideal@;math.sin(x)
+@x_l@;0.
+@x_r@;math.pi
+@u_l@;0.
+@u_r@;0
+@n@;11

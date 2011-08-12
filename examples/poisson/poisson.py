@@ -2,6 +2,7 @@
 
 # kludgey way to get bake parameters into code
 from model import *
+import math
 
 def tridiag_solver(b):
     """Solves the tridiagonal system diag(1,-2,1)x = b, given b"""
@@ -24,21 +25,9 @@ def set_up():
 
     hout = open('solution.txt', 'w')
     hout.write('%21.14e %21.14e\n' % (x_l, u_l))
-    for i in xrange(1, n - 2):
-        hout.write('%21.14e %21.14e\n' % (x_l + i*h, u[i]))
+    for i in xrange(0, n - 2):
+        hout.write('%21.14e %21.14e\n' % (x_l + (i + 1)*h, u[i]))
     hout.write('%21.14e %21.14e\n' % (x_r, u_r))
-
-#     u_ideal = [(x_l + i*h)**2/2 - (x_l + i*h)/2 for i in xrange(0, n)]
-
-#     print(u_l - u_ideal[0])
-#     for i in xrange(1, n - 1):
-#         print(u[i - 1] - u_ideal[i])
-#     print(u_r - u_ideal[-1])
-
-#     print (u_l - 2 * u[0] + u[1])/(h*h)
-#     for i in xrange(1, n - 3):
-#         print((u[i - 1] - 2*u[i] + u[i + 1])/(h*h))
-#     print (u[n - 4] - 2*u[n - 3] + u_r)/(h*h)
 
 if __name__== "__main__":
     set_up()
