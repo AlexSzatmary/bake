@@ -19,6 +19,7 @@ import mix
 import optparse
 import re
 
+
 # c is a ConfigParser object, d is a dictionary representing that object
 def load_config():
   import ConfigParser
@@ -31,18 +32,20 @@ def load_config():
       .replace('\n', '').split(',')
   return d
 
+
 def make_optparser():
   optparser = optparse.OptionParser()
-  # Core tasks 
+  # Core tasks
   optparser.add_option('--file', '-f',
                        help="""Bake parameter file to operate from""")
   optparser.add_option('--mix', '-m',
-                       help="""Mix parameters into code files.""", 
+                       help="""Mix parameters into code files.""",
                        action='store_true')
-  optparser.add_option('--remix', '-M',
-                       help=
-                       """Like mix, but does not make new directories.""", 
-                       action='store_true')
+  optparser.add_option(
+    '--remix', '-M', help="""
+    Like mix, but does not make new directories.
+    """,
+    action='store_true')
   optparser.add_option('--list', '-l', action='store_true',
                        help="""Lists the jobs that would be operated on with
                        the given parameter file and options.""")
@@ -66,10 +69,13 @@ def make_optparser():
                        """)
   return optparser
 
-# This is used to turn the options object into something that can be used
-# better later in the code. It does error checking and massaging of the
-# command line arguments. It checks to make sure a file was input, for example.
+
 def process_options(options):
+  """
+  This is used to turn the options object into something that can be used
+  better later in the code. It does error checking and massaging of the
+  command line arguments. It checks to make sure a file was input, for example.
+  """
   try:
     # A file must be selected to operate on
     if not options.file:
@@ -112,18 +118,24 @@ def process_options(options):
       raise
       exit(-100)
 
-# This is the interface between the internals of bake.mix and what people
-# would practically use.
+
 def make_iterator(label_tag, pattern, lines, slice_start, slice_end):
+  """
+  This is the interface between the internals of bake.mix and what people
+  would practically use.
+  """
   (tokens, list_values, n_values, N_values, tokendict) = \
       mix.parseBPlines(lines)
-  mixIterator = mix.ItRunValues(list_values, tokens, n_values, N_values, 
+  mixIterator = mix.ItRunValues(list_values, tokens, n_values, N_values,
                                 pattern, tokendict, slice_start, slice_end)
   return (tokendict[label_tag], tokens, mixIterator)
 
-# This does a loop over each item in mixIterator, that is, each combination
-# of the possible values. 
+
 def default_loop(label, tokens, mixIterator, config, options):
+  """
+  This does a loop over each item in mixIterator, that is, each combination
+  of the possible values.
+  """
   for values in mixIterator:
   # Do the string replace operations on the values themselves
     cd = values[label]
@@ -140,12 +152,12 @@ def default_loop(label, tokens, mixIterator, config, options):
         os.mkdir(wd)
       # String replace the tokens for the values
       for f in config['filenames']['code_files']:
-        hin = open(f + config['filenames']['file_in_suffix'],'r')
-        houtcode = open(os.path.join(wd, f + 
-                                     config['filenames']['file_out_suffix']), 
+        hin = open(f + config['filenames']['file_in_suffix'], 'r')
+        houtcode = open(os.path.join(wd, f +
+                                     config['filenames']['file_out_suffix']),
                         'w')
         for line in hin.readlines():
-          for j in range(0,len(tokens)):
+          for j in range(0, len(tokens)):
             line = line.replace(tokens[j], values[j])
           houtcode.write(line)
         hin.close()
