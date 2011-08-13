@@ -1,13 +1,14 @@
 #!/usr/bin/env python
 # encoding: utf-8
 
-# This is the command line interface for bake. For people who want to take
-# bake.py and extend it for their own circumstances, modifying the main routine
-# in this module is probably the best place to start.
+"""
+This is the command line interface for bake. For people who want to take
+bake.py and extend it for their own circumstances, modifying the main routine
+in this module is probably the best place to start.
+"""
 
 import api as bake
 import sys
-
 
 def main(args=sys.argv[1:]):
   # Set up command line argument options
