@@ -17,7 +17,8 @@ u_r = @u_r@
 # number of nodes, total; n-2 are actually used on the domain.
 n = @n@
 # h is the grid spacing
-h = (x_r - x_l)/(n - 1)
+h = (x_r - x_l) / (n - 1)
+
 
 # Forcing function for the right hand side; this is a regular function of x
 def f(x):

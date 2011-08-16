@@ -8,6 +8,7 @@
 from model import *
 import math
 
+
 # Gets an ideal solution function from bake
 def ideal(x):
     return @ideal@
