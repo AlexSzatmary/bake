@@ -42,9 +42,11 @@ def ItRunValues(list_values, tokens, n_values, N_values, pattern, tokendict,
         yield values
 
 
-# This is basically a thing that encloses ItList_iNoSlice and does the slicing
-# math for it.
 def ItList_i(n_values, slice_start, slice_end):
+    """
+    This is basically a thing that encloses ItList_iNoSlice and does the
+    slicing math for it.
+    """
     myItList_iNoSlice = ItList_iNoSlice(n_values)
     for i in xrange(0, slice_start):
         myItList_iNoSlice.next()
@@ -52,11 +54,13 @@ def ItList_i(n_values, slice_start, slice_end):
         yield myItList_iNoSlice.next()
 
 
-# Imagine an m-dimensional grid, where m is the number of tokens; the width of
-# the grid in one of these directions is the number of values for that token.
-# This iterator walks through each location in that grid; list_i corresponds
-# to a single position in that grid.
 def ItList_iNoSlice(n_values):
+    """
+    Imagine an m-dimensional grid, where m is the number of tokens; the width
+    of the grid in one of these directions is the number of values for that
+    token.  This iterator walks through each location in that grid; list_i
+    corresponds to a single position in that grid.
+    """
     list_i = [0 for i in xrange(len(n_values))]
     yield list_i
     while True:
