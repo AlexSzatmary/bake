@@ -71,15 +71,16 @@ First, you'll need Python.
 
 To install bake, just do:
 
-python setup.py install
+   python setup.py install
 
-You may need to edit your PATH or PYTHONPATH environment variable to find
+You may need to edit your `PATH` or `PYTHONPATH` environment variable to find
 bake. You can find discussion on this at:
 
     http://docs.python.org/install/index.html#modifying-python-s-search-path
 
 To set up a project to use bake, you need the
 following in the project directory:
+
 * An empty directory named `batch`
 * A `bake.cfg` file; you can use the one in the cookie and poisson
   examples. Edit it so that `code_files` indicates the files you'll want bake
@@ -157,7 +158,8 @@ of this is in the `bake/examples/poisson/myBake/cmdline.py` file, inside a
 
     for values in mixIterator:
 
-loop:
+loop,
+
         for j in range(0, len(tokens)):
             table_line = table_line.replace(tokens[j], values[j])
 
@@ -208,11 +210,11 @@ compare my results with and without that feature, I often do,
 It's not unusual for me to need to refine many parameters in tandem, for
 example, using smaller grids and timesteps. I can do this with something like:
 
-@label@;refinement-study-@fineness@
-@fineness@;3;4;5
-@dt@;(1/2^@fineness@)
-@dx@;(@length@/2^@fineness@)
-@length@;42
+    @label@;refinement-study-@fineness@
+    @fineness@;3;4;5
+    @dt@;(1/2^@fineness@)
+    @dx@;(@length@/2^@fineness@)
+    @length@;42
 
 This generates three jobs, each with half the timestep and grid spacing as the
 one before.
