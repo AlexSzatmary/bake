@@ -1,17 +1,19 @@
 #!/usr/bin/python
 # api.py
-# Alex Szatmary
-# This module takes bake parameter files, which are lists of tags and values,
-# then does something for each combination of values.
-# Okay, that's pretty vague and broad.
-# It's useful, honest, for doing repetitive find-and-replace operations,
-# wrangling data out of oodles of really-similar-but-sublty-different-in-two-
-# variables-but-not-the-other-five sets of data, doing the accounting on
-# submitting jobs to all of the different kinds of supercomputers in your life,
-# and making plots of y vs x for a given z, but then b vs t for a given y.
-#
-# It's like a little robot that does repetitive things for you so you don't get
-# tenosynovitis.
+
+"""
+This module takes bake parameter files, which are lists of tags and values,
+then does something for each combination of values.
+Okay, that's pretty vague and broad.
+It's useful, honest, for doing repetitive find-and-replace operations,
+wrangling data out of oodles of really-similar-but-sublty-different-in-two-
+variables-but-not-the-other-five sets of data, doing the accounting on
+submitting jobs to all of the different kinds of supercomputers in your life,
+and making plots of y vs x for a given z, but then b vs t for a given y.
+
+It's like a little robot that does repetitive things for you so you don't get
+tenosynovitis.
+"""
 
 import os
 import os.path
@@ -34,7 +36,7 @@ def load_config():
 
 
 def make_optparser():
-    optparser = optparse.OptionParser()
+    optparser = optparse.OptionParser(prog="bake", epilog = __doc__)
     # Core tasks
     optparser.add_option('--file', '-f',
                          help="""Bake parameter file to operate from""")

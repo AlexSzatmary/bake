@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 # encoding: utf-8
-
 """
 This is the command line interface for bake. For people who want to take
 bake.py and extend it for their own circumstances, modifying the main routine
