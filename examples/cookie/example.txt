@@ -1,123 +1,147 @@
 cookie is a super easy example of what bake is useful for.
 
-1. plain
+### Example 1: plain
+
 cookie.txt is an outline for a recipe for cookies. When, in the cookie
 directory, you do:
-$ bake bp/plain.txt
-bake takes cookie.txt, modifies it according to bp/plain, and puts it in
-batch/cookie-decoration-none/cookie.txt
 
-cookie.txt has lines with keys in them. In the last line:
-decoration: @decoration@
-@decoration@ is a key. By default, keys are enclosed in matched @ signs.
+    $ bake -l -m -f bp/plain.txt
+
+bake takes `cookie.txt`, modifies it according to `bp/plain`, and puts it in
+`batch/cookie-decoration-none/cookie.txt`. (If you haven't installed bake yet,
+use `../../bake/cmdline.py` instead of `bake` throughout this tutorial.)
+
+The raw `cookie.txt` has lines with keys in them. In the last line:
+
+    decoration: @decoration@
+
+`@decoration@` is a key. By default, keys are enclosed in matched `@` signs.
 Keys are one of the big ideas in bake. Bake replaces keys with values from
 other files, varying a handful of parameters systematically.
 
-Look at the file bp/plain.txt:
-@label@;cookie-decoration-@decoration@
-...
-@decoration@;none
+Look at the file `bp/plain.txt`:
+
+    @label@;cookie-decoration-@decoration@
+    ...
+    @decoration@;none
 
 This is a bake parameter (bp) file. It describes the things to put in for each
-of the keys. The @decoration@ key appears in cookie.txt; when bake reads
-plain.txt, it learns to replace '@decoration@' in cookie.txt with 'none'. There
-are other keys in cookie.txt that get replaced by the other keys in
-plain.txt. The key '@label@' is the only mandatory key for bp files.
+of the keys. The `@decoration@` key appears in `cookie.txt`; when bake reads
+`plain.txt`, it learns to replace `@decoration@` in `cookie.txt` with
+`none`. There are other keys in `cookie.txt` that get replaced by the other
+keys in `plain.txt`. The key `@label@` is the only mandatory key for bp files.
 
-When you did 'bake bp/plain', bake made the file:
-batch/cookie-decoration-none/cookie.txt 
+When you did `bake bp/plain`, bake made the file:
 
-The @label@ expanded to the directory name cookie-decoration-none, by replacing
-@decoration@ for the value set on the line beginning with '@decoration@'. If
-you open the modified cookie.txt file in batch/cookie-decoration-none, you'll
-see that it's the same as the original cookie.txt file, but with '@decoration@'
-swapped out for 'none', and with the other keys correspondingly swapped out for
-their values.
+     batch/cookie-decoration-none/cookie.txt 
 
-2. 1sprinkle
-The bp file 1sprinkle has a different '@decoration@'. When you do:
-$ bake bp/1sprinkle.txt
+The `@label@` expanded to the directory name `cookie-decoration-none`, by
+replacing `@decoration@` for the value set on the line beginning with
+`@decoration@`. If you open the modified cookie.txt file in
+batch/cookie-decoration-none, you'll see that it's the same as the original
+cookie.txt file, but with `@decoration@` swapped out for `none`, and with the
+other keys correspondingly swapped out for their values.
+
+### Example 2: 1sprinkle
+
+The bp file 1sprinkle has a different `@decoration@`. When you do:
+
+    $ bake -l -m -f bp/1sprinkle.txt
+
 bake makes a directory:
-batch/cookie-decoration-yellow-sprinkles
-In that directory is a copy of cookie.txt, with the last line:
 
-decoration: yellow sprinkles
+    batch/cookie-decoration-yellow-sprinkles
+
+In that directory is a copy of `cookie.txt`, with the last line:
+
+    decoration: yellow sprinkles
 
 This illustrates a big idea in bake: keys can be placed inside of values so 
-that complex values can be constructed. The '@color@' key in '@label@' was
-replaced with the value, 'yellow'. 'yellow' also gets substituted into 
-'@decoration@', which then gets plugged into the last line of cookie.txt
+that complex values can be constructed. The `@color@` key in `@label@` was
+replaced with the value, `yellow`. `yellow` also gets substituted into 
+`@decoration@`, which then gets plugged into the last line of cookie.txt
 
-3. many_sprinkles
-The bp file many_sprinkles has several colors listed on the '@color@' line.
+### Example 3: many_sprinkles
+
+The bp file many_sprinkles has several colors listed on the `@color@` line.
+
 When you do:
-$ bake bp/many_sprinkles.txt
+
+    $ bake -l -m -f bp/many_sprinkles.txt
+
 bake makes a directory in batch for each of the colors, and each modified
-cookie.txt has a different color of sprinkles substituted in. This is a big
+`cookie.txt` has a different color of sprinkles substituted in. This is a big
 idea in bake: one bp file can make a grid of different sets of files.
 
 So, the format of each line in a bp file is:
-@key@;value1;value2;value3...
 
-Bake makes one copy of cookie.txt for each combination of values in the bp
-file. So that bake doesn't overwrite one copy with another, the @label@ needs
+    @key@;value1;value2;value3...
+
+Bake makes one copy of `cookie.txt` for each combination of values in the bp
+file. So that bake doesn't overwrite one copy with another, the `@label@` needs
 to include each key that has multiple values; this gives unique labels for each
-copy of cookie.txt in batch.
+copy of `cookie.txt` in batch.
 
-4. nuts
+### Example 4: nuts
+
 You can have different keys with more than one value. bake will make one copy
 of your files for each combination of these values. For example, when you do:
 
-$ bake bp/nuts.txt
+    $ bake -l -m -f bp/nuts.txt
 
 bake makes:
 
-batch/
-      chocolate-chip-macadamia
-      chocolate-chip-walnut
-      peanut-butter-macadamia
-      peanut-butter-walnut
-      sugar-macadamia
-      sugar-walnut
+    batch/
+	  chocolate-chip-macadamia
+	  chocolate-chip-walnut
+	  peanut-butter-macadamia
+	  peanut-butter-walnut
+	  sugar-macadamia
+	  sugar-walnut
 
-nuts.txt has two kinds of nuts and three types of cookies mentioned, so bake
-maks six copies of cookie.txt and puts each copy in its own directory.  The
-contents of the cookie.txt in each directory are what you would expect, e.g.,
-chocolate-chip-macadamia looks like:
+`nuts.txt` has 2 kinds of nuts and 3 types of cookies mentioned, so bake
+maks 6 copies of `cookie.txt` and puts each copy in its own directory.  The
+contents of the `cookie.txt` in each directory are what you would expect, e.g.,
+`chocolate-chip-macadamia` looks like:
 
-type: chocolate-chip
-nuts: macadamia
-decoration: none
+    type: chocolate-chip
+    nuts: macadamia
+    decoration: none
 
-The directory names are given by the '@label@', which, in nuts.txt, is
+The directory names are given by the `@label@`, which, in `nuts.txt`, is
 
-@label@;@type@-@nuts@
+    @label@;@type@-@nuts@
 
 Remember, each key that has more than one value should appear somewhere in the
 label so that each set of files that bake makes gets their own directory.
 
 5. Under the hood
 
-All of bake's behavior depends on the directory it is running in. When bake starts, it looks for and reads bake.cfg . This is the bake.cfg for the cookie example:
+All of bake's behavior depends on the directory it is running in. When bake
+starts, it looks for and reads `bake.cfg`. This is the `bake.cfg` for the
+cookie example:
 
-[label]
-label_tag: @label@
-pattern: @.+?@
+    [label]
+    label_tag: @label@
+    pattern: @.+?@
 
-[filenames]
-code_files: cookie.txt
-file_in_suffix: 
-file_out_suffix: 
+    [filenames]
+    code_files: cookie.txt
+    file_in_suffix: 
+    file_out_suffix: 
 
-In the [label] section, the name for the @label@ line is specified. If you
-wanted to, you could change this to anything, say, @directory-name@, and then
-change @label@ to @directory-name@ in each bp file for cookie, and it would
+In the `[label]` section, the name for the `@label@` line is specified. If you
+wanted to, you could change this to anything, say, `@directory-name@`, and then
+change `@label@` to `@directory-name@` in each bp file for cookie, and it would
 behave the same way.
 
-pattern is a regular expression pattern that specifies how bake can recognize a
-key; if you wanted to, your keys could look like $key$ or <key>, if you changed
-pattern to $.+?$ or <.+?> . This is configurable because keys can be embedded
-in any type of source code and so they shouldn't look like regular code. Using
-keys in <angle brackets> would be a bad idea for HTML, for example.
+`pattern` is a regular expression pattern that specifies how bake can recognize
+a key; if you wanted to, your keys could look like `$key$` or `<key>`, if you
+changed pattern to `$.+?$` or `<.+?>`. This is configurable because keys can be
+embedded in any type of source code and so they shouldn't look like regular
+code. Using keys in `<angle brackets>` would be a bad idea for HTML, for
+example.
 
-code_files specifies the list of files bake should operate on, in this case, cookie.txt . file_in_suffix and file_out_suffix are blank here; this is okay.
+`code_files` specifies the list of files bake should operate on, in this case,
+`cookie.txt`. `file_in_suffix` and `file_out_suffix` are blank here; this is
+okay.
