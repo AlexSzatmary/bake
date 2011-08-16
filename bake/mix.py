@@ -1,9 +1,8 @@
 #!/usr/bin/python
-
 # mix.py
-
 # This has several subroutines that take bake files, do string replacements on
 # them, mix and match them, and so on.
+
 import re
 
 
@@ -94,7 +93,7 @@ def parseBPlines(lines):
     m = 0
     for line in lines:
         if (line[0] != '#'):
-            line = line.replace('\n', '').replace('\\n', '&\n')
+#            line = line.replace('\n', '').replace('\\n', '&\n')
             elements = line.split(';')
             if elements[0] not in tokens:
                 tokens.append(elements[0])
