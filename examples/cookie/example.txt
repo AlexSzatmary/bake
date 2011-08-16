@@ -34,7 +34,7 @@ see that it's the same as the original cookie.txt file, but with '@decoration@'
 swapped out for 'none', and with the other keys correspondingly swapped out for
 their values.
 
-2 1sprinkle
+2. 1sprinkle
 The bp file 1sprinkle has a different '@decoration@'. When you do:
 $ bake bp/1sprinkle.txt
 bake makes a directory:
@@ -48,7 +48,7 @@ that complex values can be constructed. The '@color@' key in '@label@' was
 replaced with the value, 'yellow'. 'yellow' also gets substituted into 
 '@decoration@', which then gets plugged into the last line of cookie.txt
 
-3 many_sprinkles
+3. many_sprinkles
 The bp file many_sprinkles has several colors listed on the '@color@' line.
 When you do:
 $ bake bp/many_sprinkles.txt
@@ -64,7 +64,7 @@ file. So that bake doesn't overwrite one copy with another, the @label@ needs
 to include each key that has multiple values; this gives unique labels for each
 copy of cookie.txt in batch.
 
-4 nuts
+4. nuts
 You can have different keys with more than one value. bake will make one copy
 of your files for each combination of these values. For example, when you do:
 
@@ -95,3 +95,29 @@ The directory names are given by the '@label@', which, in nuts.txt, is
 
 Remember, each key that has more than one value should appear somewhere in the
 label so that each set of files that bake makes gets their own directory.
+
+5. Under the hood
+
+All of bake's behavior depends on the directory it is running in. When bake starts, it looks for and reads bake.cfg . This is the bake.cfg for the cookie example:
+
+[label]
+label_tag: @label@
+pattern: @.+?@
+
+[filenames]
+code_files: cookie.txt
+file_in_suffix: 
+file_out_suffix: 
+
+In the [label] section, the name for the @label@ line is specified. If you
+wanted to, you could change this to anything, say, @directory-name@, and then
+change @label@ to @directory-name@ in each bp file for cookie, and it would
+behave the same way.
+
+pattern is a regular expression pattern that specifies how bake can recognize a
+key; if you wanted to, your keys could look like $key$ or <key>, if you changed
+pattern to $.+?$ or <.+?> . This is configurable because keys can be embedded
+in any type of source code and so they shouldn't look like regular code. Using
+keys in <angle brackets> would be a bad idea for HTML, for example.
+
+code_files specifies the list of files bake should operate on, in this case, cookie.txt . file_in_suffix and file_out_suffix are blank here; this is okay.
