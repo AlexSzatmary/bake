@@ -93,7 +93,8 @@ def parseBPlines(lines):
     m = 0
     for line in lines:
         if (line[0] != '#'):
-#            line = line.replace('\n', '').replace('\\n', '&\n')
+            line = line.replace('\n', '')
+#            line = line.replace('\\n', '&\n')
             elements = line.split(';')
             if elements[0] not in tokens:
                 tokens.append(elements[0])
