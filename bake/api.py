@@ -42,9 +42,8 @@ def make_optparser():
                          help="""Mix parameters into code files.""",
                          action='store_true')
     optparser.add_option(
-      '--remix', '-M', help="""
-      Like mix, but does not make new directories.
-      """,
+      '--remix', '-M',
+      help="""Like mix, but does not make new directories.""",
       action='store_true')
     optparser.add_option('--list', '-l', action='store_true',
                          help="""Lists the jobs that would be operated on with
@@ -52,25 +51,19 @@ def make_optparser():
     # Modifiers
     optparser.add_option(
         '--overwrite', '-o', action='append',
-        help="""
-        Overwrite a line in a batch parameter file, eg,"-o '\$foo\$;bar;baz'"
-        replaces a parameter line starting with"$foo$" with "$foo$;bar;baz".
-        This option can be used repeatedly.  (Note: if the parameter specified
-        is absent from the file, the new line will simply be added to the
-        options in the file, it won't overwrite anything.)
-
+        help="""Overwrite a line in a batch parameter file, eg,"-o
+'\$foo\$;bar;baz'" replaces a parameter line starting with"$foo$" with
+"$foo$;bar;baz". This option can be used repeatedly.  (Note: if the parameter
+specified is absent from the file, the new line will simply be added to the
+options in the file, it won't overwrite anything.)
         """)
     optparser.add_option(
-        '--slice', '-s', help="""
-        Selects a subset of the runs specified in the file, eg, -s 5-9 does
-        runs 5, 6, 7, and 8 out of however many runs would be referred to in
-        the given file.
-
+        '--slice', '-s', help="""Selects a subset of the runs specified in the
+file, eg, -s 5-9 does runs 5, 6, 7, and 8 out of however many runs would be
+referred to in the given file.
         """)
-    optparser.add_option('--execute', '-e', help="""
-        Execute a command in each job specified, eg,
-
-        "tail TaylorDF__0001.txt"
+    optparser.add_option('--execute', '-e', help="""Execute a command in each
+parameter specified, eg, "tail foo.txt"
         """)
     return optparser
 
