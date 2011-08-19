@@ -7,7 +7,7 @@ try:
     hout.write(p.read())
     hout.close()
     p.close()
-    p = os.popen('../../bake/cmdline.py -l -f bp/many_sprinkles.txt -s 2-4')
+    p = os.popen('../../bake/cmdline.py -l -f bp/many_sprinkles.txt -s 1-3')
     hout = open('batch/test2.txt', 'w')
     hout.write(p.read())
     hout.close()
