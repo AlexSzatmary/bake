@@ -1,3 +1,0 @@
-type: sugar
-nuts: none
-decoration: red sprinkles
