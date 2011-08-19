@@ -1,3 +1,0 @@
-type: peanut-butter
-nuts: walnut
-decoration: none

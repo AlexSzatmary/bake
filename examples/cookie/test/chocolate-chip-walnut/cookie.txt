@@ -1,3 +1,0 @@
-type: chocolate-chip
-nuts: walnut
-decoration: none

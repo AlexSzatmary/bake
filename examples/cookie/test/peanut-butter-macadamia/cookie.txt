@@ -1,3 +1,0 @@
-type: peanut-butter
-nuts: macadamia
-decoration: none
