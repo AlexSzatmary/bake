@@ -1,8 +1,5 @@
 type: sugar
 nuts: none
-decoration: yellow sprinkles
-type: sugar
-nuts: none
 decoration: red sprinkles
 type: sugar
 nuts: none
