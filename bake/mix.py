@@ -96,16 +96,13 @@ def parseBPlines(lines):
     #parameters)
     m = 0
     for line in lines:
-        if (line[0] != '#'):
-            line = line.replace('\n', '')
-#            line = line.replace('\\n', '&\n')
-            elements = line.split(';')
-            if elements[0] not in tokens:
-                tokens.append(elements[0])
-                list_values.append(elements[1:])
-                n_values.append(len(elements) - 1)
-                tokendict[tokens[-1]] = m
-                m = m + 1
+        elements = line.split(';')
+        if elements[0] not in tokens:
+            tokens.append(elements[0])
+            list_values.append(elements[1:])
+            n_values.append(len(elements) - 1)
+            tokendict[tokens[-1]] = m
+            m = m + 1
 
     # Count how many runs I'm going to start
     N_values = 1

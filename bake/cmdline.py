@@ -7,6 +7,7 @@ in this module is probably the best place to start.
 """
 
 import api as bake
+import load
 import sys
 
 
@@ -31,9 +32,8 @@ def main(args=sys.argv[1:]):
         lines = []
 
     # Load bake parameter file
-    hin = open(options.file, 'r')
-    lines += hin.readlines()
-    hin.close()
+    load.load(l for l in lines)
+    lines.extend(load.load_file(options.file))
 
     # This mixIterator object is kind of the core of bake.
     (label, tokens,
