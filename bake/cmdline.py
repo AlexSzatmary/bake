@@ -6,8 +6,11 @@ bake.py and extend it for their own circumstances, modifying the main routine
 in this module is probably the best place to start.
 """
 
+# If you make your own bake frontend, just do
+# import bake
 import api as bake
-import load
+# and do bake.load
+# import load
 import sys
 
 
@@ -32,8 +35,8 @@ def main(args=sys.argv[1:]):
         lines = []
 
     # Load bake parameter file
-    load.load(l for l in lines)
-    lines.extend(load.load_file(options.file))
+    bake.load.load(l for l in lines)
+    lines.extend(bake.load.load_file(options.file))
 
     # This mixIterator object is kind of the core of bake.
     (label, tokens,

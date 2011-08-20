@@ -20,7 +20,19 @@ import os.path
 import mix
 import optparse
 import re
+import load
 
+class Grid:
+    def __init__(self, tokens):
+        self.tokens = tokens
+    def replace(self, string):
+        """
+        Like string.replace() but replaces all tags and values for a given job
+
+        """
+        for j in range(0, len(self.tokens)):
+            string = string.replace(self.tokens[j], self.values[j])
+        return string
 
 # c is a ConfigParser object, d is a dictionary representing that object
 def load_config():
@@ -138,10 +150,13 @@ def default_loop(label, tokens, mixIterator, config, options):
     This does a loop over each item in mixIterator, that is, each combination
     of the possible values.
     """
+    grid = Grid(tokens)
+
     for values in mixIterator:
     # Do the string replace operations on the values themselves
         cd = values[label]
         wd = os.path.join('.', 'batch', cd)
+        grid.values = values
 
         if options.list:
             print(cd)
@@ -160,12 +175,11 @@ def default_loop(label, tokens, mixIterator, config, options):
                                   config['filenames']['file_out_suffix']),
                                   'w')
                 for line in hin.readlines():
-                    for j in range(0, len(tokens)):
-                        line = line.replace(tokens[j], values[j])
+                    line = grid.replace(line)
                     houtcode.write(line)
                 hin.close()
                 houtcode.close()
         if options.execute:
             os.chdir(wd)
-            os.system(options.execute)
+            os.system(grid.replace(options.execute))
             os.chdir(os.path.join('..', '..'))
