@@ -27,17 +27,17 @@ def main(args=sys.argv[1:]):
     ## End processing of command line parameters
     ## Prepare for big loop
 
+    # Load bake parameter file
+    if options.file:
+        lines = bake.load.load_file(options.file)
+    else:
+        lines = []
+    print lines
+
     # The overwrite command pushes lines onto the top of the bake parameter
     # file
     if options.overwrite:
-        lines = options.overwrite
-    else:
-        lines = []
-
-    # Load bake parameter file
-    bake.load.load(l for l in lines)
-    if options.file:
-        lines.extend(bake.load.load_file(options.file))
+        lines.extend(bake.load.load(l for l in options.overwrite))
 
     # This mixIterator object is kind of the core of bake.
     (label, grid,
