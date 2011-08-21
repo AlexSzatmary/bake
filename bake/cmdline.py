@@ -40,14 +40,14 @@ def main(args=sys.argv[1:]):
         lines.extend(bake.load.load_file(options.file))
 
     # This mixIterator object is kind of the core of bake.
-    (label, tokens,
+    (label, grid,
      mixIterator) = bake.make_iterator(config['label']['label_tag'],
                                        config['label']['pattern'],
                                        lines, options.slice_start,
                                        options.slice_end)
 
     ## This is the main loop, iterating over each set of values
-    bake.default_loop(label, tokens, mixIterator, config, options)
+    bake.default_loop(label, grid, mixIterator, config, options)
 
 if __name__ == '__main__':
     main()

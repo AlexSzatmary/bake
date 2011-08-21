@@ -5,6 +5,23 @@
 
 import re
 
+class Grid:
+    # This represents the space over which bake iterates and operates
+#    def __init__(self, tokens, list_values, n_values, N_values, tokendict):
+    def __init__(self):
+        self.tokens = []
+        self.list_values = []
+        self.n_values = []
+        self.tokendict = {}
+
+    def replace(self, string):
+        """
+        Like string.replace() but replaces all tags and values for a given job
+
+        """
+        for j in range(0, len(self.tokens)):
+            string = string.replace(self.tokens[j], self.values[j])
+        return string
 
 def TokenValueSubValue(values, tokendict, pattern):
     """
@@ -22,23 +39,22 @@ def TokenValueSubValue(values, tokendict, pattern):
     return None
 
 
-def ItRunValues(list_values, tokens, n_values, N_values, pattern, tokendict,
-                slice_start=0, slice_end=0):
+def ItRunValues(grid, pattern, slice_start=0, slice_end=0):
     """
     This iterator returns one set of values for each run; one run is given
     by each iteration of ItRunValues. These values can then be subbed in for
     the corresponding tokens.
     """
     if slice_end == 0:
-        slice_end = N_values
+        slice_end = grid.N_values
         #listi and values need to be initialized
-    values = [0 for i in xrange(len(tokens))]
-    for list_i in ItList_i(n_values, slice_start, slice_end):
+    values = [0 for i in xrange(len(grid.tokens))]
+    for list_i in ItList_i(grid.n_values, slice_start, slice_end):
         # Pick the values to be used in this run
-        for j in range(len(tokens)):
-            values[j] = list_values[j][list_i[j]]
+        for j in range(len(grid.tokens)):
+            values[j] = grid.list_values[j][list_i[j]]
         # Do the string replace operations on the values themselves
-        TokenValueSubValue(values, tokendict, pattern)
+        TokenValueSubValue(values, grid.tokendict, pattern)
         yield values
 
 
@@ -87,25 +103,28 @@ def parseBPlines(lines):
     runs to do.
     tokendict gives the index of a given token
     """
+    # todo convert to constructor
     # Load bp file
-    tokens = []
-    list_values = []
-    n_values = []
-    tokendict = {}
+    grid = Grid()
     #m is the number of parameters (not the number of values for the
     #parameters)
     m = 0
     for line in lines:
         elements = line.split(';')
-        if elements[0] not in tokens:
-            tokens.append(elements[0])
-            list_values.append(elements[1:])
-            n_values.append(len(elements) - 1)
-            tokendict[tokens[-1]] = m
+        if elements[0] not in grid.tokens:
+            grid.tokens.append(elements[0])
+            grid.list_values.append(elements[1:])
+            grid.n_values.append(len(elements) - 1)
+            grid.tokendict[grid.tokens[-1]] = m
             m = m + 1
+        else:
+            # If this key is repeated
+            i = grid.tokendict[elements[0]]
+            grid.list_values[i] = elements[1:]
+            grid.n_values[i] = len(elements) - 1
 
     # Count how many runs I'm going to start
-    N_values = 1
-    for i in n_values:
-        N_values = N_values * i
-    return (tokens, list_values, n_values, N_values, tokendict)
+    grid.N_values = 1
+    for i in grid.n_values:
+        grid.N_values = grid.N_values * i
+    return grid

@@ -22,18 +22,6 @@ import optparse
 import re
 import load
 
-class Grid:
-    def __init__(self, tokens):
-        self.tokens = tokens
-    def replace(self, string):
-        """
-        Like string.replace() but replaces all tags and values for a given job
-
-        """
-        for j in range(0, len(self.tokens)):
-            string = string.replace(self.tokens[j], self.values[j])
-        return string
-
 # c is a ConfigParser object, d is a dictionary representing that object
 def load_config():
     import ConfigParser
@@ -138,20 +126,16 @@ def make_iterator(label_tag, pattern, lines, slice_start, slice_end):
     This is the interface between the internals of bake.mix and what people
     would practically use.
     """
-    (tokens, list_values, n_values, N_values, tokendict) = \
-        mix.parseBPlines(lines)
-    mixIterator = mix.ItRunValues(list_values, tokens, n_values, N_values,
-                                  pattern, tokendict, slice_start, slice_end)
-    return (tokendict[label_tag], tokens, mixIterator)
+    grid = mix.parseBPlines(lines)
+    mixIterator = mix.ItRunValues(grid, pattern, slice_start, slice_end)
+    return (grid.tokendict[label_tag], grid, mixIterator)
 
 
-def default_loop(label, tokens, mixIterator, config, options):
+def default_loop(label, grid, mixIterator, config, options):
     """
     This does a loop over each item in mixIterator, that is, each combination
     of the possible values.
     """
-    grid = Grid(tokens)
-
     for values in mixIterator:
     # Do the string replace operations on the values themselves
         cd = values[label]
