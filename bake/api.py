@@ -21,6 +21,7 @@ import mix
 import optparse
 import re
 import load
+import bakedefaults
 
 # c is a ConfigParser object, d is a dictionary representing that object
 def load_config():
@@ -135,13 +136,12 @@ def make_iterator(config, lines, slice_start, slice_end):
         #todo add exception handling here for the case in which a user
         # provides one of pattern_start and pattern_end, but not both.
     else:
-        pattern_start = bakedefaults.pattern_start
-        pattern_end = bakedefaults.pattern_end
-    label_key = pattern_start + bakedefaults.label_key + pattern_end
-    pattern = pattern_start + r'.*' + pattern_end
-
-    mixIterator = mix.ItRunValues(grid, pattern, slice_start, slice_end)
-    return (grid.tokendict[label_tag], grid, mixIterator)
+        key_start = bakedefaults.key_start
+        key_end = bakedefaults.key_end
+    label_key = key_start + bakedefaults.label_key + key_end
+    key_pattern = key_start + r'.*' + key_end
+    mixIterator = mix.ItRunValues(grid, key_pattern, slice_start, slice_end)
+    return (grid.tokendict[label_key], grid, mixIterator)
 
 
 def default_loop(label, grid, mixIterator, config, options):
