@@ -36,7 +36,8 @@ def main(args=sys.argv[1:]):
 
     # Load bake parameter file
     bake.load.load(l for l in lines)
-    lines.extend(bake.load.load_file(options.file))
+    if options.file:
+        lines.extend(bake.load.load_file(options.file))
 
     # This mixIterator object is kind of the core of bake.
     (label, tokens,

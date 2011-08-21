@@ -91,8 +91,8 @@ def process_options(options):
     """
     try:
         # A file must be selected to operate on
-        if not options.file:
-            raise Exception('No batch parameter file specified')
+#         if not options.file:
+#             raise Exception('No batch parameter file specified')
         # Perform operation on a Slice of the runs
         if options.slice:
             if '-' in options.slice:
