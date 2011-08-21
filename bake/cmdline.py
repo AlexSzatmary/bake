@@ -41,8 +41,7 @@ def main(args=sys.argv[1:]):
 
     # This mixIterator object is kind of the core of bake.
     (label, grid,
-     mixIterator) = bake.make_iterator(config['label']['label_tag'],
-                                       config['label']['pattern'],
+     mixIterator) = bake.make_iterator(config, 
                                        lines, options.slice_start,
                                        options.slice_end)
 
