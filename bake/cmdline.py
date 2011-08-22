@@ -27,24 +27,21 @@ def main(args=sys.argv[1:]):
     ## End processing of command line parameters
     ## Prepare for big loop
 
-    # The overwrite command pushes lines onto the top of the bake parameter
-    # file
-    if options.overwrite:
-        lines = options.overwrite
+    # Load bake parameter file
+    if options.file:
+        lines = bake.load.load_file(options.file)
     else:
         lines = []
 
-    # Load bake parameter file
-    bake.load.load(l for l in lines)
-    if options.file:
-        lines.extend(bake.load.load_file(options.file))
+    # The overwrite command pushes lines onto the top of the bake parameter
+    # file
+    if options.overwrite:
+        lines.extend(bake.load.load(l for l in options.overwrite))
 
     # This mixIterator object is kind of the core of bake.
     (label, grid,
-     mixIterator) = bake.make_iterator(config['label']['label_tag'],
-                                       config['label']['pattern'],
-                                       lines, options.slice_start,
-                                       options.slice_end)
+     mixIterator) = bake.make_iterator(config, options,
+                                       lines)
 
     ## This is the main loop, iterating over each set of values
     bake.default_loop(label, grid, mixIterator, config, options)
