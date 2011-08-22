@@ -14,11 +14,40 @@ class Grid:
         self.n_values = []
         self.tokendict = {}
 
+    def infer_label(self, string, pattern, label_key):
+        """
+        Makes up a sensible label if none is specified.
+
+        string should be something like the bp filename, a good start to the
+        label. If it's absent, that doesn't matter.
+
+        The label format is:
+        string-key1@key1@-key2@key2...
+        or
+        key1@key1@-key2@key2...
+        if string is absent.
+        """
+        label_bits = []
+        if string:
+            label_bits.append(string)
+        for i in xrange(len(self.tokens)):
+            if len(self.list_values[i]) > 1:
+                label_bits.append(
+                    re.search(pattern, self.tokens[i]).group(1) + 
+                    self.tokens[i])
+        label = '-'.join(label_bits)
+        # Add the label as a key-values pair to the weird data structure
+        self.tokens.append(label_key)
+        self.list_values.append([label])
+        self.n_values.append(1)
+        self.tokendict[label_key] = len(self.tokens) - 1
+
     def replace(self, string):
         """
         Like string.replace() but replaces all tags and values for a given job
 
         """
+        # self.values is assigned in default_loop
         for j in range(0, len(self.tokens)):
             string = string.replace(self.tokens[j], self.values[j])
         return string

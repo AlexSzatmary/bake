@@ -32,7 +32,6 @@ def main(args=sys.argv[1:]):
         lines = bake.load.load_file(options.file)
     else:
         lines = []
-    print lines
 
     # The overwrite command pushes lines onto the top of the bake parameter
     # file
@@ -41,9 +40,8 @@ def main(args=sys.argv[1:]):
 
     # This mixIterator object is kind of the core of bake.
     (label, grid,
-     mixIterator) = bake.make_iterator(config, 
-                                       lines, options.slice_start,
-                                       options.slice_end)
+     mixIterator) = bake.make_iterator(config, options,
+                                       lines)
 
     ## This is the main loop, iterating over each set of values
     bake.default_loop(label, grid, mixIterator, config, options)

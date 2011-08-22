@@ -122,13 +122,13 @@ def process_options(options):
             exit(-100)
 
 
-def make_iterator(config, lines, slice_start, slice_end):
+def make_iterator(config, options, lines):
     """
     This is the interface between the internals of bake.mix and what people
     would practically use.
     """
     grid = mix.parseBPlines(lines)
-    # If pattern_start and pattern_end are in bake.cfg 
+    # If pattern_start and pattern_end are in bake.cfg
     if 'format' in config and 'pattern_start' in config['format'] \
             and 'pattern_end' in config['format']:
         pattern_start = config['format']['pattern_start']
@@ -139,8 +139,11 @@ def make_iterator(config, lines, slice_start, slice_end):
         key_start = bakedefaults.key_start
         key_end = bakedefaults.key_end
     label_key = key_start + bakedefaults.label_key + key_end
-    key_pattern = key_start + r'.*' + key_end
-    mixIterator = mix.ItRunValues(grid, key_pattern, slice_start, slice_end)
+    key_pattern = key_start + r'(.*?)' + key_end
+    if label_key not in grid.tokens:
+        grid.infer_label(options.file, key_pattern, label_key)
+    mixIterator = mix.ItRunValues(grid, key_pattern, options.slice_start,
+                                  options.slice_end)
     return (grid.tokendict[label_key], grid, mixIterator)
 
 
