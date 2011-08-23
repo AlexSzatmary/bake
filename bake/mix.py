@@ -88,7 +88,7 @@ class Grid:
             string = string.replace(self.keys[j], self.values[j])
         return string
 
-def KeyValueSubValue(values, keydict, pattern):
+def KeyValueSubValue(values, grid, pattern):
     """
     This takes each key's value and expands the values by substituting in
     the values of other keys.
@@ -99,7 +99,7 @@ def KeyValueSubValue(values, keydict, pattern):
         # appear in a bake parameter file
         while foundkey:
             values[j] = values[j].replace(
-                foundkey.group(0), values[keydict[foundkey.group(0)]])
+                foundkey.group(0), values[grid.keydict[foundkey.group(0)]])
             foundkey = re.search(pattern, values[j])
     return None
 
@@ -114,41 +114,41 @@ def ItRunValues(grid, pattern, slice_start=0, slice_end=0):
         slice_end = grid.N_values
         #listi and values need to be initialized
     values = [0 for i in xrange(len(grid.keys))]
-    for list_i in ItList_i(grid.n_values, slice_start, slice_end):
+    for list_i in ItList_i(grid, slice_start, slice_end):
         # Pick the values to be used in this run
         for j in range(len(grid.keys)):
             values[j] = grid.list_values[j][list_i[j]]
         # Do the string replace operations on the values themselves
-        KeyValueSubValue(values, grid.keydict, pattern)
+        KeyValueSubValue(values, grid, pattern)
         yield values
 
 
-def ItList_i(n_values, slice_start, slice_end):
+def ItList_i(grid, slice_start, slice_end):
     """
     This is basically a thing that encloses ItList_iNoSlice and does the
     slicing math for it.
     """
-    myItList_iNoSlice = ItList_iNoSlice(n_values)
+    myItList_iNoSlice = ItList_iNoSlice(grid)
     for i in xrange(0, slice_start):
         myItList_iNoSlice.next()
     for i in xrange(slice_start, slice_end):
         yield myItList_iNoSlice.next()
 
 
-def ItList_iNoSlice(n_values):
+def ItList_iNoSlice(grid):
     """
     Imagine an m-dimensional grid, where m is the number of keys; the width
     of the grid in one of these directions is the number of values for that
     key. This iterator walks through each location in that grid; list_i
     corresponds to a single position in that grid.
     """
-    list_i = [0 for i in xrange(len(n_values))]
+    list_i = [0 for i in xrange(len(grid.n_values))]
     yield list_i
     while True:
         j = 0
         while True:
             list_i[j] = list_i[j] + 1
-            if list_i[j] == n_values[j]:
+            if list_i[j] == grid.n_values[j]:
                 list_i[j] = 0
                 j = j + 1
             else:
