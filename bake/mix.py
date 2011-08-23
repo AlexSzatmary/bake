@@ -88,7 +88,7 @@ class Grid:
             slice_end = self.N_values
             #listi and values need to be initialized
         self.values = [0 for i in xrange(len(self.keys))]
-        for list_i in ItList_i(self, slice_start, slice_end):
+        for list_i in self.ItList_i(slice_start, slice_end):
             # Pick the values to be used in this run
             for j in range(len(self.keys)):
                 self.values[j] = self.list_values[j][list_i[j]]
@@ -123,34 +123,34 @@ class Grid:
         return None
 
 
-def ItList_i(grid, slice_start, slice_end):
-    """
-    This is basically a thing that encloses ItList_iNoSlice and does the
-    slicing math for it.
-    """
-    myItList_iNoSlice = ItList_iNoSlice(grid)
-    for i in xrange(0, slice_start):
-        myItList_iNoSlice.next()
-    for i in xrange(slice_start, slice_end):
-        yield myItList_iNoSlice.next()
+    def ItList_i(self, slice_start, slice_end):
+        """
+        This is basically a thing that encloses ItList_iNoSlice and does the
+        slicing math for it.
+        """
+        myItList_iNoSlice = self.ItList_iNoSlice()
+        for i in xrange(0, slice_start):
+            myItList_iNoSlice.next()
+        for i in xrange(slice_start, slice_end):
+            yield myItList_iNoSlice.next()
 
 
-def ItList_iNoSlice(grid):
-    """
-    Imagine an m-dimensional grid, where m is the number of keys; the width
-    of the grid in one of these directions is the number of values for that
-    key. This iterator walks through each location in that grid; list_i
-    corresponds to a single position in that grid.
-    """
-    list_i = [0 for i in xrange(len(grid.n_values))]
-    yield list_i
-    while True:
-        j = 0
-        while True:
-            list_i[j] = list_i[j] + 1
-            if list_i[j] == grid.n_values[j]:
-                list_i[j] = 0
-                j = j + 1
-            else:
-                break
+    def ItList_iNoSlice(self):
+        """
+        Imagine an m-dimensional grid, where m is the number of keys; the width
+        of the grid in one of these directions is the number of values for that
+        key. This iterator walks through each location in that grid; list_i
+        corresponds to a single position in that grid.
+        """
+        list_i = [0 for i in xrange(len(self.n_values))]
         yield list_i
+        while True:
+            j = 0
+            while True:
+                list_i[j] = list_i[j] + 1
+                if list_i[j] == self.n_values[j]:
+                    list_i[j] = 0
+                    j = j + 1
+                else:
+                    break
+            yield list_i
