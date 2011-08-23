@@ -156,7 +156,6 @@ def default_loop(label, grid, mixIterator, config, options):
     # Do the string replace operations on the values themselves
         cd = values[label]
         wd = os.path.join('.', 'batch', cd)
-        grid.values = values
 
         if options.list:
             print(cd)
