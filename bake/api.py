@@ -122,7 +122,7 @@ def process_options(options):
             exit(-100)
 
 
-def make_iterator(config, options, lines):
+def make_grid(config, options, lines):
     """
     This is the interface between the internals of bake.mix and what people
     would practically use.
@@ -142,17 +142,17 @@ def make_iterator(config, options, lines):
     key_pattern = key_start + r'(.*?)' + key_end
     if label_key not in grid.keys:
         grid.infer_label(options.file, key_pattern, label_key)
-    mixIterator = grid.ItRunValues(key_pattern, options.slice_start,
-                                  options.slice_end)
-    return (grid.keydict[label_key], grid, mixIterator)
+    grid.mixIterator = grid.ItRunValues(key_pattern, options.slice_start, 
+                                        options.slice_end)
+    return (grid.keydict[label_key], grid)
 
 
-def default_loop(label, grid, mixIterator, config, options):
+def default_loop(label, grid, config, options):
     """
     This does a loop over each item in mixIterator, that is, each combination
     of the possible values.
     """
-    for values in mixIterator:
+    for values in grid.mixIterator:
     # Do the string replace operations on the values themselves
         cd = values[label]
         wd = os.path.join('.', 'batch', cd)
