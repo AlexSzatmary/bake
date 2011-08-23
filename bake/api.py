@@ -127,7 +127,7 @@ def make_iterator(config, options, lines):
     This is the interface between the internals of bake.mix and what people
     would practically use.
     """
-    grid = mix.parseBPlines(lines)
+    grid = mix.Grid(lines)
     # If pattern_start and pattern_end are in bake.cfg
     if 'format' in config and 'pattern_start' in config['format'] \
             and 'pattern_end' in config['format']:
@@ -140,11 +140,11 @@ def make_iterator(config, options, lines):
         key_end = bakedefaults.key_end
     label_key = key_start + bakedefaults.label_key + key_end
     key_pattern = key_start + r'(.*?)' + key_end
-    if label_key not in grid.tokens:
+    if label_key not in grid.keys:
         grid.infer_label(options.file, key_pattern, label_key)
     mixIterator = mix.ItRunValues(grid, key_pattern, options.slice_start,
                                   options.slice_end)
-    return (grid.tokendict[label_key], grid, mixIterator)
+    return (grid.keydict[label_key], grid, mixIterator)
 
 
 def default_loop(label, grid, mixIterator, config, options):
@@ -162,12 +162,12 @@ def default_loop(label, grid, mixIterator, config, options):
             print(cd)
         # mix is the main special thing done by this loop:
         # it takes the files, does a wild find and replace on them to take out
-        # the tokens and swap in corresponding values, and spits the files out
+        # the keys and swap in corresponding values, and spits the files out
         # in ./batch/ somewhere.
         if options.mix:
             if not options.remix:
                 os.mkdir(wd)
-            # String replace the tokens for the values
+            # String replace the keys for the values
             for f in config['filenames']['code_files']:
                 hin = open(f + config['filenames']['file_in_suffix'], 'r')
                 houtcode = open(
