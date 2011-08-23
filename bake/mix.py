@@ -78,6 +78,24 @@ class Grid:
         self.n_values.append(1)
         self.keydict[label_key] = len(self.keys) - 1
 
+    def ItRunValues(self, pattern, slice_start=0, slice_end=0):
+        """
+        This iterator returns one set of values for each run; one run is given
+        by each iteration of ItRunValues. These values can then be subbed in
+        for the corresponding keys.
+        """
+        if slice_end == 0:
+            slice_end = self.N_values
+            #listi and values need to be initialized
+        self.values = [0 for i in xrange(len(self.keys))]
+        for list_i in ItList_i(self, slice_start, slice_end):
+            # Pick the values to be used in this run
+            for j in range(len(self.keys)):
+                self.values[j] = self.list_values[j][list_i[j]]
+            # Do the string replace operations on the values themselves
+            self.KeyValueSubValue(pattern)
+            yield self.values
+
     def replace(self, string):
         """
         Like string.replace() but replaces all tags and values for a given job
@@ -88,39 +106,21 @@ class Grid:
             string = string.replace(self.keys[j], self.values[j])
         return string
 
-def KeyValueSubValue(values, grid, pattern):
-    """
-    This takes each key's value and expands the values by substituting in
-    the values of other keys.
-    """
-    for j in range(len(values)):
-        foundkey = re.search(pattern, values[j])
-        # This is done iteratively so that it doesn't matter what order lines
-        # appear in a bake parameter file
-        while foundkey:
-            values[j] = values[j].replace(
-                foundkey.group(0), values[grid.keydict[foundkey.group(0)]])
-            foundkey = re.search(pattern, values[j])
-    return None
-
-
-def ItRunValues(grid, pattern, slice_start=0, slice_end=0):
-    """
-    This iterator returns one set of values for each run; one run is given
-    by each iteration of ItRunValues. These values can then be subbed in for
-    the corresponding keys.
-    """
-    if slice_end == 0:
-        slice_end = grid.N_values
-        #listi and values need to be initialized
-    values = [0 for i in xrange(len(grid.keys))]
-    for list_i in ItList_i(grid, slice_start, slice_end):
-        # Pick the values to be used in this run
-        for j in range(len(grid.keys)):
-            values[j] = grid.list_values[j][list_i[j]]
-        # Do the string replace operations on the values themselves
-        KeyValueSubValue(values, grid, pattern)
-        yield values
+    def KeyValueSubValue(self, pattern):
+        """
+        This takes each key's value and expands the values by substituting in
+        the values of other keys.
+        """
+        for j in range(len(self.values)):
+            foundkey = re.search(pattern, self.values[j])
+            # This is done iteratively so that it doesn't matter what order
+            # lines appear in a bake parameter file
+            while foundkey:
+                self.values[j] = self.values[j].replace(
+                    foundkey.group(0), 
+                    self.values[self.keydict[foundkey.group(0)]])
+                foundkey = re.search(pattern, self.values[j])
+        return None
 
 
 def ItList_i(grid, slice_start, slice_end):

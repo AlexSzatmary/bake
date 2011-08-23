@@ -142,7 +142,7 @@ def make_iterator(config, options, lines):
     key_pattern = key_start + r'(.*?)' + key_end
     if label_key not in grid.keys:
         grid.infer_label(options.file, key_pattern, label_key)
-    mixIterator = mix.ItRunValues(grid, key_pattern, options.slice_start,
+    mixIterator = grid.ItRunValues(key_pattern, options.slice_start,
                                   options.slice_end)
     return (grid.keydict[label_key], grid, mixIterator)
 
