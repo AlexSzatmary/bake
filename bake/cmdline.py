@@ -33,6 +33,17 @@ def main(args=sys.argv[1:]):
     else:
         lines = []
 
+    if not options.bake_file:
+        options.bake_file = config['filenames']['code_files']
+
+    #warn This adds secret options to the options object.
+    options.file_in_suffix = ''
+    options.file_out_suffix = ''
+    if 'filenames' in config and 'file_in_suffix' in config['filenames']:
+        options.file_in_suffix = config['filenames']['file_in_suffix']
+    if 'filenames' in config and 'file_out_suffix' in config['filenames']:
+        options.file_in_suffix = config['filenames']['file_out_suffix']
+
     # The overwrite command pushes lines onto the top of the bake parameter
     # file
     if options.overwrite:
@@ -43,7 +54,7 @@ def main(args=sys.argv[1:]):
                                        
 
     ## This is the main loop, iterating over each set of values
-    bake.default_loop(grid, config, options)
+    bake.default_loop(grid, options)
 
 if __name__ == '__main__':
     main()
