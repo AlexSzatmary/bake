@@ -84,8 +84,8 @@ class Grid:
 
     def replace(self, string):
         """
-        Like string.replace() but replaces all tags and values for a given job
-
+        Replaces all of the tags in string with the corresponding values for
+        the current job.
         """
         # self.values is assigned in mix_iterator()
         for j in range(0, len(self.keys)):
@@ -111,6 +111,9 @@ class Grid:
 
 
     def set_slice(self, slice_start=0, slice_end=0):
+        """
+        Setter
+        """
         self.slice_start = slice_start
         self.slice_end = slice_end
         if self.slice_end == 0:
@@ -126,10 +129,10 @@ class Grid:
             #todo add exception handling here for the case in which a user
             # provides one of pattern_start and pattern_end, but not both.
         else:
-            self.key_start = bakedefaults.key_start
-            self.key_end = bakedefaults.key_end
+            self.key_start = bakedefaults.KEY_START
+            self.key_end = bakedefaults.KEY_END
         self.key_pattern = self.key_start + r'(.*?)' + self.key_end
-        self.label_key = self.key_start + bakedefaults.label_key + self.key_end
+        self.label_key = self.key_start + bakedefaults.LABEL_KEY + self.key_end
         if self.label_key not in self.keys:
             self.infer_label(string)
 
@@ -152,6 +155,9 @@ class Grid:
 
 
     def get_label(self):
+        """
+        Getter for the label on the current iteration.
+        """
         return self.values[self.keydict[self.label_key]]
 
 

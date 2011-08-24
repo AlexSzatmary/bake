@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
-label_key = 'label'
-key_start = '@'
-key_end = '@'
+LABEL_KEY = 'label'
+KEY_START = '@'
+KEY_END = '@'
+CFGFILE = 'bake.cfg'
