@@ -21,7 +21,6 @@ import mix
 import optparse
 import re
 import load
-import bakedefaults
 
 # c is a ConfigParser object, d is a dictionary representing that object
 def load_config():
@@ -128,33 +127,19 @@ def make_grid(config, options, lines):
     would practically use.
     """
     grid = mix.Grid(lines)
-    # If pattern_start and pattern_end are in bake.cfg
-    if 'format' in config and 'pattern_start' in config['format'] \
-            and 'pattern_end' in config['format']:
-        pattern_start = config['format']['pattern_start']
-        pattern_end = config['format']['pattern_end']
-        #todo add exception handling here for the case in which a user
-        # provides one of pattern_start and pattern_end, but not both.
-    else:
-        key_start = bakedefaults.key_start
-        key_end = bakedefaults.key_end
-    label_key = key_start + bakedefaults.label_key + key_end
-    key_pattern = key_start + r'(.*?)' + key_end
-    if label_key not in grid.keys:
-        grid.infer_label(options.file, key_pattern, label_key)
-    grid.mixIterator = grid.ItRunValues(key_pattern, options.slice_start, 
-                                        options.slice_end)
-    return (grid.keydict[label_key], grid)
+    grid.set_slice(options.slice_start, options.slice_end)
+    grid.set_pattern(config, options.file)
+    return grid
 
 
-def default_loop(label, grid, config, options):
+def default_loop(grid, config, options):
     """
     This does a loop over each item in mixIterator, that is, each combination
     of the possible values.
     """
-    for values in grid.mixIterator:
+    for values in grid.mix_iterator():
     # Do the string replace operations on the values themselves
-        cd = values[label]
+        cd = grid.get_label()
         wd = os.path.join('.', 'batch', cd)
 
         if options.list:
