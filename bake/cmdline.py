@@ -40,9 +40,9 @@ def main(args=sys.argv[1:]):
     options.file_in_suffix = ''
     options.file_out_suffix = ''
     if 'filenames' in config and 'file_in_suffix' in config['filenames']:
-        options.file_in_suffix = config['filenames']['file_in_suffix']
+        options.file_in_suffix = config['filenames']['file_in_suffix'][0]
     if 'filenames' in config and 'file_out_suffix' in config['filenames']:
-        options.file_in_suffix = config['filenames']['file_out_suffix']
+        options.file_in_suffix = config['filenames']['file_out_suffix'][0]
 
     # The overwrite command pushes lines onto the top of the bake parameter
     # file

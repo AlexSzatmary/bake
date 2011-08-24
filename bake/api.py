@@ -20,6 +20,7 @@ import os.path
 import mix
 import optparse
 import re
+import glob
 import load
 import bakedefaults
 
@@ -50,7 +51,7 @@ def make_optparser():
         help="""File to bake. This can be a filename or a glob. This overrides
         the list code_files in bake.cfg if it is present. This option can be
         used repeatedly, with each -b flag specifying another file or glob to
-        bake.."""
+        bake..""")
 
     optparser.add_option('--mix', '-m',
                          help="""Mix parameters into code files.""",
@@ -168,7 +169,7 @@ def default_loop(grid, options):
                 for f in glob.glob(g):
                     hin = open(f + options.file_in_suffix, 'r')
                     houtcode = open(
-                        os.path.join(wd, f + options.file_out_suffix, 'w')
+                        os.path.join(wd, f + options.file_out_suffix), 'w')
                     for line in hin.readlines():
                         line = grid.replace(line)
                         houtcode.write(line)
