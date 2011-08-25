@@ -34,7 +34,8 @@ def main(args=sys.argv[1:]):
         lines = []
 
     if not options.bake_file:
-        options.bake_file = config['filenames']['code_files']
+        if 'filenames' in config and 'code_files' in config['filenames']:
+            options.bake_file = config['filenames']['code_files']
 
     #warn This adds secret options to the options object.
     options.file_in_suffix = ''
