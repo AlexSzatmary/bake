@@ -49,7 +49,7 @@ def make_optparser():
     optparser.add_option(
         '--bake_file', '-b', action='append',
         help="""File to bake. This can be a filename or a glob. This overrides
-        the list code_files in bake.cfg if it is present. This option can be
+        the list bake_files in bake.cfg if it is present. This option can be
         used repeatedly, with each -b flag specifying another file or glob to
         bake..""")
 
