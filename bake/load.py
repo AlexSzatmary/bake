@@ -21,7 +21,8 @@ def load(iterator):
 	while m:
 	    l = m.group(1) + iterator.next().lstrip()
 	    m = re.search(r'(.*)\\\s*$', l)
-	# Handle include statements
+	# Handle include statements: this removes comments at the end of
+        # include lines
  	m = re.match(r'\s*include\(\s*([^()]+)\s*\)\s*(#.*)?$', l)
  	if m:
 	    lines.extend(load_file(m.group(1)))
