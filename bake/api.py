@@ -141,7 +141,7 @@ def make_grid(config, options, lines):
     """
     grid = mix.Grid(lines)
     grid.set_slice(options.slice_start, options.slice_end)
-    grid.set_pattern(config, options.file)
+    grid.set_key_pattern(config, options.file)
     return grid
 
 

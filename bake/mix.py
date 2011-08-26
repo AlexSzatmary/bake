@@ -120,14 +120,14 @@ class Grid:
             self.slice_end = self.N_values
 
 
-    def set_pattern(self, config, string):
-        # If pattern_start and pattern_end are in bake.cfg
-        if 'format' in config and 'pattern_start' in config['format'] \
-                and 'pattern_end' in config['format']:
-            self.key_start = config['format']['pattern_start']
-            self.key_end = config['format']['pattern_end']
+    def set_key_pattern(self, config, string):
+        # If key_start and key_end are in bake.cfg
+        if 'format' in config and 'key_start' in config['format'] \
+                and 'key_end' in config['format']:
+            self.key_start = config['format']['key_start'][0]
+            self.key_end = config['format']['key_end'][0]
             #todo add exception handling here for the case in which a user
-            # provides one of pattern_start and pattern_end, but not both.
+            # provides one of key_start and key_end, but not both.
         else:
             self.key_start = bakedefaults.KEY_START
             self.key_end = bakedefaults.KEY_END
