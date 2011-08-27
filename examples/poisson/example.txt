@@ -46,7 +46,7 @@ is a long line in `constant`.)
 Bake has three main commands that can be used together or separately. The first
 is list. If you do,
 
-   $ bake -l -f bp/constant
+   $ bake -l -f bp/constant.bp
 
 bake outputs just
 
@@ -63,13 +63,13 @@ of jobs that bake will create.
 
 The second main bake command is mix. If you do,
 
-    $ bake -m -f bp/constant
+    $ bake -m -f bp/constant.bp
 
 bake actually mixes the files compare_ideal.py, model.py, and poisson.py,
-substituting the values in the bp/constant file in for the keys in the source
+substituting the values in the bp/constant.bp file in for the keys in the source
 code files. If you do,
 
-     $ bake -m -f bp/constant
+     $ bake -m -f bp/constant.bp
 
 a second time, you should get the error,
 
@@ -87,7 +87,7 @@ restriction.
 
 The third main bake command is execute. If you do,
 
-    $ bake -e 'python poisson.py' -f bp/constant
+    $ bake -e 'python poisson.py' -f bp/constant.bp
 
 bake goes into the `batch/constant` directory and does
 
@@ -103,7 +103,7 @@ column being the corresponding u values.
 Bake is also good for post-processing jobs. For the constant example, if you
 do,
 
-    $ bake -e 'python compare_ideal.py' -f bp/constant      
+    $ bake -e 'python compare_ideal.py' -f bp/constant.bp
 
 then bake outputs the output of compare_ideal,
 
@@ -118,7 +118,7 @@ for the constant forcing function test case.)
 You can repeat this entire process for another test case, with a sine forcing
 function, in one step,
 
-	  $ bake -m -e 'python poisson.py; python compare_ideal.py' -f bp/sine
+    $ bake -m -e 'python poisson.py; python compare_ideal.py' -f bp/sine.bp
 
 and see
 
@@ -152,16 +152,16 @@ use more nodes, you should see lower error, in general. You could generate
 these jobs by editing the bp file. However, you could equivalently do,
 
     $ bake -l -m -e 'python poisson.py; python compare_ideal.py' \
-          -f bp/constant -o '@label@;constant-n@n@' -o '@n@;3;5;11;21;41'
+          -f bp/constant.bp -o '@label@;constant-n@n@' -o '@n@;3;5;11;21;41'
 
 Each -o (overwrite) item acts like a line in the original bp file. In this
-case, bake behaves precisely as if you had edited bp/constant to change the
+case, bake behaves precisely as if you had edited bp/constant.bp to change the
 @label@ and @n@ lines.
 
 Similarly, you can do this with the sine test case by doing,
 
-    $ bake -l -m -e 'python poisson.py; python compare_ideal.py' -f bp/sine \
-          -o '@label@;sine-n@n@' -o '@n@;3;5;11;21;41'
+    $ bake -l -m -e 'python poisson.py; python compare_ideal.py' \
+          -f bp/sine.bp -o '@label@;sine-n@n@' -o '@n@;3;5;11;21;41'
 
 These two commands give
 
@@ -200,11 +200,11 @@ manipulate a grid of jobs, doing operations that are important for your
 project. There is a special front-end to bake In the myBake directory in this
 example. If you do 
 
-    $ ./myBake/cmdline.py -m -p -f bp/constant
+    $ ./myBake/cmdline.py -m -p -f bp/constant.bp
 
 It's as if you had done
 
-    $ bake -l -m -e 'python poisson.py' -f bp/constant
+    $ bake -l -m -e 'python poisson.py' -f bp/constant.bp
 
 Making a custom front-end to bake is helpful if your project involves running
 the same command as you test your code, or if you have to run your code many
@@ -213,8 +213,8 @@ helpful if you want some operations that use the bake string-replacement tools.
 
 If you do,
 
-    $ ./myBake/cmdline.py -l -c -f bp/constant -o '@label@;constant-n@n@' -o \
-        '@n@;3;5;11;21;41'
+    $ ./myBake/cmdline.py -l -c -f bp/constant.bp -o '@label@;constant-n@n@' \
+          -o '@n@;3;5;11;21;41'
 
 bake makes a table comparing n and the error for each case, and saves this as
 error.txt .
