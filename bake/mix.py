@@ -131,7 +131,7 @@ class Grid:
         else:
             self.key_start = bakedefaults.KEY_START
             self.key_end = bakedefaults.KEY_END
-        self.key_pattern = re.escape(self.key_start) + r'(.*)' + \
+        self.key_pattern = re.escape(self.key_start) + r'(.*?)' + \
             re.escape(self.key_end)
         self.label_key = self.key_start + bakedefaults.LABEL_KEY + self.key_end
         if self.label_key not in self.keys:
