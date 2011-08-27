@@ -39,7 +39,7 @@ def main(args=sys.argv[1:]):
     bake.process_options(options)
 
     # This loads the bake.cfg file as a dict, but processes some of the items.
-    # For example, the code_files string is converted to a list object
+    # For example, the bake_files string is converted to a list object
     config = bake.load_config()
 
     task = ''
@@ -80,31 +80,42 @@ def main(args=sys.argv[1:]):
             exit(-100)
     ## End processing of command line parameters
 
-    # Prepends the overwrite (-o) lines from the command line to the bp file
-    if options.overwrite:
-        lines = options.overwrite
+    # Load bake parameter file
+    if options.file:
+        lines = bake.load.load_file(options.file)
     else:
         lines = []
 
-    # Scan bp file
-    hin = open(options.file, 'r')
-    lines += hin.readlines()
-    hin.close()
+    if not options.bake_file:
+        if 'filenames' in config and 'bake_files' in config['filenames']:
+            options.bake_file = config['filenames']['bake_files']
 
-    # Set up bake mixIterator
-    (label, tokens, mixIterator) = bake.make_iterator(
-        config['label']['label_tag'], config['label']['pattern'],
-        lines, options.slice_start, options.slice_end)
+    #warn This adds secret options to the options object.
+    options.file_in_suffix = ''
+    options.file_out_suffix = ''
+    if 'filenames' in config and 'file_in_suffix' in config['filenames']:
+        options.file_in_suffix = config['filenames']['file_in_suffix'][0]
+    if 'filenames' in config and 'file_out_suffix' in config['filenames']:
+        options.file_in_suffix = config['filenames']['file_out_suffix'][0]
+
+    # The overwrite command pushes lines onto the top of the bake parameter
+    # file
+    if options.overwrite:
+        lines.extend(bake.load.load(l for l in options.overwrite))
+
+    # This mixIterator object is kind of the core of bake.
+    grid = bake.make_grid(config, options, lines)
 
     # If you were to have many custom commands, set this up like a series of
     # elif's
     if options.compare_ideal:
         # To loop over the grid of jobs, do a for loop on mixIterator
-        for values in mixIterator:
-            cd = values[label]
+        for values in grid.mix_iterator():
+            cd = grid.get_label()
+            wd = os.path.join('.', 'batch', cd)
+
             if options.list:
                 print(cd)
-            wd = os.path.join('.', 'batch', cd)
             os.chdir(wd)
             h = os.popen('python compare_ideal.py')
             error = h.read()
@@ -114,8 +125,7 @@ def main(args=sys.argv[1:]):
             table_line = '@n@ ' + error
             # This for loop is set up so that any tag could be put in
             # the default table_line and replaced for its value
-            for j in range(0, len(tokens)):
-                table_line = table_line.replace(tokens[j], values[j])
+            table_line = grid.replace(table_line)
             error_table.append(table_line)
     # You can add other tasks like this
     # elif options.other_task:
@@ -123,7 +133,7 @@ def main(args=sys.argv[1:]):
     # bake.default_loop preserves bake's regular behavior plus this is how
     # the poisson task is run
     else:
-        bake.default_loop(label, tokens, mixIterator, config, options)
+        bake.default_loop(grid, options)
 
     # Post-processing
     if options.compare_ideal:
