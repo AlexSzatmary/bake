@@ -51,16 +51,9 @@ hout.write(p.read())
 hout.close()
 p.close()
 
-p = os.popen("./myBake/cmdline.py -m -p -f bp/constant.bp "
-	     "-o '@label@;mbconstant'")
-hout = open('batch/test8.txt', 'w')
-hout.write(p.read())
-hout.close()
-p.close()
-
 p = os.popen("./myBake/cmdline.py -l -c -f bp/constant.bp "
-	     "-o '@label@;mbconstant-n@n@' -o '@n@;3;5;11;21;41'")
-hout = open('batch/test9.txt', 'w')
+	     "-o '@label@;constant-n@n@' -o '@n@;3;5;11;21;41'")
+hout = open('batch/test8.txt', 'w')
 hout.write(p.read())
 hout.close()
 p.close()
