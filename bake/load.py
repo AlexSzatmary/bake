@@ -31,7 +31,7 @@ def load(iterator):
 	elif re.match(r'^\s*#', l):
 	    l = ''
 	if l:
-	    lines.append(l.replace('\n', ''))
+	    lines.append(l.replace('\n', '').replace('\\n','\n'))
     return lines
 
 
