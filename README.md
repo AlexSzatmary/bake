@@ -82,15 +82,40 @@ To set up a project to use bake, you need the
 following in the project directory:
 
 * An empty directory named `batch`
-* A `bake.cfg` file; you can use the one in the cookie and poisson
-  examples. Edit it so that `code_files` indicates the files you'll want bake
-  to edit. This list should be comma-separated but with no spaces. It can span
-  more than one line, using a `\` at the end of each line.
 * A bake parameter (bp) file that describes which parameters should be 
   varied and substituted.
 
+It also helps to have a `bake.cfg` file, but it is not necessary if bake's
+defaults work for you, but can save you from typing some common options each
+time you use bake. See the section, `Configuration`, in this file, for more
+information.
+
 You can then enter keys anywhere in your code files, and, when bake operates,
 it will substitute those keys for the values in the bp file.
+
+### Configuration
+
+Bake will consult the file `bake.cfg` if it is present. The one in the poisson
+example is a good template. By default, bake identifies keys enclosed in `@`
+signs, like this: `@key@`. It's important to make keys not look like the code
+or configuration files they are embedded in, so you may want to change this
+option. So, for example, if you wanted your keys to have the format `<key>`,
+your bake.cfg would look like,
+
+    [format]
+    key_start: <
+    key_end: >
+
+You need to tell bake which files to edit.
+
+Edit it so that
+`bake_files` indicates the files you'll want bake to edit. This list should be
+comma-separated but with no spaces. It can span more than one line, using a `\`
+at the end of each line.
+
+
+you can use the one in the poisson
+example. 
 
 ### How you can help the bake project
 
@@ -128,7 +153,7 @@ values and another with 2 lead to 6 jobs.)
 
 For each job, that is, for each location in this grid, a specific set of
 values, one for each key, is selected. bake then reads through this list. (See
-`bake.mix.TokenValueSubValue()` for this process.) For each value that has a key
+`bake.mix.KeyValueSubValue()` for this process.) For each value that has a key
 in it, the key in that value is substituted for its corresponding value. For
 example, if this were a combination of keys and values,
 
@@ -145,13 +170,12 @@ key can have a value that includes a key that has another value including a
 key, and so on. Bake iterates over the keys, doing each of these substitutions,
 until each value has no keys in it.
 
-This process is aided by having a consistent format for keys. This is specified
-by the `pattern` option in `bake.cfg`
+This process is aided by having a consistent format for keys. The default format is `@key@`, but you can specify this by setting `key_start` and `key_end` options in the `[format]` section in bake.cfg (see the section, Configuration).
 
 By default, bake does these substitutions to generate the list of `@label@`s
 for a grid of jobs. When bake does the mix task, it takes these key-value pairs
 and substitutes them over all of the source code specified in the `bake.cfg`
-`code_files` option.
+`bake_files` option.
 
 You can do substitution operations on other strings or even files. An example
 of this is in the `bake/examples/poisson/myBake/cmdline.py` file, inside a

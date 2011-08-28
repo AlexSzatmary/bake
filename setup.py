@@ -1,9 +1,11 @@
 #!/usr/bin/python
 
+from bake import __version__
+
 from setuptools import setup, find_packages
 setup(
     name = "bake",
-    version = "0.0.2-46-g6a246c4",
+    version = __version__,
     packages = find_packages(),
     entry_points="""
     # -*- Entry points: -*-
