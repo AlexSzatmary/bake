@@ -77,6 +77,9 @@ class Grid:
         # Add the label as a key-values pair to the weird data structure
         # This is as if there were in the bp file the line,
         # label
+        if not label:
+            raise ValueError, "The label is blank. No label was supplied "\
+                "and none can be inferred."
         self.keys.append(self.label_key)
         self.list_values.append([label])
         self.n_values.append(1)
