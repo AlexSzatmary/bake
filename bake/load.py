@@ -16,22 +16,22 @@ def load(iterator):
     """
     lines = []
     for l in iterator:
-	# Handle line continuation with trailing backslash
-	m = re.search(r'(.*)\\\s*$', l)
-	while m:
-	    l = m.group(1) + iterator.next().lstrip()
-	    m = re.search(r'(.*)\\\s*$', l)
-	# Handle include statements: this removes comments at the end of
+        # Handle line continuation with trailing backslash
+        m = re.search(r'(.*)\\\s*$', l)
+        while m:
+            l = m.group(1) + iterator.next().lstrip()
+            m = re.search(r'(.*)\\\s*$', l)
+        # Handle include statements: this removes comments at the end of
         # include lines
- 	m = re.match(r'\s*include\(\s*([^()]+)\s*\)\s*(#.*)?$', l)
- 	if m:
-	    lines.extend(load_file(m.group(1)))
-	    l = ''
-	# Handle comments at start of line
-	elif re.match(r'^\s*#', l):
-	    l = ''
-	if l:
-	    lines.append(l.replace('\n', '').replace('\\n','\n'))
+        m = re.match(r'\s*include\(\s*([^()]+)\s*\)\s*(#.*)?$', l)
+        if m:
+            lines.extend(load_file(m.group(1)))
+            l = ''
+        # Handle comments at start of line
+        elif re.match(r'^\s*#', l):
+            l = ''
+        if l:
+            lines.append(l.replace('\n', '').replace('\\n','\n'))
     return lines
 
 
@@ -41,8 +41,8 @@ def load_file(f):
     """
     cd = os.getcwd()
     if os.path.dirname(f):
-	os.chdir(os.path.dirname(f))
+        os.chdir(os.path.dirname(f))
     with open(os.path.basename(f)) as hin:
-	lines = load(hin)
+        lines = load(hin)
     os.chdir(cd)
     return lines
