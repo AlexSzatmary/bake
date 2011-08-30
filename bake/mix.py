@@ -6,6 +6,7 @@
 import re
 import bakedefaults
 
+
 class Grid:
     """
     This represents the space over which bake iterates and operates
@@ -70,7 +71,7 @@ class Grid:
         for i in xrange(len(self.keys)):
             if len(self.list_values[i]) > 1:
                 label_bits.append(
-                    re.search(self.key_pattern, self.keys[i]).group(1) + 
+                    re.search(self.key_pattern, self.keys[i]).group(1) +
                     self.keys[i])
         label = '-'.join(label_bits)
         # Add the label as a key-values pair to the weird data structure
@@ -81,7 +82,6 @@ class Grid:
         self.n_values.append(1)
         self.keydict[self.label_key] = len(self.keys) - 1
 
-
     def replace(self, string):
         """
         Replaces all of the tags in string with the corresponding values for
@@ -91,7 +91,6 @@ class Grid:
         for j in range(0, len(self.keys)):
             string = string.replace(self.keys[j], self.values[j])
         return string
-
 
     def KeyValueSubValue(self):
         """
@@ -104,11 +103,10 @@ class Grid:
             # lines appear in a bake parameter file
             while foundkey:
                 self.values[j] = self.values[j].replace(
-                    foundkey.group(0), 
+                    foundkey.group(0),
                     self.values[self.keydict[foundkey.group(0)]])
                 foundkey = re.search(self.key_pattern, self.values[j])
         return None
-
 
     def set_slice(self, slice_start=0, slice_end=0):
         """
@@ -118,7 +116,6 @@ class Grid:
         self.slice_end = slice_end
         if self.slice_end == 0:
             self.slice_end = self.N_values
-
 
     def set_key_pattern(self, config, string):
         # If key_start and key_end are in bake.cfg
@@ -137,7 +134,6 @@ class Grid:
         if self.label_key not in self.keys:
             self.infer_label(string)
 
-
     def mix_iterator(self):
         """
         This iterator returns one set of values for each run; one run is given
@@ -154,13 +150,11 @@ class Grid:
             self.KeyValueSubValue()
             yield self.values
 
-
     def get_label(self):
         """
         Getter for the label on the current iteration.
         """
         return self.values[self.keydict[self.label_key]]
-
 
     def grid_iterator(self):
         """
@@ -172,7 +166,6 @@ class Grid:
             myItList_iNoSlice.next()
         for i in xrange(self.slice_start, self.slice_end):
             yield myItList_iNoSlice.next()
-
 
     def ItList_iNoSlice(self):
         """

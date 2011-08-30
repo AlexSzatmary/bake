@@ -24,6 +24,7 @@ import glob
 import load
 import bakedefaults
 
+
 def load_config():
     """
     Reads bake.cfg and makes a dict out of it
@@ -42,7 +43,7 @@ def load_config():
 
 
 def make_optparser():
-    optparser = optparse.OptionParser(prog="bake", epilog = __doc__)
+    optparser = optparse.OptionParser(prog="bake", epilog=__doc__)
     # Core tasks
     optparser.add_option('--file', '-f',
                          help="""Bake parameter file to operate from""")

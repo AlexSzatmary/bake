@@ -52,7 +52,6 @@ def main(args=sys.argv[1:]):
 
     # This mixIterator object is kind of the core of bake.
     grid = bake.make_grid(config, options, lines)
-                                       
 
     ## This is the main loop, iterating over each set of values
     bake.default_loop(grid, options)
