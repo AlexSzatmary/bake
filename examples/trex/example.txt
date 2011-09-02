@@ -1,1 +1,16 @@
-http://www.qwantz.com/index.php?comic=2025
+This is not a great example, and is more of a bizarre test case. In this
+Dinosaur Comic,
+
+    http://www.qwantz.com/index.php?comic=2025
+
+T-Rex has a generic sales pitch; this code generates each one of these
+pitches. Be careful, there are a lot of them! This is an example of how bake
+can be used with no setup except for doing `mkdir batch`. The following command
+generates 23 T-Rex sales pitches!
+
+    $ bake -l -f trex.bp -s 121-144 -e 'cat trex.txt' -o '@possessive@;your' \
+          -o '@desire@;love' -o '@location@;beachhouse' \
+	  -o '@adjective1@;amazing' -b trex.txt
+
+(If you haven't installed bake, you can do `../../bake/cmdline.py` instead of
+`bake` in this example.)
