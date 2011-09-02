@@ -1,2 +1,2 @@
 from api import *
-__version__ = '0.1.0r0'
+__version__ = '0.1.0'
