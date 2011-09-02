@@ -1,0 +1,82 @@
+Developers of bake should run tests to ensure that new features do not change
+previous behavior of bake unless this is explicitly desired.
+
+### Unit tests:
+Some unit tests have been made, but very little of the code is currently covered. To run the unit tests, cd into the bake directory (the one with the source code), and do,
+
+    python -m unittest discover
+
+### End-to-end tests:
+
+Each example has a script, `test.py`. These comprehensively test each step of
+the `example.txt` tutorials. Currently, these must be kept in sync manually. When beginning development, go into each example and do,
+
+    ./test.py
+    mkdir
+    mv batch/* test
+
+the make changes to the source, then do,
+
+    ./test.py
+
+This runs the test cases and diffs the outputs. A successful test simply lists
+the files and directories in the test directory. If a test fails, the diff
+between its results and the previous results are shown under the name of the
+file with different results; an example of this output for the cookie example is below. Some tests will report that binary `*.pyc` files
+differ. This does not matter.
+
+### Sample output for a failed test for the cookie example:
+Traceback (most recent call last):
+  File "../../bake/cmdline.py", line 60, in <module>
+    main()
+  File "../../bake/cmdline.py", line 32, in main
+    lines = bake.load.load_file(options.file)
+  File "/Users/Alex/code/bake/bake/load.py", line 45, in load_file
+    with open(os.path.basename(f)) as hin:
+IOError: [Errno 2] No such file or directory: 'uts.txt'
+diff: batch/chocolate-chip-macadamia: No such file or directory
+diff: batch/chocolate-chip-walnut: No such file or directory
+diff: batch/peanut-butter-macadamia: No such file or directory
+diff: batch/peanut-butter-walnut: No such file or directory
+diff: batch/sugar-macadamia: No such file or directory
+diff: batch/sugar-walnut: No such file or directory
+chocolate-chip-macadamia
+chocolate-chip-walnut
+cookie-decoration-blue-sprinkles
+cookie-decoration-green-sprinkles
+cookie-decoration-purple-sprinkles
+cookie-decoration-red-sprinkles
+peanut-butter-macadamia
+peanut-butter-walnut
+sugar-macadamia
+sugar-walnut
+test1.txt
+test2.txt
+test3.txt
+test4.txt
+test5.txt
+0a1,24
+> type: sugar
+> nuts: macadamia
+> decoration: none
+> type: chocolate-chip
+> nuts: macadamia
+> decoration: none
+> type: peanut-butter
+> nuts: macadamia
+> decoration: none
+> type: sugar
+> nuts: walnut
+> decoration: none
+> type: chocolate-chip
+> nuts: walnut
+> decoration: none
+> type: peanut-butter
+> nuts: walnut
+> decoration: none
+> sugar-macadamia
+> chocolate-chip-macadamia
+> peanut-butter-macadamia
+> sugar-walnut
+> chocolate-chip-walnut
+> peanut-butter-walnut
