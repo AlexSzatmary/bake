@@ -1,3 +1,40 @@
+0.1.0 No new files needed!
+
+Things that this breaks:
+
+* bake.cfg files have a new format. The one in example/cookie is a good
+  example. This is described in the README.
+
+* Custom cmdline.py bake front-ends break because of the substantial changes to
+  the api. The cmdline.py in example/poisson/myBake is a good example. This is
+  a good change; the new cmdline.py in this example is about 10 lines shorter
+  than in the 0.0.0 release.
+
+New features:
+
+* No files are needed to make a project use bake. Just do `mkdir batch`;
+  everything else can be specified with command line flags. Currently, the
+  minimal use for bake is, 1. install bake, 2. in any directory, do
+
+    mkdir batch; bake -l -o '@foo@;bar;baz'
+
+  outputting,
+
+    foobar
+    foobaz
+
+* bp files now can have include statements. If a bp file has the line,
+  `include(foo.bp)`, Bake replaces that line with the text of `foo.bp`. This is
+  most useful for having a default configuration, and then bp files that refine
+  that for specific cases. One can even have hierarchies with a specific case
+  file including parameters for a project, which includes default values for
+  the whole code.
+
+* Automatic testing. Both unit tests and end-to-end tests are set up in an
+  organized way. These should make it clear that Bake continues to behave as
+  expected as new features are added. Some of this was in the 0.0.0 release,
+  but this is now systematized. See testing.txt for information.
+
 0.0.2 Bugfix: Cookie test code
 0.0.1 Bugfix: Restore \n removal from end of bp line
 0.0.0 Initial release
