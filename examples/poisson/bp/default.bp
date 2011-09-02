@@ -1,0 +1,9 @@
+@label@;default
+# Unit forcing function
+@forcing_function@;1.
+@x_l@;0.
+@x_r@;1.
+@u_l@;0.
+@u_r@;0
+# Number of nodes
+@n@;11

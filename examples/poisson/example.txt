@@ -1,10 +1,10 @@
 ### Introduction
 
-This is an example of how bake can be used to manage a Poisson solver. If
+This is an example of how Bake can be used to manage a Poisson solver. If
 you're unfamiliar with the Poisson problem, that's okay, this is just an
-example of bake being used to help with numerics. In this example, you will
-learn about the command line parameters bake has, and you will learn how to
-extend the bake code for yourself.
+example of Bake being used to help with numerics. In this example, you will
+learn about the command line parameters Bake has, and you will learn how to
+extend the Bake code for yourself.
 
 The Poisson problem in one dimension is:
 
@@ -21,25 +21,49 @@ forcing function f(x), domain, and boundary conditions.
 
 ### Case 1: constant
 
-The first example is for a constant forcing function. The file, constant,
+The first example is for a constant forcing function. The file, `constant.bp`,
 reads:
 
+    include(default.bp) # defaults include domain and bc's
     @label@;constant
     @forcing_function@;1.
-    @ideal@;0.5*@forcing_function@*((x - x_l)**2 - (x - x_l)*(x_r - x_l)) + \
-            u_l + u_r*(x - x_l)/(x_r - x_l)
+    # Parabola, solution to constant forcing_function
+    @ideal@;0.5 * @forcing_function@ * \
+        ((x - x_l)**2 - (x - x_l)*(x_r - x_l)) + \
+        u_l + u_r * (x - x_l) / (x_r - x_l)
+    @n@;11
+
+Here, the forcing function is a constant, unity. An ideal solution is also
+given, as is the number of nodes. The very long `@ideal@` solution could have
+been written all on one line with no wrapping, but when Bake reads a trailing
+backslash followed by nothing (but the newline character), Bake continues the
+next line. Leading whitespace on continued lines is stripped; this is nice so
+that continued lines can be indented to indicate that they aren't new lines.
+
+The file begins with an `include` command. This inserts the include file right
+where the include statement is, so it is as if the file, `constant.bp`, read
+as,
+
+    @label@;default
+    # Unit forcing function
+    @forcing_function@;1.
     @x_l@;0.
     @x_r@;1.
     @u_l@;0.
     @u_r@;0
+    # Number of nodes
+    @n@;11
+    @label@;constant
+    @forcing_function@;1.
+    # Parabola, solution to constant forcing_function
+    @ideal@;0.5 * @forcing_function@ * \
+        ((x - x_l)**2 - (x - x_l)*(x_r - x_l)) + \
+        u_l + u_r * (x - x_l) / (x_r - x_l)
     @n@;11
 
-Here, the forcing function is a constant, unity. The domain bounds and
-boundaryconditions are specified, as are the number, @n@ , of finite difference
-nodes.
-
-(The actual file does not use `\` as a line continuation indicator; `@ideal@`
-is a long line in `constant`.)
+This example has two test cases, constant and sine, and they have a lot of
+common material in `default.bp`. Later lines override earlier lines, so the
+`@label@` for this file is `constant`, not `default`.
 
 ### Bake command: list
 
@@ -48,26 +72,26 @@ is list. If you do,
 
    $ bake -l -f bp/constant.bp
 
-bake outputs just
+Bake outputs just
 
      constant
 
 This is the name of the directory that will be generated in `batch/`. (The `-f`
-flag is necessary to select the file that bake uses as its source for keys and
-values.) If you are running multiple jobs through bake, bake gives the list of
-all jobs it would make. this is a helpful preview, so you can make sure you
+flag is necessary to select the file that Bake uses as its source for keys and
+values.) If you are running multiple jobs through Bake, Bake gives the list of
+all jobs it would make. This is a helpful preview, so you can make sure you
 don't overwrite an existing job. This is also useful in determining the number
-of jobs that bake will create.
+of jobs that Bake will create.
 
 ### Bake command: mix
 
-The second main bake command is mix. If you do,
+The second main Bake command is mix. If you do,
 
     $ bake -m -f bp/constant.bp
 
-bake actually mixes the files compare_ideal.py, model.py, and poisson.py,
-substituting the values in the bp/constant.bp file in for the keys in the source
-code files. If you do,
+Bake actually mixes the files compare_ideal.py, model.py, and poisson.py,
+substituting the values in the bp/constant.bp file in for the keys in the
+source code files. If you do,
 
      $ bake -m -f bp/constant.bp
 
@@ -76,24 +100,24 @@ a second time, you should get the error,
 OSError: [Errno 17] File exists: './batch/constant'
 
 This is so that you don't accidentally overwrite the source code for a job
-using bake. Instead,
+using Bake. Instead,
 
       rm -rf batch/constant
 
-and then re-run bake. Alternatively, using `-M` instead of `-m` overrides this
+and then re-run Bake. Alternatively, using `-M` instead of `-m` overrides this
 restriction.
 
 ### Bake command: execute
 
-The third main bake command is execute. If you do,
+The third main Bake command is execute. If you do,
 
     $ bake -e 'python poisson.py' -f bp/constant.bp
 
-bake goes into the `batch/constant` directory and does
+Bake goes into the `batch/constant` directory and does
 
      python poisson.py
 
-as if you had done cd into batch/constant and typed that yourself. Running
+as if you had done `cd batch/constant` and typed that yourself. Running
 `poisson.py` generates a text file, `solution.txt`, the solution to the given
 poisson problem, with the first column being x coordinates and the second
 column being the corresponding u values.
@@ -105,7 +129,7 @@ do,
 
     $ bake -e 'python compare_ideal.py' -f bp/constant.bp
 
-then bake outputs the output of compare_ideal,
+then Bake outputs the output of compare_ideal,
 
     4.16333634234e-17
 
@@ -122,7 +146,7 @@ function, in one step,
 
 and see
 
-	  0.00826541696623
+          0.00826541696623
 
 Here, the `-e` (execute) flag is two commands joined into a one-liner. The
 error in this solution is much higher than the constant forcing function
@@ -139,7 +163,7 @@ and its `@n@` line as,
 
     @n@;3;5;11;21;41
 
-then bake would know to process five jobs:
+then Bake would know to process five jobs:
 
     constant-n3
     constant-n5
@@ -154,9 +178,10 @@ these jobs by editing the bp file. However, you could equivalently do,
     $ bake -l -m -e 'python poisson.py; python compare_ideal.py' \
           -f bp/constant.bp -o '@label@;constant-n@n@' -o '@n@;3;5;11;21;41'
 
-Each -o (overwrite) item acts like a line in the original bp file. In this
-case, bake behaves precisely as if you had edited bp/constant.bp to change the
-@label@ and @n@ lines.
+Each `-o` (overwrite) item acts like a line in the original bp file. In this
+case, Bake behaves precisely as if you had edited `bp/constant.bp` to change
+the `@label@` and `@n@` lines. If you had written one `-o` for each key, you
+wouldn't have to specify a bp file at all.
 
 Similarly, you can do this with the sine test case by doing,
 
@@ -193,11 +218,11 @@ and
 of truncation error. The error in the sine case decreases with n because the
 discretization error decreases.)
 
-### Customizing bake
+### Customizing Bake
 
-It's easy to make your own version of bake that uses bake's ability to
+It's easy to make your own version of Bake that uses Bake's ability to
 manipulate a grid of jobs, doing operations that are important for your
-project. There is a special front-end to bake In the myBake directory in this
+project. There is a special front-end to Bake In the myBake directory in this
 example. If you do 
 
     $ ./myBake/cmdline.py -m -p -f bp/constant.bp
@@ -206,31 +231,31 @@ It's as if you had done
 
     $ bake -l -m -e 'python poisson.py' -f bp/constant.bp
 
-Making a custom front-end to bake is helpful if your project involves running
+Making a custom front-end to Bake is helpful if your project involves running
 the same command as you test your code, or if you have to run your code many
-times for many different sets of inputs. A front-end for bake is even more
-helpful if you want some operations that use the bake string-replacement tools.
+times for many different sets of inputs. A front-end for Bake is even more
+helpful if you want some operations that use the Bake string-replacement tools.
 
 If you do,
 
     $ ./myBake/cmdline.py -l -c -f bp/constant.bp -o '@label@;constant-n@n@' \
           -o '@n@;3;5;11;21;41'
 
-bake makes a table comparing n and the error for each case, and saves this as
-error.txt .
+Bake makes a table comparing n and the error for each case, and saves this as
+`error.txt`.
 
 The `-p` flag is implemented, mostly in two lines of code:
 
     task = 'execute'
     options.execute = ('python poisson.py')
 
-This tells bake to act as if 
+This tells Bake to act as if 
 
      -e 'python poisson.py'
 
 had been entered on the command line.
 
 The `-c` flag is more complicated, but the way that it is implemented in
-`cmdline.py` shows some idioms that can be used to apply the bake token-value
+`cmdline.py` shows some idioms that can be used to apply the Bake token-value
 replacement on things other than source code. Looking at cmdline.py in the
-myBake directory is the best way to get started with your own bake front-end.
+myBake directory is the best way to get started with your own Bake front-end.
