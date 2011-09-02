@@ -166,16 +166,17 @@ def default_loop(grid, options):
             if not options.remix:
                 os.mkdir(wd)
             # String replace the keys for the values
-            for g in options.bake_file:
-                for f in glob.glob(g):
-                    hin = open(f + options.file_in_suffix, 'r')
-                    houtcode = open(
-                        os.path.join(wd, f + options.file_out_suffix), 'w')
-                    for line in hin.readlines():
-                        line = grid.replace(line)
-                        houtcode.write(line)
-                    hin.close()
-                    houtcode.close()
+            if options.bake_file:
+                for g in options.bake_file:
+                    for f in glob.glob(g):
+                        hin = open(f + options.file_in_suffix, 'r')
+                        houtcode = open(
+                            os.path.join(wd, f + options.file_out_suffix), 'w')
+                        for line in hin.readlines():
+                            line = grid.replace(line)
+                            houtcode.write(line)
+                        hin.close()
+                        houtcode.close()
         if options.execute:
             os.chdir(wd)
             os.system(grid.replace(options.execute))
