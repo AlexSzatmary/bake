@@ -1,0 +1,12 @@
+Mix: To take a list of keys and corresponding value lists and generate a grid
+representing each combination of values
+
+Grid: Every possible combination of values
+
+Key: Text in a code or data file read into bake, to be replaced with a list of
+values, one value per job
+
+Value list: This is what would be substituted into a bake_file; this can be a
+list or a single value.
+
+Job: Each element in the grid corresponds to a job.

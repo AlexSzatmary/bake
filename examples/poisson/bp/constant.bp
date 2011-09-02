@@ -1,0 +1,8 @@
+@label@;constant
+@forcing_function@;1.
+# Parabola, solution to constant forcing_function
+@ideal@;0.5 * @forcing_function@ * \
+    ((x - x_l)**2 - (x - x_l)*(x_r - x_l)) + \
+    u_l + u_r * (x - x_l) / (x_r - x_l)
+@n@;11
+include(default.bp) # defaults include domain and bc's

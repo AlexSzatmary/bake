@@ -1,9 +1,0 @@
-@label@;constant
-@forcing_function@;1.
-@ideal@;0.5*@forcing_function@*((x - x_l)**2 - (x - x_l)*(x_r - x_l)) + u_l + u_r*(x - x_l)/(x_r - x_l)
-#(x_l + x)**2/2 - (x_l + x)/2
-@x_l@;0.
-@x_r@;1.
-@u_l@;0.
-@u_r@;0
-@n@;11

@@ -1,4 +1,4 @@
-cookie is a super easy example of what bake is useful for.
+cookie is a super easy example of what Bake is useful for.
 
 ### Example 1: plain
 
@@ -7,8 +7,8 @@ directory, you do:
 
     $ bake -l -m -f bp/plain.txt
 
-bake takes `cookie.txt`, modifies it according to `bp/plain`, and puts it in
-`batch/cookie-decoration-none/cookie.txt`. (If you haven't installed bake yet,
+Bake takes `cookie.txt`, modifies it according to `bp/plain`, and puts it in
+`batch/cookie-decoration-none/cookie.txt`. (If you haven't installed Bake yet,
 use `../../bake/cmdline.py` instead of `bake` throughout this tutorial.)
 
 The raw `cookie.txt` has lines with keys in them. In the last line:
@@ -16,7 +16,7 @@ The raw `cookie.txt` has lines with keys in them. In the last line:
     decoration: @decoration@
 
 `@decoration@` is a key. By default, keys are enclosed in matched `@` signs.
-Keys are one of the big ideas in bake. Bake replaces keys with values from
+Keys are one of the big ideas in Bake. Bake replaces keys with values from
 other files, varying a handful of parameters systematically.
 
 Look at the file `bp/plain.txt`:
@@ -25,13 +25,13 @@ Look at the file `bp/plain.txt`:
     ...
     @decoration@;none
 
-This is a bake parameter (bp) file. It describes the things to put in for each
-of the keys. The `@decoration@` key appears in `cookie.txt`; when bake reads
+This is a Bake parameter (bp) file. It describes the things to put in for each
+of the keys. The `@decoration@` key appears in `cookie.txt`; when Bake reads
 `plain.txt`, it learns to replace `@decoration@` in `cookie.txt` with
 `none`. There are other keys in `cookie.txt` that get replaced by the other
-keys in `plain.txt`. The key `@label@` is the only mandatory key for bp files.
+keys in `plain.txt`.
 
-When you did `bake bp/plain`, bake made the file:
+When you did `bake bp/plain`, Bake made the file:
 
      batch/cookie-decoration-none/cookie.txt 
 
@@ -48,7 +48,7 @@ The bp file 1sprinkle has a different `@decoration@`. When you do:
 
     $ bake -l -m -f bp/1sprinkle.txt
 
-bake makes a directory:
+Bake makes a directory:
 
     batch/cookie-decoration-yellow-sprinkles
 
@@ -56,7 +56,7 @@ In that directory is a copy of `cookie.txt`, with the last line:
 
     decoration: yellow sprinkles
 
-This illustrates a big idea in bake: keys can be placed inside of values so 
+This illustrates a big idea in Bake: keys can be placed inside of values so 
 that complex values can be constructed. The `@color@` key in `@label@` was
 replaced with the value, `yellow`. `yellow` also gets substituted into 
 `@decoration@`, which then gets plugged into the last line of cookie.txt
@@ -69,7 +69,7 @@ When you do:
 
     $ bake -l -m -f bp/many_sprinkles.txt
 
-bake makes a directory in batch for each of the colors, and each modified
+Bake makes a directory in batch for each of the colors, and each modified
 `cookie.txt` has a different color of sprinkles substituted in. This is a big
 idea in bake: one bp file can make a grid of different sets of files.
 
@@ -78,18 +78,20 @@ So, the format of each line in a bp file is:
     @key@;value1;value2;value3...
 
 Bake makes one copy of `cookie.txt` for each combination of values in the bp
-file. So that bake doesn't overwrite one copy with another, the `@label@` needs
+file. So that Bake doesn't overwrite one copy with another, the `@label@` needs
 to include each key that has multiple values; this gives unique labels for each
-copy of `cookie.txt` in batch.
+copy of `cookie.txt` in batch. (If Bake doesn't see `@label@` in your bake
+parameter file, it will do its best to make a sensible label pattern that will
+give unique names to each job.)
 
 ### Example 4: nuts
 
-You can have different keys with more than one value. bake will make one copy
+You can have different keys with more than one value. Bake will make one copy
 of your files for each combination of these values. For example, when you do:
 
     $ bake -l -m -f bp/nuts.txt
 
-bake makes:
+Bake makes:
 
     batch/
 	  chocolate-chip-macadamia
@@ -99,7 +101,7 @@ bake makes:
 	  sugar-macadamia
 	  sugar-walnut
 
-`nuts.txt` has 2 kinds of nuts and 3 types of cookies mentioned, so bake
+`nuts.txt` has 2 kinds of nuts and 3 types of cookies mentioned, so Bake
 maks 6 copies of `cookie.txt` and puts each copy in its own directory.  The
 contents of the `cookie.txt` in each directory are what you would expect, e.g.,
 `chocolate-chip-macadamia` looks like:
@@ -113,35 +115,49 @@ The directory names are given by the `@label@`, which, in `nuts.txt`, is
     @label@;@type@-@nuts@
 
 Remember, each key that has more than one value should appear somewhere in the
-label so that each set of files that bake makes gets their own directory.
+label so that each set of files that Bake makes gets their own directory.
 
-5. Under the hood
+### 5. Under the hood
 
-All of bake's behavior depends on the directory it is running in. When bake
+All of Bake's behavior depends on the directory it is running in. When Bake
 starts, it looks for and reads `bake.cfg`. This is the `bake.cfg` for the
 cookie example:
 
-    [label]
-    label_tag: @label@
-    pattern: @.+?@
+    [format]
+    key_start: @
+    key_end: @
 
     [filenames]
-    code_files: cookie.txt
-    file_in_suffix: 
-    file_out_suffix: 
+    bake_files: cookie.txt
 
-In the `[label]` section, the name for the `@label@` line is specified. If you
-wanted to, you could change this to anything, say, `@directory-name@`, and then
-change `@label@` to `@directory-name@` in each bp file for cookie, and it would
-behave the same way.
+If you wanted to, your keys could look like `$key$` or `<key>`; this is what is
+specified in the `[format]` section. For the first case, do,
 
-`pattern` is a regular expression pattern that specifies how bake can recognize
-a key; if you wanted to, your keys could look like `$key$` or `<key>`, if you
-changed pattern to `$.+?$` or `<.+?>`. This is configurable because keys can be
-embedded in any type of source code and so they shouldn't look like regular
-code. Using keys in `<angle brackets>` would be a bad idea for HTML, for
-example.
+    key_start: $
+    key_end: $
 
-`code_files` specifies the list of files bake should operate on, in this case,
-`cookie.txt`. `file_in_suffix` and `file_out_suffix` are blank here; this is
-okay.
+To make keys be enclosed in `<angle brackets>`, do,
+
+    key_start: <
+    key_end: >
+
+This is configurable because keys can be embedded in any type of source code
+and so they shouldn't look like regular code. Using keys in `<angle brackets>`
+would be a bad idea for HTML, for example.
+
+`bake_files` specifies the list of files Bake should operate on, in this case,
+`cookie.txt`. You could also select your bake files using the --bake_file
+command line flag, like
+
+    bake --bake_file=cookie.txt ...
+
+or
+
+    bake -b cookie.txt ...
+
+It's normal to bake one set of files repeatedly, and so setting this in a file
+saves typing.
+
+Having a `bake.cfg` file is optional. If the `[format]` section is absent, Bake
+uses the default format of keys marked by `@`s. If the `bake_file` option is
+missing, files to bake must be specified at the command line.
