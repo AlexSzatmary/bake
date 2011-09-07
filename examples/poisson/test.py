@@ -59,6 +59,6 @@ hout.close()
 p.close()
 
 # diff tests with reference case
-p = os.popen('for f in `ls test`; do echo $f; diff -r batch/$f test/$f; done')
+p = os.popen("for f in `ls test`; do echo $f; diff -r batch/$f test/$f|grep -v '^Binary files'; done")
 print p.read()
 p.close()
