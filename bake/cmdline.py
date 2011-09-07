@@ -51,7 +51,7 @@ def main(args=sys.argv[1:]):
         lines.extend(bake.load.load(l for l in options.overwrite))
 
     # This mixIterator object is kind of the core of bake.
-    grid = bake.make_grid(config, options, lines)
+    grid = bake.make_grid(lines, options, config)
 
     ## This is the main loop, iterating over each set of values
     bake.default_loop(grid, options)

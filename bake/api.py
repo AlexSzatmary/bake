@@ -6,7 +6,7 @@ This module takes bake parameter files, which are lists of tags and values,
 then does something for each combination of values.
 Okay, that's pretty vague and broad.
 It's useful, honest, for doing repetitive find-and-replace operations,
-wrangling data out of oodles of really-similar-but-sublty-different-in-two-
+wrangling data out of oodles of really-similar-but-subtly-different-in-two-
 variables-but-not-the-other-five sets of data, doing the accounting on
 submitting jobs to all of the different kinds of supercomputers in your life,
 and making plots of y vs x for a given z, but then b vs t for a given y.
@@ -135,14 +135,30 @@ def process_options(options):
             exit(-100)
 
 
-def make_grid(config, options, lines):
+def make_grid(lines, options, config):
     """
     This is the interface between the internals of bake.mix and what people
     would practically use.
     """
     grid = mix.Grid(lines)
-    grid.set_slice(options.slice_start, options.slice_end)
-    grid.set_key_pattern(config, options.file)
+    if options:
+        grid.set_slice(options.slice_start, options.slice_end)
+    else:
+        grid.set_slice()
+    if options:
+        grid.set_key_pattern(config, options.file)
+    else:
+        grid.set_key_pattern(config)
+    return grid
+
+
+def default_make_grid(lines):
+    """
+    New goal: make this function useless
+    """
+    grid = mix.Grid(lines)
+    grid.set_slice()
+    grid.set_key_pattern()
     return grid
 
 
