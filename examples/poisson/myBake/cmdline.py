@@ -104,7 +104,7 @@ def main(args=sys.argv[1:]):
         lines.extend(bake.load.load(l for l in options.overwrite))
 
     # This mixIterator object is kind of the core of bake.
-    grid = bake.make_grid(config, options, lines)
+    grid = bake.make_grid(lines, options, config)
 
     # If you were to have many custom commands, set this up like a series of
     # elif's
