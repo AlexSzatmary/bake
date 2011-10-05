@@ -120,7 +120,7 @@ class Grid:
         if self.slice_end == 0:
             self.slice_end = self.N_values
 
-    def set_key_pattern(self, config, string):
+    def set_key_pattern(self, config={}, string=""):
         # If key_start and key_end are in bake.cfg
         if 'format' in config and 'key_start' in config['format'] \
                 and 'key_end' in config['format']:
