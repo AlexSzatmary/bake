@@ -34,7 +34,7 @@ def make_argparser(argv):
         help="""File to bake. This can be a filename or a glob. This overrides
         the list bake_files in bake.cfg if it is present. This option can be
         used repeatedly, with each -b flag specifying another file or glob to
-        bake..""")
+        bake.""")
 
     argparser.add_argument('--mix', '-m',
                          help="""Mix parameters into code files.""",
