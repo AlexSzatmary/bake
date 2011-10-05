@@ -104,7 +104,7 @@ def main(argv=sys.argv[1:]):
     if args.overwrite:
         lines.extend(bake.load.load(l for l in args.overwrite))
 
-    # This mixIterator object is kind of the core of bake.
+    # This grid object is kind of the core of bake.
     grid = bake.make_grid(lines, args, config)
 
     # If you were to have many custom commands, set this up like a series of
