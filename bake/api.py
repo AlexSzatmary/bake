@@ -21,22 +21,19 @@ import mix
 import re
 import glob
 import load
-import cfg_arg
+import argument
 
-def make_grid(lines, options, config):
+def make_grid(lines, args):
     """
     This is the interface between the internals of bake.mix and what people
     would practically use.
     """
     grid = mix.Grid(lines)
-    if options:
-        grid.set_slice(options.slice_start, options.slice_end)
+    if args:
+        grid.set_slice(args.slice_start, args.slice_end)
     else:
         grid.set_slice()
-    if options:
-        grid.set_key_pattern(config, options.file)
-    else:
-        grid.set_key_pattern(config)
+    grid.set_key_pattern(args)
     return grid
 
 
@@ -50,7 +47,7 @@ def default_make_grid(lines):
     return grid
 
 
-def default_loop(grid, options):
+def default_loop(grid, args):
     """
     This does a loop over each item in mixIterator, that is, each combination
     of the possible values.
@@ -60,28 +57,27 @@ def default_loop(grid, options):
         cd = grid.get_label()
         wd = os.path.join('.', 'batch', cd)
 
-        if options.list:
+        if args.list:
             print(cd)
         # mix is the main special thing done by this loop:
         # it takes the files, does a wild find and replace on them to take out
         # the keys and swap in corresponding values, and spits the files out
         # in ./batch/ somewhere.
-        if options.mix:
-            if not options.remix:
+        if args.mix:
+            if not args.remix:
                 os.mkdir(wd)
             # String replace the keys for the values
-            if options.bake_file:
-                for g in options.bake_file:
+            if args.bake_file:
+                for g in args.bake_file:
                     for f in glob.glob(g):
-                        hin = open(f + options.file_in_suffix, 'r')
-                        houtcode = open(
-                            os.path.join(wd, f + options.file_out_suffix), 'w')
+                        hin = open(f, 'r')
+                        houtcode = open(os.path.join(wd, f), 'w')
                         for line in hin.readlines():
                             line = grid.replace(line)
                             houtcode.write(line)
                         hin.close()
                         houtcode.close()
-        if options.execute:
+        if args.execute:
             os.chdir(wd)
-            os.system(grid.replace(options.execute))
+            os.system(grid.replace(args.execute))
             os.chdir(os.path.join('..', '..'))
