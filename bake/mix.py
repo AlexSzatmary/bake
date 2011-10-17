@@ -120,22 +120,15 @@ class Grid:
         if self.slice_end == 0:
             self.slice_end = self.N_values
 
-    def set_key_pattern(self, config={}, string=""):
-        # If key_start and key_end are in bake.cfg
-        if 'format' in config and 'key_start' in config['format'] \
-                and 'key_end' in config['format']:
-            self.key_start = config['format']['key_start'][0]
-            self.key_end = config['format']['key_end'][0]
-            #todo add exception handling here for the case in which a user
-            # provides one of key_start and key_end, but not both.
-        else:
-            self.key_start = bakedefaults.KEY_START
-            self.key_end = bakedefaults.KEY_END
+    def set_key_pattern(self, args):
+        self.key_start = args.key_start
+        self.key_end = args.key_end
         self.key_pattern = re.escape(self.key_start) + r'(.*?)' + \
             re.escape(self.key_end)
-        self.label_key = self.key_start + bakedefaults.LABEL_KEY + self.key_end
+        self.label_key = (self.key_start + bakedefaults.LABEL_KEY +
+                          self.key_end)
         if self.label_key not in self.keys:
-            self.infer_label(string)
+            self.infer_label(args.file)
 
     def mix_iterator(self):
         """
