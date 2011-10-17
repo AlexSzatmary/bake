@@ -55,7 +55,7 @@ def default_loop(grid, args):
     for values in grid.mix_iterator():
     # Do the string replace operations on the values themselves
         cd = grid.get_label()
-        wd = os.path.join('.', 'batch', cd)
+        wd = os.path.join(args.prefix, cd)
 
         if args.list:
             print(cd)

@@ -20,6 +20,8 @@ class BakeArgparser(argparse.ArgumentParser):
             help="""File or comma-separated list of files to bake. This can be
             a filename or a glob. This option can be used repeatedly, with
             each -b flag specifying another file or glob to bake.""")
+        self.add_argument('--prefix', '-p', help="""The directory with the grid
+            of jobs.""", default='batch')
         self.add_argument('--mix', '-m',
                              help="""Mix parameters into code files.""",
                              action='store_true')

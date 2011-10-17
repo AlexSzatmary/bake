@@ -23,7 +23,7 @@ def main(argv=sys.argv[1:]):
 
     # Add my own options
     argparser.add_argument(
-        '--poisson', '-p', action='store_true', help="""
+        '--poisson', '-P', action='store_true', help="""
         Run the poisson solver
         """
         )
