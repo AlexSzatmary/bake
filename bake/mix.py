@@ -26,7 +26,6 @@ class Grid:
         """
         self.keys = []
         self.list_values = []
-        self.n_values = []
         self.keydict = {}
 
         # Load bp file
@@ -38,19 +37,17 @@ class Grid:
             if elements[0] not in self.keys:
                 self.keys.append(elements[0])
                 self.list_values.append(elements[1:])
-                self.n_values.append(len(elements) - 1)
                 self.keydict[self.keys[-1]] = m
                 m = m + 1
             else:
                 # If this key is repeated
                 i = self.keydict[elements[0]]
                 self.list_values[i] = elements[1:]
-                self.n_values[i] = len(elements) - 1
 
         # Count how many runs I'm going to start
         self.N_values = 1
-        for i in self.n_values:
-            self.N_values = self.N_values * i
+        for values in self.list_values:
+            self.N_values = self.N_values * len(values)
 
     def infer_label(self, string):
         """
@@ -82,7 +79,6 @@ class Grid:
                 "and none can be inferred."
         self.keys.append(self.label_key)
         self.list_values.append([label])
-        self.n_values.append(1)
         self.keydict[self.label_key] = len(self.keys) - 1
 
     def replace(self, string):
@@ -170,13 +166,13 @@ class Grid:
         key. This iterator walks through each location in that grid; list_i
         corresponds to a single position in that grid.
         """
-        list_i = [0 for i in xrange(len(self.n_values))]
+        list_i = [0 for i in xrange(len(self.list_values))]
         yield list_i
         while True:
             j = 0
             while True:
                 list_i[j] = list_i[j] + 1
-                if list_i[j] == self.n_values[j]:
+                if list_i[j] == len(self.list_values[j]):
                     list_i[j] = 0
                     j = j + 1
                 else:
