@@ -19,7 +19,6 @@ class Grid:
         keys: the list of keys
         list_values: the list of values for a given key (these are matched by
         their indices)
-        n_values is the number of values for a given index
         N_values is the repeated product of n_values; it is the total number of
         runs to do.
         keydict gives the index of a given key
@@ -65,8 +64,14 @@ class Grid:
         label_bits = []
         if string:
             label_bits.append(string)
-        for i in xrange(len(self.keys)):
+        for i in xrange(len(self.list_values)):
+            # The automatic label includes any keys with multiple values
             if len(self.list_values[i]) > 1:
+                # If a key has multiple values, add both its name and its key.
+                # That is, if @key1@ has multiple values, label_bits will have
+                # 'key1' + '@key1@' appended. This means the label includes
+                # both the key's name and the particular value it has for a
+                # given job.
                 label_bits.append(
                     re.search(self.key_pattern, self.keys[i]).group(1) +
                     self.keys[i])
@@ -79,7 +84,7 @@ class Grid:
                 "and none can be inferred."
         self.keys.append(self.label_key)
         self.list_values.append([label])
-        self.keydict[self.label_key] = len(self.keys) - 1
+        self.keydict[self.label_key] = len(self.list_values) - 1
 
     def replace(self, string):
         """
@@ -87,11 +92,11 @@ class Grid:
         the current job.
         """
         # self.values is assigned in mix_iterator()
-        for j in range(0, len(self.keys)):
+        for j in xrange(len(self.list_values)):
             string = string.replace(self.keys[j], self.values[j])
         return string
 
-    def KeyValueSubValue(self):
+    def expand_values(self):
         """
         This takes each key's value and expands the values by substituting in
         the values of other keys.
@@ -105,7 +110,6 @@ class Grid:
                     foundkey.group(0),
                     self.values[self.keydict[foundkey.group(0)]])
                 foundkey = re.search(self.key_pattern, self.values[j])
-        return None
 
     def set_slice(self, slice_start=0, slice_end=0):
         """
@@ -139,7 +143,7 @@ class Grid:
             for j in range(len(self.keys)):
                 self.values[j] = self.list_values[j][list_i[j]]
             # Do the string replace operations on the values themselves
-            self.KeyValueSubValue()
+            self.expand_values()
             yield self.values
 
     def get_label(self):
@@ -153,13 +157,13 @@ class Grid:
         This is basically a thing that encloses ItList_iNoSlice and does the
         slicing math for it.
         """
-        myItList_iNoSlice = self.ItList_iNoSlice()
+        my_grid_iterator_noslice = self.grid_iterator_noslice()
         for i in xrange(0, self.slice_start):
-            myItList_iNoSlice.next()
+            my_grid_iterator_noslice.next()
         for i in xrange(self.slice_start, self.slice_end):
-            yield myItList_iNoSlice.next()
+            yield my_grid_iterator_noslice.next()
 
-    def ItList_iNoSlice(self):
+    def grid_iterator_noslice(self):
         """
         Imagine an m-dimensional grid, where m is the number of keys; the width
         of the grid in one of these directions is the number of values for that
