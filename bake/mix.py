@@ -71,18 +71,18 @@ class Grid:
         if self.slice_end == 0:
             self.slice_end = self.N_values
 
-    def set_key_pattern(self, args):
+    def set_key_pattern(self, key_start, key_end, f):
         """
         Setter
         """
-        self.key_start = args.key_start
-        self.key_end = args.key_end
+        self.key_start = key_start
+        self.key_end = key_end
         self.key_pattern = re.escape(self.key_start) + r'(.*?)' + \
             re.escape(self.key_end)
         self.label_key = (self.key_start + bakedefaults.LABEL_KEY +
                           self.key_end)
         if self.label_key not in self.table.keys():
-            self.infer_label(args.file)
+            self.infer_label(f)
 
 # Internal methods
     def infer_label(self, string):

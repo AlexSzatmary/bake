@@ -33,7 +33,7 @@ def make_grid(lines, args):
         grid.set_slice(args.slice_start, args.slice_end)
     else:
         grid.set_slice()
-    grid.set_key_pattern(args)
+    grid.set_key_pattern(args.key_start, args.key_end, args.file)
     return grid
 
 
