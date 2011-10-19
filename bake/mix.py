@@ -24,11 +24,67 @@ class Grid:
             elements = line.split(';')
             self.table[elements[0]] = elements[1:]
 
-        # Count how many runs I'm going to start
+# External methods
+    def mix_iterator(self):
+        """
+        This iterator returns one set of values for each run; one run is given
+        by each iteration of grid_iterator. These values can then be subbed in
+        for the corresponding keys.
+        """
+        self.job = OrderedDict()
+        for list_i in self.grid_iterator():
+            # Pick the values to be used in this run
+            for (k, i) in zip(self.table.keys(), list_i):
+                self.job[k] = self.table[k][i]
+            # Do the string replace operations on the values themselves
+            self.expand_values()
+            yield self.job
+
+    def replace(self, string):
+        """
+        Replaces all of the tags in string with the corresponding values for
+        the current job.
+        """
+        # self.values is assigned in mix_iterator()
+        for k, v in self.job.items():
+            string = string.replace(k, v)
+        return string
+
+    def get_label(self):
+        """
+        Getter for the label on the current iteration.
+        """
+        return self.job[self.label_key]
+
+    def set_slice(self, slice_start=0, slice_end=0):
+        """
+        Setter
+        """
+        self.slice_start = slice_start
+        self.slice_end = slice_end
+
+        # Count how many runs to start
         self.N_values = 1
         for values in self.table.values():
             self.N_values = self.N_values * len(values)
 
+        if self.slice_end == 0:
+            self.slice_end = self.N_values
+
+    def set_key_pattern(self, args):
+        """
+        Setter
+        """
+        self.key_start = args.key_start
+        self.key_end = args.key_end
+        self.key_pattern = re.escape(self.key_start) + r'(.*?)' + \
+            re.escape(self.key_end)
+        self.label_key = (self.key_start + bakedefaults.LABEL_KEY +
+                          self.key_end)
+        if self.label_key not in self.table.keys():
+            self.infer_label(args.file)
+
+# Internal methods
     def infer_label(self, string):
         """
         Makes up a sensible label if none is specified.
@@ -63,75 +119,6 @@ class Grid:
                 "and none can be inferred."
         self.table[self.label_key] = [label]
 
-    def replace(self, string):
-        """
-        Replaces all of the tags in string with the corresponding values for
-        the current job.
-        """
-        # self.values is assigned in mix_iterator()
-        for k, v in self.job.items():
-            string = string.replace(k, v)
-        return string
-
-    def expand_values(self):
-        """
-        This takes each key's value and expands the values by substituting in
-        the values of other keys.
-        """
-        for k, v in self.job.items():
-            foundkey = re.search(self.key_pattern, v)
-            # This is done iteratively so that it doesn't matter what order
-            # lines appear in a bake parameter file
-            while foundkey:
-                v = v.replace(
-                    foundkey.group(0),
-                    self.job[foundkey.group(0)])
-                foundkey = re.search(self.key_pattern, v)
-            self.job[k] = v
-
-    def set_slice(self, slice_start=0, slice_end=0):
-        """
-        Setter
-        """
-        self.slice_start = slice_start
-        self.slice_end = slice_end
-        if self.slice_end == 0:
-            self.slice_end = self.N_values
-
-    def set_key_pattern(self, args):
-        """
-        Setter
-        """
-        self.key_start = args.key_start
-        self.key_end = args.key_end
-        self.key_pattern = re.escape(self.key_start) + r'(.*?)' + \
-            re.escape(self.key_end)
-        self.label_key = (self.key_start + bakedefaults.LABEL_KEY +
-                          self.key_end)
-        if self.label_key not in self.table.keys():
-            self.infer_label(args.file)
-
-    def mix_iterator(self):
-        """
-        This iterator returns one set of values for each run; one run is given
-        by each iteration of grid_iterator. These values can then be subbed in
-        for the corresponding keys.
-        """
-        self.job = OrderedDict()
-        for list_i in self.grid_iterator():
-            # Pick the values to be used in this run
-            for (k, i) in zip(self.table.keys(), list_i):
-                self.job[k] = self.table[k][i]
-            # Do the string replace operations on the values themselves
-            self.expand_values()
-            yield self.job
-
-    def get_label(self):
-        """
-        Getter for the label on the current iteration.
-        """
-        return self.job[self.label_key]
-
     def grid_iterator(self):
         """
         This is basically a thing that encloses grid_iterator_noslice and does
@@ -156,3 +143,19 @@ class Grid:
             q.append(k % b)
             k /= b
         return q
+
+    def expand_values(self):
+        """
+        This takes each key's value and expands the values by substituting in
+        the values of other keys.
+        """
+        for k, v in self.job.items():
+            foundkey = re.search(self.key_pattern, v)
+            # This is done iteratively so that it doesn't matter what order
+            # lines appear in a bake parameter file
+            while foundkey:
+                v = v.replace(
+                    foundkey.group(0),
+                    self.job[foundkey.group(0)])
+                foundkey = re.search(self.key_pattern, v)
+            self.job[k] = v
