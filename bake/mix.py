@@ -137,29 +137,22 @@ class Grid:
         This is basically a thing that encloses grid_iterator_noslice and does
         the slicing math for it.
         """
-        my_grid_iterator_noslice = self.grid_iterator_noslice()
-        for i in xrange(0, self.slice_start):
-            my_grid_iterator_noslice.next()
-        for i in xrange(self.slice_start, self.slice_end):
-            yield my_grid_iterator_noslice.next()
-
-    def grid_iterator_noslice(self):
-        """
-        Imagine an m-dimensional grid, where m is the number of keys; the width
-        of the grid in one of these directions is the number of values for that
-        key. This iterator walks through each location in that grid; list_i
-        corresponds to a single position in that grid.
-        """
-        list_i = [0 for v in self.table]
         n_values = [len(v) for v in self.table.values()]
-        yield list_i
-        while True:
-            j = 0
-            while True:
-                list_i[j] = list_i[j] + 1
-                if list_i[j] == n_values[j]:
-                    list_i[j] = 0
-                    j = j + 1
-                else:
-                    break
-            yield list_i
+        for i in xrange(self.slice_start, self.slice_end):
+            yield self.variable_base(i, n_values)
+
+    def variable_base(self, k, base):
+        """
+        This gives the representation of k in the base system specified in
+        `base`, where the base for each digit is different.
+        For binary, base = [2, 2, ..., 2]
+        For decimal, base = [10, 10, ..., 10]
+        If time were represented as SS:MM:HH:DD, base = [60, 60, 24, 365]
+        This order is reversed for bizarre historical reasons. This means that
+        the first values in a bp file get varied more frequently.
+        """
+        q = []
+        for b in base:
+            q.append(k % b)
+            k /= b
+        return q
