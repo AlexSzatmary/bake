@@ -22,8 +22,7 @@ the make changes to the source, then do,
 This runs the test cases and diffs the outputs. A successful test simply lists
 the files and directories in the test directory. If a test fails, the diff
 between its results and the previous results are shown under the name of the
-file with different results; an example of this output for the cookie example is below. Some tests will report that binary `*.pyc` files
-differ. This does not matter.
+file with different results; an example of this output for the cookie example is below.
 
 ### Sample output for a failed test for the cookie example:
 Traceback (most recent call last):
