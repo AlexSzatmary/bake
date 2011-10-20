@@ -5,26 +5,29 @@
 import sys
 import os
 import os.path
-import optparse
+import argparse
+sys.path.insert(0, '/Users/Alex/code/bake')
 import bake
 import bake.mix
 
 
-def main(args=sys.argv[1:]):
+def main(argv=sys.argv[1:]):
     """
     Main routine for cmdline.py
     """
 
     # Generate an optparser object with the bake default options
-    optparser = bake.make_optparser()
+    argparser = bake.argument.BakeArgparser()
+    if os.path.exists('bake.arg'):
+        argv = ['+bake.arg'] + argv
 
     # Add my own options
-    optparser.add_option(
-        '--poisson', '-p', action='store_true', help="""
+    argparser.add_argument(
+        '--poisson', '-P', action='store_true', help="""
         Run the poisson solver
         """
         )
-    optparser.add_option(
+    argparser.add_argument(
         '--compare_ideal', '-c', action='store_true', help="""
         Compare the numerical solution with the ideal value, giving the
         L_infinity norm for each job specified in the bp file; this data is
@@ -32,15 +35,11 @@ def main(args=sys.argv[1:]):
         """
         )
 
-    options, arguments = optparser.parse_args()
+    args = argparser.parse_args(argv)
 
     # Bake tweaks the options object, it checks for errors, does
     # arithmetic for slice, and so on
-    bake.process_options(options)
-
-    # This loads the bake.cfg file as a dict, but processes some of the items.
-    # For example, the bake_files string is converted to a list object
-    config = bake.load_config()
+    bake.argument.process_arguments(args)
 
     task = ''
 
@@ -48,17 +47,17 @@ def main(args=sys.argv[1:]):
     # tasks aren't requested. For example, a regular execute plus the poisson
     # task can't both be requested.
     try:
-        if options.poisson:
+        if args.poisson:
             if task:
                 raise Exception('Multiple tasks requested')
             # This makes the poisson option act like a simple execute option,
             # but with a built-in command
             task = 'execute'
-            options.execute = ('python poisson.py')
+            args.execute = ('python poisson.py')
             # Uncomment the below lines to force bake to always mix or list
-            # options.mix = True
-            # options.list = True
-        if options.compare_ideal:
+            # args.mix = True
+            # args.list = True
+        if args.compare_ideal:
             if task:
                 raise Exception('Multiple tasks requested')
             error_table = []
@@ -81,40 +80,28 @@ def main(args=sys.argv[1:]):
     ## End processing of command line parameters
 
     # Load bake parameter file
-    if options.file:
-        lines = bake.load.load_file(options.file)
+    if args.file:
+        lines = bake.load.load_file(args.file)
     else:
         lines = []
 
-    if not options.bake_file:
-        if 'filenames' in config and 'bake_files' in config['filenames']:
-            options.bake_file = config['filenames']['bake_files']
-
-    #warn This adds secret options to the options object.
-    options.file_in_suffix = ''
-    options.file_out_suffix = ''
-    if 'filenames' in config and 'file_in_suffix' in config['filenames']:
-        options.file_in_suffix = config['filenames']['file_in_suffix'][0]
-    if 'filenames' in config and 'file_out_suffix' in config['filenames']:
-        options.file_in_suffix = config['filenames']['file_out_suffix'][0]
-
     # The overwrite command pushes lines onto the top of the bake parameter
     # file
-    if options.overwrite:
-        lines.extend(bake.load.load(l for l in options.overwrite))
+    if args.overwrite:
+        lines.extend(bake.load.load(l for l in args.overwrite))
 
-    # This mixIterator object is kind of the core of bake.
-    grid = bake.make_grid(config, options, lines)
+    # This grid object is kind of the core of bake.
+    grid = bake.make_grid(lines, args)
 
     # If you were to have many custom commands, set this up like a series of
     # elif's
-    if options.compare_ideal:
+    if args.compare_ideal:
         # To loop over the grid of jobs, do a for loop on mixIterator
         for values in grid.mix_iterator():
             cd = grid.get_label()
             wd = os.path.join('.', 'batch', cd)
 
-            if options.list:
+            if args.list:
                 print(cd)
             os.chdir(wd)
             h = os.popen('python compare_ideal.py')
@@ -128,15 +115,15 @@ def main(args=sys.argv[1:]):
             table_line = grid.replace(table_line)
             error_table.append(table_line)
     # You can add other tasks like this
-    # elif options.other_task:
+    # elif args.other_task:
     #     code for other task
     # bake.default_loop preserves bake's regular behavior plus this is how
     # the poisson task is run
     else:
-        bake.default_loop(grid, options)
+        bake.default_loop(grid, args)
 
     # Post-processing
-    if options.compare_ideal:
+    if args.compare_ideal:
         hout = open('error.txt', 'w')
         hout.writelines(error_table)
         hout.close()

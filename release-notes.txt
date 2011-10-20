@@ -1,3 +1,29 @@
+0.2.0 Sensible use of arguments! Saner internals!
+
+Things that this breaks:
+
+* bake.cfg is dead. Long live bake.arg! Converting from bake.cfg to bake.arg
+  should be easy; a good example of bake.arg is in examples/poisson.
+
+* Custom cmdline.py front-ends break again. This should be easy to fix. Compare
+  with `examples/poisson/myBake/cmdline.py`. In short, do a find-and-replace on
+  optparse to argparse, options to args, and change
+
+    options, arguments = optparser.parse_args()
+
+  to
+
+    args = argparser.parse_args(argv)
+
+  The new sample cmdline.py in myBake is about 14 lines shorter than the 0.1.0
+  version.
+
+New feature:
+
+* bake.cfg is gone. Now, all options can be set at the command line, or,
+  equivalently, in bake.arg in the project directory. See Configuration in the
+  README.
+
 0.1.0 No new files needed! include statements!
 
 Things that this breaks:
@@ -6,9 +32,9 @@ Things that this breaks:
   example. This is described in the README.
 
 * Custom cmdline.py bake front-ends break because of the substantial changes to
-  the api. The cmdline.py in example/poisson/myBake is a good example. This is
-  a good change; the new cmdline.py in this example is about 10 lines shorter
-  than in the 0.0.0 release.
+  the api. The cmdline.py in `examples/poisson/myBake` is a good example. This
+  is a good change; the new cmdline.py in this example is about 10 lines
+  shorter than in the 0.0.0 release.
 
 New features:
 

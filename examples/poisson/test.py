@@ -44,7 +44,7 @@ hout.write(p.read())
 hout.close()
 p.close()
 
-p = os.popen("./myBake/cmdline.py -m -p -f bp/constant.bp "
+p = os.popen("./myBake/cmdline.py -m -P -f bp/constant.bp "
 	     "-o '@label@;mbconstant'")
 hout = open('batch/test7.txt', 'w')
 hout.write(p.read())
@@ -59,6 +59,6 @@ hout.close()
 p.close()
 
 # diff tests with reference case
-p = os.popen('for f in `ls test`; do echo $f; diff -r batch/$f test/$f; done')
+p = os.popen("for f in `ls test`; do echo $f; diff -r batch/$f test/$f|grep -v '^Binary files'; done")
 print p.read()
 p.close()

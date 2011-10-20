@@ -39,7 +39,7 @@ action five times in one line.)
 (If you haven't installed Bake yet, instead of `bake`, type 
 
     $ cd examples/poisson/
-    $ ../../bake/cmdline.py -m -f bp/sine \
+    $ ../../bake/cmdline.py -m -f bp/sine.bp \
           -e 'python poisson.py; python compare_ideal.py' \
           -o '@label@;sine-n@n@' -o '@n@;3;5;11;21;41'
 
@@ -66,50 +66,56 @@ are below.
 
 ### What you need to run Bake
 
-First, you'll need Python.
+First, you'll need Python 2.7.
 
 To install Bake, just do:
 
-   python setup.py install
+    python setup.py install
 
 You may need to edit your `PATH` or `PYTHONPATH` environment variable to find
 Bake. You can find discussion on this at:
 
     http://docs.python.org/install/index.html#modifying-python-s-search-path
 
-To set up a project to use Bake, you will need an empty directory named
-`batch`.
+To set up a project to use Bake, make an empty directory named `batch` in your
+project directory.
 
 Bake is easiest to use if you write a Bake parameter (bp) file that describes
 which parameters should be varied and substituted.
 
-It also helps to have a `bake.cfg` file, but it is not necessary if Bake's
-defaults work for you, but can save you from typing some common options each
-time you use Bake. See the section, `Configuration`, in this file, for more
-information.
-
 You can then enter keys anywhere in your code files, and, when Bake operates,
 it will substitute those keys for the values in the bp file.
 
-### Configuration
+### `bake.arg`
 
-Bake will consult the file `bake.cfg` if it is present. The one in the poisson
-example is a good template. By default, Bake identifies keys enclosed in `@`
-signs, like this: `@key@`. It's important to make keys not look like the code
-or configuration files they are embedded in, so you may want to change this
-option. So, for example, if you wanted your keys to have the format `<key>`,
-your `bake.cfg` would look like,
+Bake will consult the file `bake.arg` if it is present, but it is not
+necessary. The `bake.arg` in the poisson example is a good template. Bake can
+consult other argument files if you prefix them with a `+`. If you do,
 
-    [format]
-    key_start: <
-    key_end: >
+    bake -m bp/foo.bp +bar.arg
 
-You need to tell Bake which files to edit.
+Bake reads the arguments from `bar.arg` as if they had been typed in at the
+command line, where `+bar.arg` was written. You may want to set up a `bake.arg`
+file to save yourself some typing.
 
-Edit it so that `bake_files` indicates the files you'll want Bake to edit. This
-list should be comma-separated but with no spaces. It can span more than one
-line, using a `\` at the end of each line. You can use the one in the poisson
-example.
+Typically, a particular set of files is repeatedly baked, so storing the list
+of filenames or globs is convenient, by setting `--bake_file` in
+bake.arg. Also, the format for keys is, by default, `@key@`; if you use a
+different format in your project, you may want to set it with `--key_start` and
+`--key_end`
+
+In addition, you can add your own extra `.arg` files. For example, if you
+regularly run your code with bake by doing
+
+    bake -e 'some complicated build command' ...
+
+you could, instead, have a file named `run.arg`,
+
+    -e 'some complicated build command'
+
+and then do,
+
+    bake +run.arg ...
 
 ### How you can help the Bake project
 
@@ -125,6 +131,11 @@ What I would appreciate the most are:
 3. Notes on what parts of the documentation are unclear
 
 ### How Bake works
+
+This is a nerdy explanation of how Bake works. To learn how to use Bake, first
+work through `example.txt` in `example/cookie`, then `example.txt` in
+`examples/poisson`; what follows is more useful in understanding some of the
+finer points of how Bake works.
 
 First, Bake reads a bp file, line-by-line. If any lines are added through the
 overwrite option, those are prepended to the file. Then each line is scanned
@@ -155,7 +166,7 @@ for each possible combination of values. (See the discussion in
 values and another with 2 lead to 6 jobs.)
 
 Bake selects a specific set of values, one for each key, for each job. Bake
-then reads through this list. (See `bake.mix.KeyValueSubValue()` for this
+then reads through this list. (See `bake.mix.Grid.expand_values()` for this
 process.) For each value that has a key in it, the key in that value is
 substituted for its corresponding value. For example, if this were a
 combination of keys and values,
@@ -174,15 +185,33 @@ key, and so on. Bake iterates over the keys, doing each of these substitutions,
 until each value has no keys in it. (You can make an infinite loop by making a
 circular reference between several values. This is not useful.)
 
-This process is aided by having a consistent format for keys. The default
-format is `@key@`, but you can specify this by setting `key_start` and
-`key_end` options in the `[format]` section in bake.cfg (see the section,
-Configuration).
+This process is aided by having a consistent format for keys. By default, Bake
+identifies keys enclosed in `@` signs, like this: `@key@`. It's important to
+make keys not look like the code or configuration files they are embedded in,
+so you may want to change this option. So, for example, if you wanted your keys
+to have the format `<key>`, you could use the flags, `--key_start \<` and
+`--key_end \>`. To keep from typing these flags repeatedly, you can store them
+in the `bake.arg` file for your project. Not that `<` and `>` need to be
+escaped at the command line, but should not be escaped in a `bake.arg`
+file. For more on the `bake.arg` file, see the section, Configuration.
 
 By default, Bake does these substitutions to generate the list of `@label@`s
-for a grid of jobs. When Bake does the mix task, it takes these key-value pairs
-and substitutes them over all of the source code specified in the `bake.cfg`
-`bake_files` option.
+for a grid of jobs; the `@label@` determines what a job is named, which is how
+Bake knows which directory to look in to work on a job.
+
+When Bake does the mix task, it takes these key-value pairs and substitutes
+them over all of the source code specified with the `--bake_files` argument.
+The `--bake_file` argument tells Bake which files to bake. The files listed
+after `--bake_file` should be comma-separated but with no spaces, and
+`--bake_file` can be set multiple times, with each invocation adding to the
+list of files to bake. For example, doing,
+
+    bake --bake_file *.py,Makefile --bake_file foo.cfg,bar.txt
+
+would bake all files ending in `.py`, plus `Makefile`, foo.cfg`, and `bar.txt`.
+Typically, a particular set of files is repeatedly baked, so storing the list
+of filenames or globs is convenient; see the section, Configuration, on how to
+do this.
 
 You can do substitution operations on other strings or even files. An example
 of this is in the `bake/examples/poisson/myBake/cmdline.py` file, inside a
@@ -200,11 +229,11 @@ This does this key-value substitituion over the string table_line.
 For Bake to select each job, each job must have a unique label.
 
 If the `@label@` key is not set in your bp file, Bake can infer one for you. If
-you have a bp file named foo.bp, with the contents,
+you have a bp file named `foo.bp`, with the contents,
 
-@key1@;value1;value2
-@key2@;value3
-@key3@;value4;value5
+    @key1@;value1;value2
+    @key2@;value3
+    @key3@;value4;value5
 
 Bake will make this `@label@`: `foo.bp-key1@key1@-key3@key3@`. The job names,
 specifically, the directories that Bake will look at, would then each have
