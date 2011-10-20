@@ -5,7 +5,7 @@ cookie is a super easy example of what Bake is useful for.
 cookie.txt is an outline for a recipe for cookies. When, in the cookie
 directory, you do:
 
-    $ bake -l -m -f bp/plain.txt
+    $ bake -l -m -f bp/plain.bp
 
 Bake takes `cookie.txt`, modifies it according to `bp/plain`, and puts it in
 `batch/cookie-decoration-none/cookie.txt`. (If you haven't installed Bake yet,
@@ -19,7 +19,7 @@ The raw `cookie.txt` has lines with keys in them. In the last line:
 Keys are one of the big ideas in Bake. Bake replaces keys with values from
 other files, varying a handful of parameters systematically.
 
-Look at the file `bp/plain.txt`:
+Look at the file `bp/plain.bp`:
 
     @label@;cookie-decoration-@decoration@
     ...
@@ -27,9 +27,9 @@ Look at the file `bp/plain.txt`:
 
 This is a Bake parameter (bp) file. It describes the things to put in for each
 of the keys. The `@decoration@` key appears in `cookie.txt`; when Bake reads
-`plain.txt`, it learns to replace `@decoration@` in `cookie.txt` with
+`plain.bp`, it learns to replace `@decoration@` in `cookie.txt` with
 `none`. There are other keys in `cookie.txt` that get replaced by the other
-keys in `plain.txt`.
+keys in `plain.bp`.
 
 When you did `bake bp/plain`, Bake made the file:
 
@@ -46,7 +46,7 @@ other keys correspondingly swapped out for their values.
 
 The bp file 1sprinkle has a different `@decoration@`. When you do:
 
-    $ bake -l -m -f bp/1sprinkle.txt
+    $ bake -l -m -f bp/1sprinkle.bp
 
 Bake makes a directory:
 
@@ -67,7 +67,7 @@ The bp file many_sprinkles has several colors listed on the `@color@` line.
 
 When you do:
 
-    $ bake -l -m -f bp/many_sprinkles.txt
+    $ bake -l -m -f bp/many_sprinkles.bp
 
 Bake makes a directory in batch for each of the colors, and each modified
 `cookie.txt` has a different color of sprinkles substituted in. This is a big
@@ -89,7 +89,7 @@ give unique names to each job.)
 You can have different keys with more than one value. Bake will make one copy
 of your files for each combination of these values. For example, when you do:
 
-    $ bake -l -m -f bp/nuts.txt
+    $ bake -l -m -f bp/nuts.bp
 
 Bake makes:
 
@@ -101,7 +101,7 @@ Bake makes:
 	  sugar-macadamia
 	  sugar-walnut
 
-`nuts.txt` has 2 kinds of nuts and 3 types of cookies mentioned, so Bake
+`nuts.bp` has 2 kinds of nuts and 3 types of cookies mentioned, so Bake
 maks 6 copies of `cookie.txt` and puts each copy in its own directory.  The
 contents of the `cookie.txt` in each directory are what you would expect, e.g.,
 `chocolate-chip-macadamia` looks like:
@@ -110,7 +110,7 @@ contents of the `cookie.txt` in each directory are what you would expect, e.g.,
     nuts: macadamia
     decoration: none
 
-The directory names are given by the `@label@`, which, in `nuts.txt`, is
+The directory names are given by the `@label@`, which, in `nuts.bp`, is
 
     @label@;@type@-@nuts@
 
@@ -119,35 +119,36 @@ label so that each set of files that Bake makes gets their own directory.
 
 ### 5. Under the hood
 
-All of Bake's behavior depends on the directory it is running in. When Bake
-starts, it looks for and reads `bake.cfg`. This is the `bake.cfg` for the
-cookie example:
+When Bake starts, it looks for and reads `bake.arg` in the current directory,
+if present. This is the `bake.arg` for the cookie example:
 
-    [format]
-    key_start: @
-    key_end: @
-
-    [filenames]
-    bake_files: cookie.txt
+    --key_start @
+    --key_end @
+    --bake_file cookie.txt
 
 If you wanted to, your keys could look like `$key$` or `<key>`; this is what is
 specified in the `[format]` section. For the first case, do,
 
-    key_start: $
-    key_end: $
+    --key_start $
+    --key_end $
 
 To make keys be enclosed in `<angle brackets>`, do,
 
-    key_start: <
-    key_end: >
+    --key_start <
+    --key_end >
 
 This is configurable because keys can be embedded in any type of source code
 and so they shouldn't look like regular code. Using keys in `<angle brackets>`
 would be a bad idea for HTML, for example.
 
+The `bake.arg` file is a shortcut for typing things at the command line. The
+only difference is if you use special characters; if you type `<`, at the
+command line, for example, it should be escaped, like `\<`; special characters
+should not be escaped in a .arg file.
+
 `bake_files` specifies the list of files Bake should operate on, in this case,
-`cookie.txt`. You could also select your bake files using the --bake_file
-command line flag, like
+`cookie.txt`. You could also select your bake files at the command line using
+the same --bake_file command line flag, like
 
     bake --bake_file=cookie.txt ...
 
@@ -155,9 +156,9 @@ or
 
     bake -b cookie.txt ...
 
-It's normal to bake one set of files repeatedly, and so setting this in a file
-saves typing.
+It's normal to bake one set of files repeatedly, and so setting this in `bake.arg` saves typing.
 
-Having a `bake.cfg` file is optional. If the `[format]` section is absent, Bake
-uses the default format of keys marked by `@`s. If the `bake_file` option is
-missing, files to bake must be specified at the command line.
+Having a `bake.arg` file is optional. If `--key_start` and `--key_end` aren't
+specified, Bake uses the default format of keys marked by `@`s. If the
+`bake_file` option is missing, files to bake must be specified at the command
+line.
