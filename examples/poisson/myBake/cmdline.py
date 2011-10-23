@@ -6,7 +6,7 @@ import sys
 import os
 import os.path
 import argparse
-sys.path.insert(0, '/Users/Alex/code/bake')
+sys.path.insert(0, '../../../bake')
 import bake
 import bake.mix
 
