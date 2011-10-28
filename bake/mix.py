@@ -84,6 +84,29 @@ class Grid:
         if self.label_key not in self.table.keys():
             self.infer_label(f)
 
+    def write_job_manifest(self):
+        """
+        Save a bp file that could be used to regenerate each job individually
+        in that job's directory
+        """
+        import time
+        with open('bake-manifest-' + time.strftime('%Y-%m-%d-%H:%M:%S') + 
+             '.txt', 'w') as hout:
+            for k, v in self.job.items():
+                hout.write(';'.join([k, v]) + '\n')
+
+    def write_manifest(self):
+        """
+        Save a copy of the grid
+        """
+        import time
+        import sys
+        with open('bake-manifest-' + time.strftime('%Y-%m-%d-%H:%M:%S') + 
+             '.txt', 'w') as hout:
+            hout.write(' '.join(sys.argv) + '\n')
+            for k, v in self.table.items():
+                hout.write(';'.join([k] + v) + '\n')
+
 # Internal methods
     def infer_label(self, string):
         """
