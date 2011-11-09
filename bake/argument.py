@@ -50,6 +50,15 @@ class BakeArgparser(argparse.ArgumentParser):
         self.add_argument('--execute', '-e', help="""Execute a command in each
             parameter specified, eg, "tail foo.txt"
             """)
+        self.add_argument('--job_manifest', action='store_true', 
+                          help="""Save a bp file that could be used to
+        regenerate each job individually in that job's directory
+            """)
+        self.add_argument('--grid_manifest', action='store_true', 
+                          help="""Save a copy of the grid""")
+        self.add_argument('--grid_manifest_dir', default='.',
+                          help="""Directory to save grid manifest in
+            """)
         self.add_argument('--key_start', default='@')
         self.add_argument('--key_end', default='@')
 

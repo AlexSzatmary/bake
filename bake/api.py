@@ -52,6 +52,14 @@ def default_loop(grid, args):
     This does a loop over each item in mixIterator, that is, each combination
     of the possible values.
     """
+    # Optionally record a manifest about this job, what the effective bp file
+    # was
+    if args.grid_manifest:
+        cd = os.getcwd()
+        os.chdir(args.grid_manifest_dir)
+        grid.write_manifest()
+        os.chdir(cd)
+
     for values in grid.mix_iterator():
     # Do the string replace operations on the values themselves
         cd = grid.get_label()
@@ -81,3 +89,9 @@ def default_loop(grid, args):
             os.chdir(wd)
             os.system(grid.replace(args.execute))
             os.chdir(os.path.join('..', '..'))
+        # Optionally record a bp file representing a single job for each job
+        if args.job_manifest:
+            os.chdir(wd)
+            grid.write_job_manifest()
+            os.chdir(os.path.join('..', '..'))
+            
