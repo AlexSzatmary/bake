@@ -30,7 +30,7 @@ def load(iterator):
         # Handle comments at start of line
         elif re.match(r'^\s*#', l):
             l = ''
-        if l:
+        if l.strip() != '':
             lines.append(l.replace('\n', '').replace('\\n','\n'))
     return lines
 
