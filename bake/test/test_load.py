@@ -15,15 +15,18 @@ class loadLinesTestCase(unittest.TestCase):
 class loadFileTestCase(unittest.TestCase):
     def setUp(self):
         self.cd = cd = os.getcwd()
-        os.chdir('../examples/cookie/bp/')
+        os.chdir('../examples/poisson/bp/')
 
     def test_load_file(self):
-        with open('include3.txt') as f:
+        with open('constant.bp') as f:
             self.assertEqual(
                 load.load(f),
-                ['@label@;include1', '@label@;cookie-decoration-@decoration@',
-                 '@type@;sugar', '@nuts@;none', '@decoration@;none',
-                 '@cutter@;circle'])
+                ['@label@;constant', '@forcing_function@;1.',
+                 '@ideal@;0.5 * @forcing_function@ * ((x - x_l)**2 - '
+                 '(x - x_l)*(x_r - x_l)) + u_l + u_r * '
+                 '(x - x_l) / (x_r - x_l)', '@n@;11', '@label@;default',
+                 '@forcing_function@;1.', '@x_l@;0.', '@x_r@;1.', '@u_l@;0.',
+                 '@u_r@;0', '@n@;11'])
 
     def tearDown(self):
         os.chdir(self.cd)
