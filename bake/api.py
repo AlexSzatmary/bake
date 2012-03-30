@@ -87,7 +87,8 @@ def default_loop(grid, args):
                         houtcode.close()
         if args.execute:
             os.chdir(wd)
-            os.system(grid.replace(args.execute))
+            for e in args.execute:
+                os.system(grid.replace(e))
             os.chdir(os.path.join('..', '..'))
         # Optionally record a bp file representing a single job for each job
         if args.job_manifest:
