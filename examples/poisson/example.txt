@@ -99,6 +99,13 @@ a second time, you should get the error,
 
 OSError: [Errno 17] File exists: './batch/constant'
 
+Notes:
+
+* If you haven't installed Bake yet, use `../../bake/cmdline.py` instead of
+`bake` throughout this tutorial.)
+* If you see the error, `OSError: Bake requires the directory, batch`, just do,
+  `mkdir batch`. This makes a place for the runs to go.
+
 This is so that you don't accidentally overwrite the source code for a job
 using Bake. Instead,
 
