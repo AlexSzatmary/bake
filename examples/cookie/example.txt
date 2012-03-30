@@ -2,8 +2,11 @@ cookie is a super easy example of what Bake is useful for.
 
 ### Example 1: plain
 
-cookie.txt is an outline for a recipe for cookies. When, in the cookie
-directory, you do:
+cookie.txt is an outline for a recipe for cookies. First, do,
+
+    $ mkdir batch
+
+When, in the cookie directory, you do:
 
     $ bake -l -m -f bp/plain.bp
 
