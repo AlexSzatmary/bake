@@ -16,7 +16,7 @@ hout.write(p.read())
 hout.close()
 p.close()
 
-p = os.popen(bakecmd + " -e 'python poisson.py' -f bp/constant.bp")
+p = os.popen(bakecmd + " +run.arg -f bp/constant.bp")
 hout = open('batch/test3.txt', 'w')
 hout.write(p.read())
 hout.close()
@@ -28,15 +28,16 @@ hout.write(p.read())
 hout.close()
 p.close()
 
-p = os.popen(bakecmd + " -m -e 'python poisson.py; python compare_ideal.py' "
+p = os.popen(bakecmd + " -m -e 'python poisson.py' "
+             "-e 'python compare_ideal.py' "
 	     "-f bp/sine.bp")
 hout = open('batch/test5.txt', 'w')
 hout.write(p.read())
 hout.close()
 p.close()
 
-p = os.popen(bakecmd + " -l -m -e 'python poisson.py; "
-	     "python compare_ideal.py' "
+p = os.popen(bakecmd + " -l -m -e 'python poisson.py' "
+	     "-e 'python compare_ideal.py' "
 	     "-f bp/constant.bp -o '@label@;constant-n@n@' "
 	     "-o '@n@;3;5;11;21;41'")
 hout = open('batch/test6.txt', 'w')

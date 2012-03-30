@@ -2,14 +2,23 @@ cookie is a super easy example of what Bake is useful for.
 
 ### Example 1: plain
 
-cookie.txt is an outline for a recipe for cookies. When, in the cookie
-directory, you do:
+cookie.txt is an outline for a recipe for cookies. First, do,
+
+    $ mkdir batch
+
+When, in the cookie directory, you do:
 
     $ bake -l -m -f bp/plain.bp
 
-Bake takes `cookie.txt`, modifies it according to `bp/plain`, and puts it in
-`batch/cookie-decoration-none/cookie.txt`. (If you haven't installed Bake yet,
-use `../../bake/cmdline.py` instead of `bake` throughout this tutorial.)
+Bake takes `cookie.txt`, modifies it according to `bp/plain.bp`, and puts it in
+`batch/cookie-decoration-none/cookie.txt`.
+
+Notes:
+
+* If you haven't installed Bake yet, use `../../bake/cmdline.py` instead of
+`bake` throughout this tutorial.)
+* If you see the error, `OSError: Bake requires the directory, batch`, just do,
+  `mkdir batch`. This makes a place for the runs to go.
 
 The raw `cookie.txt` has lines with keys in them. In the last line:
 
@@ -31,7 +40,7 @@ of the keys. The `@decoration@` key appears in `cookie.txt`; when Bake reads
 `none`. There are other keys in `cookie.txt` that get replaced by the other
 keys in `plain.bp`.
 
-When you did `bake bp/plain`, Bake made the file:
+When you did `bake bp/plain.bp`, Bake made the file:
 
      batch/cookie-decoration-none/cookie.txt 
 

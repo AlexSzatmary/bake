@@ -1,3 +1,29 @@
+0.2.3 More useful .args
+
+* The parsing of .arg files is different, so text in a .arg is read just as if
+  it were typed in at the command line. This makes it possible to make execute
+  (-e) commands like, -e 'echo foo bar', making it easier to save tricky -e's
+  as .arg files.
+
+* Several execute (-e) commands can be stacked, previously, each would replace
+  the previous one. Previously, one would have to do,
+
+    -e 'command1; command2; command3'
+
+  now,
+
+    -e 'command1' -e 'command2' -e 'command3'
+
+  is equivalent to this. So, series of complicated commands can be saved in
+  several .arg files, and composed like
+
+    bake -f bp/foo.bp -m +command1.arg +command2.arg +command3.arg
+
+Also, bp files can now have blank lines; these are ignored. This improves
+readabilty for bp files.
+
+
+
 0.2.2 Records of runs
 
 New feature: with --grid_manifest, the grid is saved, in bp format, with an

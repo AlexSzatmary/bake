@@ -63,6 +63,8 @@ def default_loop(grid, args):
     for values in grid.mix_iterator():
     # Do the string replace operations on the values themselves
         cd = grid.get_label()
+        if not os.path.exists(args.prefix):
+            raise OSError, 'Bake requires the directory, ' + args.prefix
         wd = os.path.join(args.prefix, cd)
 
         if args.list:
@@ -87,7 +89,8 @@ def default_loop(grid, args):
                         houtcode.close()
         if args.execute:
             os.chdir(wd)
-            os.system(grid.replace(args.execute))
+            for e in args.execute:
+                os.system(grid.replace(e))
             os.chdir(os.path.join('..', '..'))
         # Optionally record a bp file representing a single job for each job
         if args.job_manifest:

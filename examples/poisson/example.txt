@@ -68,9 +68,13 @@ common material in `default.bp`. Later lines override earlier lines, so the
 ### Bake command: list
 
 Bake has three main commands that can be used together or separately. The first
-is list. If you do,
+is list. First, do,
 
-   $ bake -l -f bp/constant.bp
+    $ mkdir batch
+
+Then, if you do,
+
+    $ bake -l -f bp/constant.bp
 
 Bake outputs just
 
@@ -98,6 +102,13 @@ source code files. If you do,
 a second time, you should get the error,
 
 OSError: [Errno 17] File exists: './batch/constant'
+
+Notes:
+
+* If you haven't installed Bake yet, use `../../bake/cmdline.py` instead of
+`bake` throughout this tutorial.)
+* If you see the error, `OSError: Bake requires the directory, batch`, just do,
+  `mkdir batch`. This makes a place for the runs to go.
 
 This is so that you don't accidentally overwrite the source code for a job
 using Bake. Instead,
@@ -222,14 +233,16 @@ discretization error decreases.)
 
 It's easy to make your own version of Bake that uses Bake's ability to
 manipulate a grid of jobs, doing operations that are important for your
-project. There is a special front-end to Bake In the myBake directory in this
-example. If you do 
+project. There is a special front-end to Bake in the myBake directory in this
+example. To try this next example, first clear the batch directory,
 
-    $ ./myBake/cmdline.py -m -p -f bp/constant.bp
+    $ rm -rf batch/constant
 
-It's as if you had done
+If you do 
 
-    $ bake -l -m -e 'python poisson.py' -f bp/constant.bp
+    $ ./myBake/cmdline.py -m -P -f bp/constant.bp
+
+the -P option acts like `-e 'python poisson.py'`.
 
 Making a custom front-end to Bake is helpful if your project involves running
 the same command as you test your code, or if you have to run your code many
@@ -244,7 +257,7 @@ If you do,
 Bake makes a table comparing n and the error for each case, and saves this as
 `error.txt`.
 
-The `-p` flag is implemented, mostly in two lines of code:
+The `-P` flag is implemented, mostly in two lines of code:
 
     task = 'execute'
     options.execute = ('python poisson.py')

@@ -17,7 +17,7 @@ try:
     hout.write(p.read())
     hout.close()
     p.close() 
-    p = os.popen('../../bake/cmdline.py -f bp/many_sprinkles.bp -e "cat cookie.txt"')
+    p = os.popen('../../bake/cmdline.py -f bp/many_sprinkles.bp +cat.arg')
     hout = open('batch/test4.txt', 'w')
     hout.write(p.read())
     hout.close()

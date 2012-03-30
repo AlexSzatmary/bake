@@ -6,6 +6,7 @@ command line.
 
 import argparse
 import bakedefaults
+import shlex
 
 
 class BakeArgparser(argparse.ArgumentParser):
@@ -47,8 +48,9 @@ class BakeArgparser(argparse.ArgumentParser):
             the file, eg, -s 5-9 does runs 5, 6, 7, and 8 out of however many
             runs would be referred to in the given file.
             """)
-        self.add_argument('--execute', '-e', help="""Execute a command in each
-            parameter specified, eg, "tail foo.txt"
+        self.add_argument('--execute', '-e', action='append',
+                          help="""Execute a command in each parameter
+            specified, eg, "tail foo.txt"
             """)
         self.add_argument('--job_manifest', action='store_true', 
                           help="""Save a bp file that could be used to
@@ -63,9 +65,7 @@ class BakeArgparser(argparse.ArgumentParser):
         self.add_argument('--key_end', default='@')
 
     def convert_arg_line_to_args(self, arg_line):
-        for arg in arg_line.split():
-            if not arg.strip():
-                continue
+        for arg in shlex.split(arg_line):
             yield arg
 
 

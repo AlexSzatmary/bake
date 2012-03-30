@@ -53,7 +53,7 @@ def main(argv=sys.argv[1:]):
             # This makes the poisson option act like a simple execute option,
             # but with a built-in command
             task = 'execute'
-            args.execute = ('python poisson.py')
+            args.execute = ['python poisson.py']
             # Uncomment the below lines to force bake to always mix or list
             # args.mix = True
             # args.list = True
