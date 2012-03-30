@@ -6,6 +6,7 @@ command line.
 
 import argparse
 import bakedefaults
+import shlex
 
 
 class BakeArgparser(argparse.ArgumentParser):
@@ -63,9 +64,7 @@ class BakeArgparser(argparse.ArgumentParser):
         self.add_argument('--key_end', default='@')
 
     def convert_arg_line_to_args(self, arg_line):
-        for arg in arg_line.split():
-            if not arg.strip():
-                continue
+        for arg in shlex.split(arg_line):
             yield arg
 
 

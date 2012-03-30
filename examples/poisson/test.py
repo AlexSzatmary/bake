@@ -16,7 +16,7 @@ hout.write(p.read())
 hout.close()
 p.close()
 
-p = os.popen(bakecmd + " -e 'python poisson.py' -f bp/constant.bp")
+p = os.popen(bakecmd + " +run.arg -f bp/constant.bp")
 hout = open('batch/test3.txt', 'w')
 hout.write(p.read())
 hout.close()
